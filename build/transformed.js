@@ -21426,7 +21426,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var CheckersBoard = __webpack_require__(173);
+	var CheckersBoardContainer = __webpack_require__(173);
 
 	function App() {
 		// this.props.etc
@@ -21443,7 +21443,7 @@
 				null,
 				'WELCOME TO CHECKERSSSSSSSS'
 			),
-			React.createElement(CheckersBoard, null)
+			React.createElement(CheckersBoardContainer, { size: 8, color: '#333', secondary_color: '#fff' })
 		);
 	}
 
@@ -21457,52 +21457,124 @@
 	 * Created by kylegsessions on 9/17/16.
 	 */
 	var React = __webpack_require__(1);
+	var CheckersBoard = __webpack_require__(174);
+	var Cell = __webpack_require__(175);
 
-	var CheckersBoard = React.createClass({
-		displayName: 'CheckersBoard',
+	var CheckersBoardContainer = React.createClass({
+		displayName: 'CheckersBoardContainer',
 
 		render: function () {
-			var rowLabels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
-			    colLabels = ['1', '2', '3', '4', '5', '6', '7', '8'],
-			    cells = rowLabels.map(function (rowLabel, rowIdx) {
-				var rowId = 'row_' + rowLabel;
-				var rowCells = colLabels.map(function (colLabel, colIdx) {
-					var id = 'cell_' + rowLabel + colLabel,
-					    className = 'cell',
-					    playable = rowIdx % 2 == 0 && colIdx % 2 == 1 || rowIdx % 2 == 1 && colIdx % 2 == 0;
+			//console.log(this.props);
+			//debugger;
 
-					if (playable) className += ' black';else className += ' white';
+			var cellSize = (100 / this.props.size).toFixed(2) + '%',
+			    cellCount = this.props.size * this.props.size;
 
-					return React.createElement('div', { className: className, id: id, key: id,
-						style: {
-							float: 'left',
-							width: '12.5%',
-							paddingTop: '12.5%',
-							background: playable ? '#000' : '#fff'
-						}
-					});
-				});
+			function cellArray(currentArray, count, cellStyle) {
+				if (currentArray.length >= count) {
+					return currentArray;
+				} else {
+					currentArray.push(React.createElement(Cell, { style: cellStyle }));
+					return cellArray(currentArray, count, cellStyle);
+				}
+			}
 
-				return React.createElement(
-					'div',
-					{ className: 'row', id: rowId, key: rowId },
-					rowCells
-				);
+			var cells = cellArray([], cellCount, {
+				backgroundColor: 'red',
+				width: cellSize,
+				paddingTop: cellSize,
+				float: 'left'
 			});
+			//debugger;
 
 			return React.createElement(
-				'div',
-				{ className: 'checkersBoard', style: {
-						border: '3px solid gold',
-						overflow: 'hidden',
-						maxWidth: 700
-					} },
+				CheckersBoard,
+				null,
 				cells
 			);
+			//<Cell style={{
+			//	backgroundColor:'red',
+			//	width: cellSize,
+			//	paddingTop: cellSize
+			//	}} />
+
+			//var rowLabels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+			//	colLabels = ['1', '2', '3', '4', '5', '6', '7', '8'],
+			//	cells = rowLabels.map(function(rowLabel, rowIdx) {
+			//		var rowId = 'row_' + rowLabel;
+			//		var rowCells = colLabels.map(function(colLabel, colIdx) {
+			//			var id = 'cell_' + rowLabel + colLabel,
+			//				className = 'cell',
+			//				playable =  (
+			//					(rowIdx % 2 == 0 && colIdx % 2 == 1) ||
+			//					(rowIdx % 2 == 1 && colIdx % 2 == 0)
+			//				);
+			//
+			//			if (playable) className += ' black';
+			//			else className += ' white';
+			//
+			//			return <div className={className} id={id} key={id}
+			//						style={{
+			//							float: 'left',
+			//							width: '12.5%',
+			//							paddingTop: '12.5%',
+			//							background: playable ? '#000' : '#fff'
+			//						}}
+			//				></div>;
+			//		});
+			//
+			//		return <div className="row" id={rowId} key={rowId}>{rowCells}</div>;
+			//	});
+			//
+			//return (
+			//	<div className="checkersBoard" style={{
+			//		border: '3px solid gold',
+			//		overflow: 'hidden',
+			//		maxWidth: 650
+			//	}}>
+			//		{cells}
+			//	</div>
+			//);
 		}
 	});
 
+	module.exports = CheckersBoardContainer;
+
+/***/ },
+/* 174 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	function CheckersBoard(props) {
+		return React.createElement(
+			'div',
+			{ className: 'checkersBoard', style: {
+					border: '3px solid gold',
+					overflow: 'hidden',
+					maxWidth: 650
+				} },
+			props.children
+		);
+	}
+
 	module.exports = CheckersBoard;
+
+/***/ },
+/* 175 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	function Cell(props) {
+		return React.createElement('div', { style: props.style });
+	}
+
+	Cell.propTypes = {
+		style: React.PropTypes.object.isRequired
+	};
+
+	module.exports = Cell;
 
 /***/ }
 /******/ ]);
