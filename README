@@ -1,1 +1,5 @@
-To use, in the project's main directory, type `npm run build`, then `npm run start`, then direct your browser to http://localhost:8080/
+To use, in the project's main directory, 
+
+* type `npm run build`, 
+* then `npm run start`, 
+* then direct your browser to http://localhost:8080/
