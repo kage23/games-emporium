@@ -21436,6 +21436,11 @@
 			React.createElement(
 				'h1',
 				null,
+				'KAGE\'S UNLICENSED GAME EMPORIUM!!!'
+			),
+			React.createElement(
+				'h2',
+				null,
 				'WELCOME TO CHECKERSSSSSSSS'
 			),
 			React.createElement(CheckersBoard, null)
