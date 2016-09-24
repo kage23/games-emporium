@@ -21423,6 +21423,8 @@
 	var React = __webpack_require__(1);
 	var CheckersBoardContainer = __webpack_require__(173);
 	var TokenContainer = __webpack_require__(176);
+	var SiteHeader = __webpack_require__(178);
+	var GameHeader = __webpack_require__(179);
 
 	function CheckersGame() {
 		var boardSize = 8; // number of cells along each side of the board. board will be square.
@@ -21432,16 +21434,8 @@
 		return React.createElement(
 			'div',
 			null,
-			React.createElement(
-				'h1',
-				null,
-				'KAGE\'S UNLICENSED GAME EMPORIUM!!!'
-			),
-			React.createElement(
-				'h2',
-				null,
-				'WELCOME TO CHECKERSSSSSSSS'
-			),
+			React.createElement(SiteHeader, null),
+			React.createElement(GameHeader, { game: 'CHECKERSSSSSSSS' }),
 			React.createElement(
 				CheckersBoardContainer,
 				{ size: boardSize, color: color, secondary_color: secondaryColor },
@@ -21609,6 +21603,43 @@
 	};
 
 	module.exports = Token;
+
+/***/ },
+/* 178 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	function SiteHeader() {
+	    return React.createElement(
+	        'h1',
+	        null,
+	        'KAGE\'S UNLICENSED GAME EMPORIUM!!!'
+	    );
+	}
+
+	module.exports = SiteHeader;
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	function GameHeader(props) {
+	    return React.createElement(
+	        'h2',
+	        null,
+	        'WELCOME TO ',
+	        props.game
+	    );
+	};
+
+	GameHeader.propTypes = {
+	    game: React.PropTypes.string.isRequired
+	};
+
+	module.exports = GameHeader;
 
 /***/ }
 /******/ ]);

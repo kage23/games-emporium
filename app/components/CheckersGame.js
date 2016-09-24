@@ -1,6 +1,8 @@
 var React = require('react');
 var CheckersBoardContainer = require('../containers/CheckersBoardContainer');
 var TokenContainer = require('../containers/TokenContainer');
+var SiteHeader = require('../components/SiteHeader');
+var GameHeader = require('../components/GameHeader');
 
 function CheckersGame () {
     var boardSize = 8;              // number of cells along each side of the board. board will be square.
@@ -9,8 +11,8 @@ function CheckersGame () {
 
 	return (
 		<div>
-			<h1>KAGE'S UNLICENSED GAME EMPORIUM!!!</h1>
-			<h2>WELCOME TO CHECKERSSSSSSSS</h2>
+			<SiteHeader />
+			<GameHeader game="CHECKERSSSSSSSS" />
 
 			<CheckersBoardContainer size={boardSize} color={color} secondary_color={secondaryColor}>
                 <TokenContainer color="black" type="circle" boardSize={boardSize} cell="c3r2" />
