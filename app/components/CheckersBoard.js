@@ -5,7 +5,8 @@ function CheckersBoard (props) {
 		<div className="checkersBoard" style={{
 				border: '3px solid gold',
 				overflow: 'hidden',
-				maxWidth: 650
+				maxWidth: 650,
+                position: 'relative'
 			}}>
 			{props.children}
 		</div>

@@ -1,8 +1,8 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var App = require('./components/App');
+var CheckersGame = require('./components/CheckersGame');
 
 ReactDOM.render(
-	<App />,
+	<CheckersGame />,
 	document.getElementById('app')
 );
