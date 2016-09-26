@@ -15,11 +15,11 @@ function CheckersBoardContainer (props) {
         if (currentArray.length >= count) {
             return currentArray;
         } else {
-            col = (currentArray.length % boardSize) + 1;
-            row = Math.floor(currentArray.length / boardSize) + 1;
+            col = (currentArray.length % boardSize);
+            row = Math.floor(currentArray.length / boardSize);
             id = 'c' + col + 'r' + row;
 
-            if (row % 2 == col % 2) {
+            if (row % 2 != col % 2) {
                 backgroundColor = color;
             } else {
                 backgroundColor = secondaryColor;
