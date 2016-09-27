@@ -6,7 +6,9 @@ function CheckersBoard (props) {
 				border: '3px solid gold',
 				overflow: 'hidden',
 				maxWidth: 650,
-                position: 'relative'
+                position: 'relative',
+                float: 'left',
+                width: '100%'
 			}}>
 			{props.children}
 		</div>
