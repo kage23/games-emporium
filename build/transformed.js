@@ -21477,6 +21477,9 @@
 	            null,
 	            React.createElement(SiteHeader, null),
 	            React.createElement(GameHeader, { game: 'CHECKERSSSSSSSS' }),
+	            React.createElement(CheckersGameInfoContainer, {
+	                data: this.state
+	            }),
 	            React.createElement(
 	                CheckersBoardContainer,
 	                {
@@ -21486,8 +21489,7 @@
 	                },
 	                this.state.players[0].tokens,
 	                this.state.players[1].tokens
-	            ),
-	            React.createElement(CheckersGameInfoContainer, null)
+	            )
 	        );
 	    }
 	});
@@ -21701,9 +21703,18 @@
 	    displayName: 'CheckersGameInfoContainer',
 
 	    render: function () {
-	        return React.createElement(CheckersGameInfo, null);
+	        var currentPlayer = this.props.data.players[this.props.data.currentTurn];
+
+	        return React.createElement(CheckersGameInfo, {
+	            name: currentPlayer.name,
+	            color: currentPlayer.color
+	        });
 	    }
 	});
+
+	CheckersGameInfoContainer.propTypes = {
+	    data: React.PropTypes.object.isRequired
+	};
 
 	module.exports = CheckersGameInfoContainer;
 
@@ -21718,12 +21729,23 @@
 
 	    render: function () {
 	        return React.createElement(
-	            'h1',
+	            'h3',
 	            null,
-	            'Game info woooOOOOO!!!!'
+	            'It is ',
+	            React.createElement(
+	                'span',
+	                { style: { color: this.props.color } },
+	                this.props.name
+	            ),
+	            '\'s turn'
 	        );
 	    }
 	});
+
+	CheckersGameInfo.propTypes = {
+	    name: React.PropTypes.string.isRequired,
+	    color: React.PropTypes.string.isRequired
+	};
 
 	module.exports = CheckersGameInfo;
 

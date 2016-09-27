@@ -3,10 +3,19 @@ var CheckersGameInfo = require('../components/CheckersGameInfo');
 
 var CheckersGameInfoContainer = React.createClass({
     render: function () {
+        var currentPlayer = this.props.data.players[this.props.data.currentTurn];
+
         return (
-            <CheckersGameInfo />
+            <CheckersGameInfo
+                name={currentPlayer.name}
+                color={currentPlayer.color}
+            />
         );
     }
 });
+
+CheckersGameInfoContainer.propTypes = {
+    data: React.PropTypes.object.isRequired
+};
 
 module.exports = CheckersGameInfoContainer;

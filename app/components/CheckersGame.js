@@ -67,6 +67,10 @@ var CheckersGame = React.createClass({
                 <SiteHeader />
                 <GameHeader game="CHECKERSSSSSSSS" />
 
+                <CheckersGameInfoContainer
+                    data={this.state}
+                />
+
                 <CheckersBoardContainer
                     size={this.config.boardSize}
                     color={this.config.color}
@@ -75,8 +79,6 @@ var CheckersGame = React.createClass({
                     {this.state.players[0].tokens}
                     {this.state.players[1].tokens}
                 </CheckersBoardContainer>
-
-                <CheckersGameInfoContainer />
             </div>
         );
     }
