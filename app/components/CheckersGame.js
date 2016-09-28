@@ -55,24 +55,44 @@ var CheckersGame = React.createClass({
         };
     },
 
-    handleTokenClick: function (token) {
+    handleTokenClick: function (tokenContainer) {
         var currentPlayer, tokenBelongsToPlayer, validMoves = [];
 
         currentPlayer = this.state.players[this.state.currentTurn];
 
         currentPlayer.tokens.forEach(function (playerToken) {
-            if (playerToken.key == token.state.cell) tokenBelongsToPlayer = true;
+            if (playerToken.key == tokenContainer.props.startingCell) tokenBelongsToPlayer = true;
         });
 
         if (tokenBelongsToPlayer) {
-            validMoves = this.lookForValidMoves(token);
+            validMoves = this.lookForValidMoves(tokenContainer);
             if (validMoves.length) {
-                this.highlightToken(token);
+                this.highlightToken(tokenContainer);
                 this.setState({
                     cells: this.generateCellArray([], this.config.boardSize, this.generateBaseCellStyle(), this.config.color, this.config.secondaryColor, validMoves)
-                })
+                });
             }
         }
+    },
+
+    handleCellClick: function (cellContainer) {
+        var newTurn;
+
+        if (cellContainer.props.highlighted) {
+            if (this.state.currentTurn == 0) newTurn = 1;
+            else if (this.state.currentTurn == 1) newTurn = 0;
+
+            this.moveSelectedTokenToCell(cellContainer.props.id);
+            this.resetHighlights();
+
+            this.setState({
+                currentTurn: newTurn
+            });
+        }
+    },
+
+    moveSelectedTokenToCell: function (cellId) {
+        this.state.selectedToken.setState({cell: cellId});
     },
 
     highlightToken: function (token) {
@@ -81,6 +101,17 @@ var CheckersGame = React.createClass({
         }
         this.setState({selectedToken: token});
         token.highlightToken();
+    },
+
+    resetHighlights: function () {
+        if (this.state.selectedToken) {
+            this.state.selectedToken.clearHighlight();
+            this.setState({selectedToken: undefined});
+        }
+
+        this.setState({
+            cells: this.generateCellArray([], this.config.boardSize, this.generateBaseCellStyle(), this.config.color, this.config.secondaryColor, [])
+        });
     },
 
     lookForValidMoves: function (token) {
@@ -139,7 +170,10 @@ var CheckersGame = React.createClass({
                 newStyle.zIndex = 2;
             }
 
-            currentArray.push(<CellContainer style={newStyle} id={id} key={id} highlightCell={this.highlightCell} />);
+            currentArray.push(
+                <CellContainer style={newStyle} id={id} key={id} highlighted={highlightedArray.indexOf(id) > -1}
+                               handleClick={this.handleCellClick} />
+            );
 
             return this.generateCellArray(currentArray, boardSize, inCellStyle, color, secondaryColor, highlightedArray);
         }

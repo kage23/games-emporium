@@ -45,6 +45,8 @@ var TokenContainer = React.createClass({
         tokenStyle.left = (100 / this.props.boardSize) * (0.1 + tokenCol) + '%';
         tokenStyle.top = (100 / this.props.boardSize) * (0.1 + tokenRow) + '%';
 
+        tokenStyle.transition = 'left 0.5s ease-out, top 0.5s ease-out';
+
         if (this.state.highlighted) {
             tokenStyle.boxShadow = '0px 0px 5px 5px #0f0';
         }
