@@ -1,10 +1,12 @@
 var React = require('react');
 
-function Cell (props) {
-	return <div style={props.style}
-				id={props.id}
-			></div>;
-}
+var Cell = React.createClass({
+    render: function () {
+        return <div style={this.props.style}
+                    id={this.props.id}
+        ></div>;
+    }
+});
 
 Cell.propTypes = {
 	style: React.PropTypes.object.isRequired,

@@ -1,13 +1,15 @@
 var React = require('react');
 var SiteHeader = require('../components/SiteHeader');
 var GameHeader = require('../components/GameHeader');
-var CheckersBoardContainer = require('../containers/CheckersBoardContainer');
+var CheckersBoard = require('../components/CheckersBoard');
 var TokenContainer = require('../containers/TokenContainer');
 var CheckersGameInfoContainer = require('../containers/CheckersGameInfoContainer');
+var CellContainer = require('../containers/CellContainer');
 
 var CheckersGame = React.createClass({
     getInitialState: function () {
         return {
+            cells: [],
             players: [
                 {
                     name: 'Player 1',
@@ -41,6 +43,18 @@ var CheckersGame = React.createClass({
         secondaryColor: '#fff'          // color of alternate squares
     },
 
+    generateBaseCellStyle: function () {
+        var cellSize = (100 / this.config.boardSize).toFixed(8) + '%';
+
+        return {
+            width: cellSize,
+            paddingTop: cellSize,
+            position: 'relative',
+            float: 'left',
+            zIndex: 1
+        };
+    },
+
     handleTokenClick: function (token) {
         var currentPlayer, tokenBelongsToPlayer, validMoves = [];
 
@@ -54,7 +68,9 @@ var CheckersGame = React.createClass({
             validMoves = this.lookForValidMoves(token);
             if (validMoves.length) {
                 this.highlightToken(token);
-                this.highlightCells(validMoves);
+                this.setState({
+                    cells: this.generateCellArray([], this.config.boardSize, this.generateBaseCellStyle(), this.config.color, this.config.secondaryColor, validMoves)
+                })
             }
         }
     },
@@ -65,10 +81,6 @@ var CheckersGame = React.createClass({
         }
         this.setState({selectedToken: token});
         token.highlightToken();
-    },
-
-    highlightCells: function (cellArray) {
-        // debugger;
     },
 
     lookForValidMoves: function (token) {
@@ -104,7 +116,38 @@ var CheckersGame = React.createClass({
             owner={player} handleClick={this.handleTokenClick} />
     },
 
+    generateCellArray: function (currentArray, boardSize, inCellStyle, color, secondaryColor, highlightedArray) {
+        var id, col, row, backgroundColor, newStyle = Object.assign({}, inCellStyle), count = boardSize * boardSize;
+
+        if (currentArray.length >= count) {
+            return currentArray;
+        } else {
+            col = (currentArray.length % boardSize);
+            row = Math.floor(currentArray.length / boardSize);
+            id = 'c' + col + 'r' + row;
+
+            if (row % 2 != col % 2) {
+                backgroundColor = color;
+            } else {
+                backgroundColor = secondaryColor;
+            }
+
+            newStyle.backgroundColor = backgroundColor;
+
+            if (highlightedArray.indexOf(id) > -1) {
+                newStyle.boxShadow = '0px 0px 5px 5px #0f0';
+                newStyle.zIndex = 2;
+            }
+
+            currentArray.push(<CellContainer style={newStyle} id={id} key={id} highlightCell={this.highlightCell} />);
+
+            return this.generateCellArray(currentArray, boardSize, inCellStyle, color, secondaryColor, highlightedArray);
+        }
+    },
+
     componentDidMount: function () {
+        var cellCount = this.config.boardSize * this.config.boardSize;
+
         var players = [
             Object.assign({}, this.state.players[0]),
             Object.assign({}, this.state.players[1])
@@ -118,7 +161,12 @@ var CheckersGame = React.createClass({
             return newPlayer;
         }.bind(this));
 
-        this.setState({players: newPlayers});
+        var cells = this.generateCellArray([], this.config.boardSize, this.generateBaseCellStyle(), this.config.color, this.config.secondaryColor, []);
+
+        this.setState({
+            players: newPlayers,
+            cells: cells
+        });
     },
 
     render: function () {
@@ -131,14 +179,11 @@ var CheckersGame = React.createClass({
                     data={this.state}
                 />
 
-                <CheckersBoardContainer
-                    size={this.config.boardSize}
-                    color={this.config.color}
-                    secondary_color={this.config.secondaryColor}
-                >
+                <CheckersBoard>
+                    {this.state.cells}
                     {this.state.players[0].tokens}
                     {this.state.players[1].tokens}
-                </CheckersBoardContainer>
+                </CheckersBoard>
             </div>
         );
     }

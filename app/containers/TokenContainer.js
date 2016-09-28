@@ -37,6 +37,7 @@ var TokenContainer = React.createClass({
                 borderRadius: '50%',
                 border: '1px solid #000',
                 position: 'absolute',
+                zIndex: 10,
                 backgroundColor: this.props.color
             };
         }
