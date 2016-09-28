@@ -30,7 +30,8 @@ var CheckersGame = React.createClass({
                     ]
                 }
             ],
-            currentTurn: 0
+            currentTurn: 0,
+            selectedToken: undefined
         };
     },
 
@@ -40,8 +41,67 @@ var CheckersGame = React.createClass({
         secondaryColor: '#fff'          // color of alternate squares
     },
 
-    generateToken: function (id, color, boardSize) {
-        return <TokenContainer color={color} type="circle" boardSize={boardSize} cell={id} key={id} />
+    handleTokenClick: function (token) {
+        var currentPlayer, tokenBelongsToPlayer, validMoves = [];
+
+        currentPlayer = this.state.players[this.state.currentTurn];
+
+        currentPlayer.tokens.forEach(function (playerToken) {
+            if (playerToken.key == token.state.cell) tokenBelongsToPlayer = true;
+        });
+
+        if (tokenBelongsToPlayer) {
+            validMoves = this.lookForValidMoves(token);
+            if (validMoves.length) {
+                this.highlightToken(token);
+                this.highlightCells(validMoves);
+            }
+        }
+    },
+
+    highlightToken: function (token) {
+        if (this.state.selectedToken) {
+            this.state.selectedToken.clearHighlight();
+        }
+        this.setState({selectedToken: token});
+        token.highlightToken();
+    },
+
+    highlightCells: function (cellArray) {
+        // debugger;
+    },
+
+    lookForValidMoves: function (token) {
+        var currentCol = parseInt(token.state.cell[1]),
+            currentRow = parseInt(token.state.cell[3]),
+            validCols = [],
+            validRows = [],
+            validCells = [];
+
+        if (currentCol - 1 >= 0)
+            validCols.push(currentCol - 1);
+        if (currentCol + 1 < this.config.boardSize)
+            validCols.push(currentCol + 1);
+
+        if ((token.props.owner == 0 || token.state.king) && currentRow - 1 >= 0)
+            validRows.push(currentRow - 1);
+
+        if ((token.props.owner == 1 || token.state.king) && currentRow + 1 < this.config.boardSize)
+            validRows.push(currentRow + 1);
+
+        validCols.forEach(function (col) {
+            validRows.forEach(function (row) {
+                validCells.push('c' + col + 'r' + row);
+            })
+        });
+
+        return validCells;
+    },
+
+    generateToken: function (id, player, color, boardSize) {
+        return <TokenContainer
+            color={color} type="circle" boardSize={boardSize} startingCell={id} key={id}
+            owner={player} handleClick={this.handleTokenClick} />
     },
 
     componentDidMount: function () {
@@ -50,10 +110,10 @@ var CheckersGame = React.createClass({
             Object.assign({}, this.state.players[1])
         ];
 
-        var newPlayers = players.map(function (currentPlayer) {
+        var newPlayers = players.map(function (currentPlayer, index) {
             var newPlayer = Object.assign({}, currentPlayer);
             newPlayer.tokens = currentPlayer.startingPositions.map(function (currentPosition) {
-                return this.generateToken(currentPosition, currentPlayer.color, this.config.boardSize);
+                return this.generateToken(currentPosition, index, currentPlayer.color, this.config.boardSize);
             }.bind(this));
             return newPlayer;
         }.bind(this));

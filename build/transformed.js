@@ -21443,7 +21443,8 @@
 	                tokens: [],
 	                startingPositions: ['c1r0', 'c3r0', 'c5r0', 'c7r0', 'c0r1', 'c2r1', 'c4r1', 'c6r1', 'c1r2', 'c3r2', 'c5r2', 'c7r2']
 	            }],
-	            currentTurn: 0
+	            currentTurn: 0,
+	            selectedToken: undefined
 	        };
 	    },
 
@@ -21453,17 +21454,74 @@
 	        secondaryColor: '#fff' // color of alternate squares
 	    },
 
-	    generateToken: function (id, color, boardSize) {
-	        return React.createElement(TokenContainer, { color: color, type: 'circle', boardSize: boardSize, cell: id, key: id });
+	    handleTokenClick: function (token) {
+	        var currentPlayer,
+	            tokenBelongsToPlayer,
+	            validMoves = [];
+
+	        currentPlayer = this.state.players[this.state.currentTurn];
+
+	        currentPlayer.tokens.forEach(function (playerToken) {
+	            if (playerToken.key == token.state.cell) tokenBelongsToPlayer = true;
+	        });
+
+	        if (tokenBelongsToPlayer) {
+	            validMoves = this.lookForValidMoves(token);
+	            if (validMoves.length) {
+	                this.highlightToken(token);
+	                this.highlightCells(validMoves);
+	            }
+	        }
+	    },
+
+	    highlightToken: function (token) {
+	        if (this.state.selectedToken) {
+	            this.state.selectedToken.clearHighlight();
+	        }
+	        this.setState({ selectedToken: token });
+	        token.highlightToken();
+	    },
+
+	    highlightCells: function (cellArray) {
+	        // debugger;
+	    },
+
+	    lookForValidMoves: function (token) {
+	        var currentCol = parseInt(token.state.cell[1]),
+	            currentRow = parseInt(token.state.cell[3]),
+	            validCols = [],
+	            validRows = [],
+	            validCells = [];
+
+	        if (currentCol - 1 >= 0) validCols.push(currentCol - 1);
+	        if (currentCol + 1 < this.config.boardSize) validCols.push(currentCol + 1);
+
+	        if ((token.props.owner == 0 || token.state.king) && currentRow - 1 >= 0) validRows.push(currentRow - 1);
+
+	        if ((token.props.owner == 1 || token.state.king) && currentRow + 1 < this.config.boardSize) validRows.push(currentRow + 1);
+
+	        validCols.forEach(function (col) {
+	            validRows.forEach(function (row) {
+	                validCells.push('c' + col + 'r' + row);
+	            });
+	        });
+
+	        return validCells;
+	    },
+
+	    generateToken: function (id, player, color, boardSize) {
+	        return React.createElement(TokenContainer, {
+	            color: color, type: 'circle', boardSize: boardSize, startingCell: id, key: id,
+	            owner: player, handleClick: this.handleTokenClick });
 	    },
 
 	    componentDidMount: function () {
 	        var players = [Object.assign({}, this.state.players[0]), Object.assign({}, this.state.players[1])];
 
-	        var newPlayers = players.map(function (currentPlayer) {
+	        var newPlayers = players.map(function (currentPlayer, index) {
 	            var newPlayer = Object.assign({}, currentPlayer);
 	            newPlayer.tokens = currentPlayer.startingPositions.map(function (currentPosition) {
-	                return this.generateToken(currentPosition, currentPlayer.color, this.config.boardSize);
+	                return this.generateToken(currentPosition, index, currentPlayer.color, this.config.boardSize);
 	            }.bind(this));
 	            return newPlayer;
 	        }.bind(this));
@@ -21577,6 +21635,7 @@
 	    var cells = cellArray([], cellCount, props.size, {
 	        width: cellSize,
 	        paddingTop: cellSize,
+	        position: 'relative',
 	        float: 'left'
 	    }, props.color, props.secondary_color);
 
@@ -21639,39 +21698,70 @@
 	var React = __webpack_require__(1);
 	var Token = __webpack_require__(179);
 
-	function TokenContainer(props) {
-	    var tokenSize,
-	        tokenCol,
-	        tokenRow,
-	        tokenStyle = {};
+	var TokenContainer = React.createClass({
+	    displayName: 'TokenContainer',
 
-	    tokenCol = parseInt(props.cell.substr(props.cell.indexOf('c') + 1));
-	    tokenRow = parseInt(props.cell.substr(props.cell.indexOf('r') + 1));
-
-	    tokenSize = 100 / props.boardSize * 0.8 + '%';
-
-	    if (props.type == 'circle') {
-	        tokenStyle = {
-	            width: tokenSize,
-	            paddingTop: tokenSize,
-	            borderRadius: '50%',
-	            border: '1px solid #000',
-	            position: 'absolute',
-	            backgroundColor: props.color
+	    getInitialState: function () {
+	        return {
+	            cell: this.props.startingCell,
+	            highlighted: false,
+	            king: false
 	        };
+	    },
+
+	    handleClick: function () {
+	        this.props.handleClick(this);
+	    },
+
+	    highlightToken: function () {
+	        this.setState({ highlighted: true });
+	    },
+
+	    clearHighlight: function () {
+	        this.setState({ highlighted: false });
+	    },
+
+	    render: function () {
+	        var tokenCol,
+	            tokenRow,
+	            tokenSize,
+	            tokenStyle = {},
+	            classes;
+
+	        tokenCol = parseInt(this.state.cell.substr(this.state.cell.indexOf('c') + 1));
+	        tokenRow = parseInt(this.state.cell.substr(this.state.cell.indexOf('r') + 1));
+
+	        tokenSize = 100 / this.props.boardSize * 0.8 + '%';
+
+	        if (this.props.type == 'circle') {
+	            tokenStyle = {
+	                width: tokenSize,
+	                paddingTop: tokenSize,
+	                borderRadius: '50%',
+	                border: '1px solid #000',
+	                position: 'absolute',
+	                backgroundColor: this.props.color
+	            };
+	        }
+
+	        tokenStyle.left = 100 / this.props.boardSize * (0.1 + tokenCol) + '%';
+	        tokenStyle.top = 100 / this.props.boardSize * (0.1 + tokenRow) + '%';
+
+	        if (this.state.highlighted) {
+	            tokenStyle.boxShadow = '0px 0px 5px 5px #0f0';
+	        }
+
+	        return React.createElement(Token, { style: tokenStyle, handleClick: this.handleClick, id: this.props.startingCell });
 	    }
-
-	    tokenStyle.left = 100 / props.boardSize * (0.1 + tokenCol) + '%';
-	    tokenStyle.top = 100 / props.boardSize * (0.1 + tokenRow) + '%';
-
-	    return React.createElement(Token, { style: tokenStyle });
-	}
+	});
 
 	TokenContainer.propTypes = {
 	    type: React.PropTypes.string.isRequired,
 	    boardSize: React.PropTypes.number,
-	    cell: React.PropTypes.string.isRequired,
-	    color: React.PropTypes.string
+	    startingCell: React.PropTypes.string.isRequired,
+	    color: React.PropTypes.string,
+	    owner: React.PropTypes.number.isRequired,
+	    handleClick: React.PropTypes.func.isRequired
 	};
 
 	module.exports = TokenContainer;
@@ -21683,11 +21773,13 @@
 	var React = __webpack_require__(1);
 
 	function Token(props) {
-	    return React.createElement('div', { style: props.style });
+	    return React.createElement('div', { style: props.style, onClick: props.handleClick, id: props.id, className: props.classes });
 	}
 
 	Token.propTypes = {
-	    style: React.PropTypes.object.isRequired
+	    style: React.PropTypes.object.isRequired,
+	    handleClick: React.PropTypes.func.isRequired,
+	    id: React.PropTypes.string.isRequired
 	};
 
 	module.exports = Token;

@@ -38,6 +38,7 @@ function CheckersBoardContainer (props) {
     var cells = cellArray([], cellCount, props.size, {
         width: cellSize,
         paddingTop: cellSize,
+        position: 'relative',
         float: 'left'
     }, props.color, props.secondary_color);
 
