@@ -765,7 +765,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule reactProdInvariant
-	 * 
+	 *
 	 */
 	'use strict';
 
@@ -1327,7 +1327,7 @@
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
-	 * 
+	 *
 	 */
 
 	function makeEmptyFunction(arg) {
@@ -1572,7 +1572,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule getIteratorFn
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -1618,7 +1618,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule KeyEscapeUtils
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -6349,7 +6349,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule accumulateInto
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -6413,7 +6413,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule forEachAccumulated
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -7683,7 +7683,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule ReactFeatureFlags
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -8956,7 +8956,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule isTextInputElement
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -12427,7 +12427,7 @@
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
-	 * 
+	 *
 	 * @typechecks static-only
 	 */
 
@@ -15953,7 +15953,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule ReactNodeTypes
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -15999,7 +15999,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @typechecks
-	 * 
+	 *
 	 */
 
 	/*eslint-disable no-self-compare */
@@ -16234,7 +16234,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule flattenChildren
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -16412,7 +16412,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule ReactServerUpdateQueue
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -18574,7 +18574,7 @@
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
-	 * 
+	 *
 	 */
 
 	var isTextNode = __webpack_require__(146);
@@ -21091,7 +21091,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule adler32
-	 * 
+	 *
 	 */
 
 	'use strict';
@@ -21436,12 +21436,12 @@
 	                name: 'Player 1',
 	                color: 'red',
 	                tokens: [],
-	                startingPositions: ['c0r7', 'c2r7', 'c4r7', 'c6r7', 'c1r6', 'c3r6', 'c5r6', 'c7r6', 'c0r5', 'c2r5', 'c4r5', 'c6r5']
+	                positions: ['c0r7', 'c2r7', 'c4r7', 'c6r7', 'c1r6', 'c3r6', 'c5r6', 'c7r6', 'c0r5', 'c2r5', 'c4r5', 'c6r5']
 	            }, {
 	                name: 'Player 2',
 	                color: 'black',
 	                tokens: [],
-	                startingPositions: ['c1r0', 'c3r0', 'c5r0', 'c7r0', 'c0r1', 'c2r1', 'c4r1', 'c6r1', 'c1r2', 'c3r2', 'c5r2', 'c7r2']
+	                positions: ['c1r0', 'c3r0', 'c5r0', 'c7r0', 'c0r1', 'c2r1', 'c4r1', 'c6r1', 'c1r2', 'c3r2', 'c5r2', 'c7r2']
 	            }],
 	            currentTurn: 0,
 	            selectedToken: undefined
@@ -21520,7 +21520,7 @@
 
 	        var newPlayers = players.map(function (currentPlayer, index) {
 	            var newPlayer = Object.assign({}, currentPlayer);
-	            newPlayer.tokens = currentPlayer.startingPositions.map(function (currentPosition) {
+	            newPlayer.tokens = currentPlayer.positions.map(function (currentPosition) {
 	                return this.generateToken(currentPosition, index, currentPlayer.color, this.config.boardSize);
 	            }.bind(this));
 	            return newPlayer;

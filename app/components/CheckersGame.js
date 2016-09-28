@@ -15,7 +15,7 @@ var CheckersGame = React.createClass({
                     name: 'Player 1',
                     color: 'red',
                     tokens: [],
-                    startingPositions: [
+                    positions: [
                         'c0r7', 'c2r7', 'c4r7', 'c6r7',
                         'c1r6', 'c3r6', 'c5r6', 'c7r6',
                         'c0r5', 'c2r5', 'c4r5', 'c6r5'
@@ -25,7 +25,7 @@ var CheckersGame = React.createClass({
                     name: 'Player 2',
                     color: 'black',
                     tokens: [],
-                    startingPositions: [
+                    positions: [
                         'c1r0', 'c3r0', 'c5r0', 'c7r0',
                         'c0r1', 'c2r1', 'c4r1', 'c6r1',
                         'c1r2', 'c3r2', 'c5r2', 'c7r2'
@@ -58,7 +58,7 @@ var CheckersGame = React.createClass({
     handleTokenClick: function (tokenContainer) {
         var currentPlayer, tokenBelongsToPlayer, validMoves = [];
 
-        currentPlayer = this.state.players[this.state.currentTurn];
+        currentPlayer = this.state.players[this.state.currentTurn % 2];
 
         currentPlayer.tokens.forEach(function (playerToken) {
             if (playerToken.key == tokenContainer.props.startingCell) tokenBelongsToPlayer = true;
@@ -79,8 +79,7 @@ var CheckersGame = React.createClass({
         var newTurn;
 
         if (cellContainer.props.highlighted) {
-            if (this.state.currentTurn == 0) newTurn = 1;
-            else if (this.state.currentTurn == 1) newTurn = 0;
+            newTurn = this.state.currentTurn + 1;
 
             this.moveSelectedTokenToCell(cellContainer.props.id);
             this.resetHighlights();
@@ -92,7 +91,13 @@ var CheckersGame = React.createClass({
     },
 
     moveSelectedTokenToCell: function (cellId) {
+        var currentPlayer = this.state.players[this.state.currentTurn % 2],
+            initialPosition = this.state.selectedToken.state.cell,
+            positionIndex = currentPlayer.positions.indexOf(initialPosition);
+
         this.state.selectedToken.setState({cell: cellId});
+
+        currentPlayer.positions[positionIndex] = cellId;
     },
 
     highlightToken: function (token) {
@@ -134,9 +139,47 @@ var CheckersGame = React.createClass({
 
         validCols.forEach(function (col) {
             validRows.forEach(function (row) {
-                validCells.push('c' + col + 'r' + row);
-            })
-        });
+                var id = 'c' + col + 'r' + row;
+
+                var checkCell = function (cell) {
+                    var currentTokenLocation = token.state.cell,
+                        checkLocation = cell.key,
+                        newLocation = 'c',
+                        newCell;
+
+                    if (cell.key == id) {
+                        if (cell.props.occupied > -1) {
+                            if (cell.props.occupied != (this.state.currentTurn % 2)) {
+                                if (parseInt(checkLocation[1]) > parseInt(currentTokenLocation[1])) {
+                                    newLocation += (parseInt(checkLocation[1]) + 1) + 'r';
+                                } else {
+                                    newLocation += (parseInt(checkLocation[1]) - 1) + 'r';
+                                }
+
+                                if (parseInt(checkLocation[3]) > parseInt(currentTokenLocation[3])) {
+                                    newLocation += (parseInt(checkLocation[3]) + 1);
+                                } else {
+                                    newLocation += (parseInt(checkLocation[3]) - 1);
+                                }
+
+                                this.state.cells.forEach(function (cell) {
+                                    if (cell.key == newLocation) newCell = cell;
+                                });
+
+                                if (newCell) {
+                                    id = newLocation;
+                                    return checkCell(newCell);
+                                }
+                            }
+                        } else {
+                            validCells.push(cell.key);
+                        }
+                    }
+                }.bind(this);
+
+                this.state.cells.forEach(checkCell);
+            }.bind(this))
+        }.bind(this));
 
         return validCells;
     },
@@ -148,7 +191,9 @@ var CheckersGame = React.createClass({
     },
 
     generateCellArray: function (currentArray, boardSize, inCellStyle, color, secondaryColor, highlightedArray) {
-        var id, col, row, backgroundColor, newStyle = Object.assign({}, inCellStyle), count = boardSize * boardSize;
+        var id, col, row, backgroundColor, occupied = -1,
+            newStyle = Object.assign({}, inCellStyle),
+            count = boardSize * boardSize;
 
         if (currentArray.length >= count) {
             return currentArray;
@@ -170,8 +215,15 @@ var CheckersGame = React.createClass({
                 newStyle.zIndex = 2;
             }
 
+            this.state.players.forEach(function (player, playerIndex) {
+                if (player.positions.indexOf(id) > -1) {
+                    occupied = playerIndex;
+                }
+            });
+
             currentArray.push(
                 <CellContainer style={newStyle} id={id} key={id} highlighted={highlightedArray.indexOf(id) > -1}
+                               occupied={occupied}
                                handleClick={this.handleCellClick} />
             );
 
@@ -189,7 +241,7 @@ var CheckersGame = React.createClass({
 
         var newPlayers = players.map(function (currentPlayer, index) {
             var newPlayer = Object.assign({}, currentPlayer);
-            newPlayer.tokens = currentPlayer.startingPositions.map(function (currentPosition) {
+            newPlayer.tokens = currentPlayer.positions.map(function (currentPosition) {
                 return this.generateToken(currentPosition, index, currentPlayer.color, this.config.boardSize);
             }.bind(this));
             return newPlayer;

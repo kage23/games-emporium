@@ -6,7 +6,8 @@ var CellContainer = React.createClass({
         style: React.PropTypes.object.isRequired,
         id: React.PropTypes.string.isRequired,
         handleClick: React.PropTypes.func.isRequired,
-        highlighted: React.PropTypes.bool.isRequired
+        highlighted: React.PropTypes.bool.isRequired,
+        occupied: React.PropTypes.number.isRequired
     },
 
     handleClick: function () {

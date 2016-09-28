@@ -3,7 +3,7 @@ var CheckersGameInfo = require('../components/CheckersGameInfo');
 
 var CheckersGameInfoContainer = React.createClass({
     render: function () {
-        var currentPlayer = this.props.data.players[this.props.data.currentTurn];
+        var currentPlayer = this.props.data.players[this.props.data.currentTurn % 2];
 
         return (
             <CheckersGameInfo
