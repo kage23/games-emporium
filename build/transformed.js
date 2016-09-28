@@ -765,7 +765,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule reactProdInvariant
-	 *
+	 * 
 	 */
 	'use strict';
 
@@ -1327,7 +1327,7 @@
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
-	 *
+	 * 
 	 */
 
 	function makeEmptyFunction(arg) {
@@ -1572,7 +1572,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule getIteratorFn
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -1618,7 +1618,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule KeyEscapeUtils
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -6349,7 +6349,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule accumulateInto
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -6413,7 +6413,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule forEachAccumulated
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -7683,7 +7683,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule ReactFeatureFlags
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -8956,7 +8956,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule isTextInputElement
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -12427,7 +12427,7 @@
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
-	 *
+	 * 
 	 * @typechecks static-only
 	 */
 
@@ -15953,7 +15953,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule ReactNodeTypes
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -15999,7 +15999,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @typechecks
-	 *
+	 * 
 	 */
 
 	/*eslint-disable no-self-compare */
@@ -16234,7 +16234,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule flattenChildren
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -16412,7 +16412,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule ReactServerUpdateQueue
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -18574,7 +18574,7 @@
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
-	 *
+	 * 
 	 */
 
 	var isTextNode = __webpack_require__(146);
@@ -21091,7 +21091,7 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule adler32
-	 *
+	 * 
 	 */
 
 	'use strict';
@@ -21423,15 +21423,17 @@
 	var React = __webpack_require__(1);
 	var SiteHeader = __webpack_require__(173);
 	var GameHeader = __webpack_require__(174);
-	var CheckersBoardContainer = __webpack_require__(175);
-	var TokenContainer = __webpack_require__(178);
-	var CheckersGameInfoContainer = __webpack_require__(180);
+	var CheckersBoard = __webpack_require__(175);
+	var TokenContainer = __webpack_require__(176);
+	var CheckersGameInfoContainer = __webpack_require__(178);
+	var CellContainer = __webpack_require__(180);
 
 	var CheckersGame = React.createClass({
 	    displayName: 'CheckersGame',
 
 	    getInitialState: function () {
 	        return {
+	            cells: [],
 	            players: [{
 	                name: 'Player 1',
 	                color: 'red',
@@ -21454,24 +21456,63 @@
 	        secondaryColor: '#fff' // color of alternate squares
 	    },
 
-	    handleTokenClick: function (token) {
+	    generateBaseCellStyle: function () {
+	        var cellSize = (100 / this.config.boardSize).toFixed(8) + '%';
+
+	        return {
+	            width: cellSize,
+	            paddingTop: cellSize,
+	            position: 'relative',
+	            float: 'left',
+	            zIndex: 1
+	        };
+	    },
+
+	    handleTokenClick: function (tokenContainer) {
 	        var currentPlayer,
 	            tokenBelongsToPlayer,
 	            validMoves = [];
 
-	        currentPlayer = this.state.players[this.state.currentTurn];
+	        currentPlayer = this.state.players[this.state.currentTurn % 2];
 
 	        currentPlayer.tokens.forEach(function (playerToken) {
-	            if (playerToken.key == token.state.cell) tokenBelongsToPlayer = true;
+	            if (playerToken.key == tokenContainer.props.startingCell) tokenBelongsToPlayer = true;
 	        });
 
 	        if (tokenBelongsToPlayer) {
-	            validMoves = this.lookForValidMoves(token);
+	            validMoves = this.lookForValidMoves(tokenContainer);
 	            if (validMoves.length) {
-	                this.highlightToken(token);
-	                this.highlightCells(validMoves);
+	                this.highlightToken(tokenContainer);
+	                this.setState({
+	                    cells: this.generateCellArray([], this.config.boardSize, this.generateBaseCellStyle(), this.config.color, this.config.secondaryColor, validMoves)
+	                });
 	            }
 	        }
+	    },
+
+	    handleCellClick: function (cellContainer) {
+	        var newTurn;
+
+	        if (cellContainer.props.highlighted) {
+	            newTurn = this.state.currentTurn + 1;
+
+	            this.moveSelectedTokenToCell(cellContainer.props.id);
+	            this.resetHighlights();
+
+	            this.setState({
+	                currentTurn: newTurn
+	            });
+	        }
+	    },
+
+	    moveSelectedTokenToCell: function (cellId) {
+	        var currentPlayer = this.state.players[this.state.currentTurn % 2],
+	            initialPosition = this.state.selectedToken.state.cell,
+	            positionIndex = currentPlayer.positions.indexOf(initialPosition);
+
+	        this.state.selectedToken.setState({ cell: cellId });
+
+	        currentPlayer.positions[positionIndex] = cellId;
 	    },
 
 	    highlightToken: function (token) {
@@ -21482,8 +21523,15 @@
 	        token.highlightToken();
 	    },
 
-	    highlightCells: function (cellArray) {
-	        // debugger;
+	    resetHighlights: function () {
+	        if (this.state.selectedToken) {
+	            this.state.selectedToken.clearHighlight();
+	            this.setState({ selectedToken: undefined });
+	        }
+
+	        this.setState({
+	            cells: this.generateCellArray([], this.config.boardSize, this.generateBaseCellStyle(), this.config.color, this.config.secondaryColor, [])
+	        });
 	    },
 
 	    lookForValidMoves: function (token) {
@@ -21502,9 +21550,47 @@
 
 	        validCols.forEach(function (col) {
 	            validRows.forEach(function (row) {
-	                validCells.push('c' + col + 'r' + row);
-	            });
-	        });
+	                var id = 'c' + col + 'r' + row;
+
+	                var checkCell = function (cell) {
+	                    var currentTokenLocation = token.state.cell,
+	                        checkLocation = cell.key,
+	                        newLocation = 'c',
+	                        newCell;
+
+	                    if (cell.key == id) {
+	                        if (cell.props.occupied > -1) {
+	                            if (cell.props.occupied != this.state.currentTurn % 2) {
+	                                if (parseInt(checkLocation[1]) > parseInt(currentTokenLocation[1])) {
+	                                    newLocation += parseInt(checkLocation[1]) + 1 + 'r';
+	                                } else {
+	                                    newLocation += parseInt(checkLocation[1]) - 1 + 'r';
+	                                }
+
+	                                if (parseInt(checkLocation[3]) > parseInt(currentTokenLocation[3])) {
+	                                    newLocation += parseInt(checkLocation[3]) + 1;
+	                                } else {
+	                                    newLocation += parseInt(checkLocation[3]) - 1;
+	                                }
+
+	                                this.state.cells.forEach(function (cell) {
+	                                    if (cell.key == newLocation) newCell = cell;
+	                                });
+
+	                                if (newCell) {
+	                                    id = newLocation;
+	                                    return checkCell(newCell);
+	                                }
+	                            }
+	                        } else {
+	                            validCells.push(cell.key);
+	                        }
+	                    }
+	                }.bind(this);
+
+	                this.state.cells.forEach(checkCell);
+	            }.bind(this));
+	        }.bind(this));
 
 	        return validCells;
 	    },
@@ -21515,7 +21601,52 @@
 	            owner: player, handleClick: this.handleTokenClick });
 	    },
 
+	    generateCellArray: function (currentArray, boardSize, inCellStyle, color, secondaryColor, highlightedArray) {
+	        var id,
+	            col,
+	            row,
+	            backgroundColor,
+	            occupied = -1,
+	            newStyle = Object.assign({}, inCellStyle),
+	            count = boardSize * boardSize;
+
+	        if (currentArray.length >= count) {
+	            return currentArray;
+	        } else {
+	            col = currentArray.length % boardSize;
+	            row = Math.floor(currentArray.length / boardSize);
+	            id = 'c' + col + 'r' + row;
+
+	            if (row % 2 != col % 2) {
+	                backgroundColor = color;
+	            } else {
+	                backgroundColor = secondaryColor;
+	            }
+
+	            newStyle.backgroundColor = backgroundColor;
+
+	            if (highlightedArray.indexOf(id) > -1) {
+	                newStyle.boxShadow = '0px 0px 5px 5px #0f0';
+	                newStyle.zIndex = 2;
+	            }
+
+	            this.state.players.forEach(function (player, playerIndex) {
+	                if (player.positions.indexOf(id) > -1) {
+	                    occupied = playerIndex;
+	                }
+	            });
+
+	            currentArray.push(React.createElement(CellContainer, { style: newStyle, id: id, key: id, highlighted: highlightedArray.indexOf(id) > -1,
+	                occupied: occupied,
+	                handleClick: this.handleCellClick }));
+
+	            return this.generateCellArray(currentArray, boardSize, inCellStyle, color, secondaryColor, highlightedArray);
+	        }
+	    },
+
 	    componentDidMount: function () {
+	        var cellCount = this.config.boardSize * this.config.boardSize;
+
 	        var players = [Object.assign({}, this.state.players[0]), Object.assign({}, this.state.players[1])];
 
 	        var newPlayers = players.map(function (currentPlayer, index) {
@@ -21526,7 +21657,12 @@
 	            return newPlayer;
 	        }.bind(this));
 
-	        this.setState({ players: newPlayers });
+	        var cells = this.generateCellArray([], this.config.boardSize, this.generateBaseCellStyle(), this.config.color, this.config.secondaryColor, []);
+
+	        this.setState({
+	            players: newPlayers,
+	            cells: cells
+	        });
 	    },
 
 	    render: function () {
@@ -21539,12 +21675,9 @@
 	                data: this.state
 	            }),
 	            React.createElement(
-	                CheckersBoardContainer,
-	                {
-	                    size: this.config.boardSize,
-	                    color: this.config.color,
-	                    secondary_color: this.config.secondaryColor
-	                },
+	                CheckersBoard,
+	                null,
+	                this.state.cells,
 	                this.state.players[0].tokens,
 	                this.state.players[1].tokens
 	            )
@@ -21595,64 +21728,6 @@
 /* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * Created by kylegsessions on 9/17/16.
-	 */
-	var React = __webpack_require__(1);
-	var CheckersBoard = __webpack_require__(176);
-	var Cell = __webpack_require__(177);
-
-	function CheckersBoardContainer(props) {
-	    var cellSize = (100 / props.size).toFixed(8) + '%',
-	        cellCount = props.size * props.size;
-
-	    function cellArray(currentArray, count, boardSize, cellStyle, color, secondaryColor) {
-	        var id, col, row, backgroundColor;
-
-	        if (currentArray.length >= count) {
-	            return currentArray;
-	        } else {
-	            col = currentArray.length % boardSize;
-	            row = Math.floor(currentArray.length / boardSize);
-	            id = 'c' + col + 'r' + row;
-
-	            if (row % 2 != col % 2) {
-	                backgroundColor = color;
-	            } else {
-	                backgroundColor = secondaryColor;
-	            }
-
-	            currentArray.push(React.createElement(Cell, { style: {
-	                    width: cellStyle.width,
-	                    paddingTop: cellStyle.paddingTop,
-	                    float: cellStyle.float,
-	                    backgroundColor: backgroundColor
-	                }, id: id, key: id }));
-	            return cellArray(currentArray, count, boardSize, cellStyle, color, secondaryColor);
-	        }
-	    }
-
-	    var cells = cellArray([], cellCount, props.size, {
-	        width: cellSize,
-	        paddingTop: cellSize,
-	        position: 'relative',
-	        float: 'left'
-	    }, props.color, props.secondary_color);
-
-	    return React.createElement(
-	        CheckersBoard,
-	        null,
-	        cells,
-	        props.children
-	    );
-	}
-
-	module.exports = CheckersBoardContainer;
-
-/***/ },
-/* 176 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var React = __webpack_require__(1);
 
 	function CheckersBoard(props) {
@@ -21673,37 +21748,28 @@
 	module.exports = CheckersBoard;
 
 /***/ },
-/* 177 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-
-	function Cell(props) {
-		return React.createElement('div', { style: props.style,
-			id: props.id
-		});
-	}
-
-	Cell.propTypes = {
-		style: React.PropTypes.object.isRequired,
-		id: React.PropTypes.string.isRequired
-	};
-
-	module.exports = Cell;
-
-/***/ },
-/* 178 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var Token = __webpack_require__(179);
+	var Token = __webpack_require__(177);
 
 	var TokenContainer = React.createClass({
 	    displayName: 'TokenContainer',
 
+	    propTypes: {
+	        type: React.PropTypes.string.isRequired,
+	        boardSize: React.PropTypes.number,
+	        startingCell: React.PropTypes.string.isRequired,
+	        color: React.PropTypes.string,
+	        owner: React.PropTypes.number.isRequired,
+	        handleClick: React.PropTypes.func.isRequired
+	    },
+
 	    getInitialState: function () {
 	        return {
 	            cell: this.props.startingCell,
+	            activePlayer: false,
 	            highlighted: false,
 	            king: false
 	        };
@@ -21725,8 +21791,7 @@
 	        var tokenCol,
 	            tokenRow,
 	            tokenSize,
-	            tokenStyle = {},
-	            classes;
+	            tokenStyle = {};
 
 	        tokenCol = parseInt(this.state.cell.substr(this.state.cell.indexOf('c') + 1));
 	        tokenRow = parseInt(this.state.cell.substr(this.state.cell.indexOf('r') + 1));
@@ -21744,30 +21809,25 @@
 	            };
 	        }
 
+	        tokenStyle.zIndex = 10;
 	        tokenStyle.left = 100 / this.props.boardSize * (0.1 + tokenCol) + '%';
 	        tokenStyle.top = 100 / this.props.boardSize * (0.1 + tokenRow) + '%';
 
+	        tokenStyle.transition = 'left 0.5s ease-out, top 0.5s ease-out, z-index 0s ease-out 0.5s';
+
 	        if (this.state.highlighted) {
 	            tokenStyle.boxShadow = '0px 0px 5px 5px #0f0';
+	            tokenStyle.zIndex = 20;
 	        }
 
 	        return React.createElement(Token, { style: tokenStyle, handleClick: this.handleClick, id: this.props.startingCell });
 	    }
 	});
 
-	TokenContainer.propTypes = {
-	    type: React.PropTypes.string.isRequired,
-	    boardSize: React.PropTypes.number,
-	    startingCell: React.PropTypes.string.isRequired,
-	    color: React.PropTypes.string,
-	    owner: React.PropTypes.number.isRequired,
-	    handleClick: React.PropTypes.func.isRequired
-	};
-
 	module.exports = TokenContainer;
 
 /***/ },
-/* 179 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -21785,17 +21845,17 @@
 	module.exports = Token;
 
 /***/ },
-/* 180 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var CheckersGameInfo = __webpack_require__(181);
+	var CheckersGameInfo = __webpack_require__(179);
 
 	var CheckersGameInfoContainer = React.createClass({
 	    displayName: 'CheckersGameInfoContainer',
 
 	    render: function () {
-	        var currentPlayer = this.props.data.players[this.props.data.currentTurn];
+	        var currentPlayer = this.props.data.players[this.props.data.currentTurn % 2];
 
 	        return React.createElement(CheckersGameInfo, {
 	            name: currentPlayer.name,
@@ -21811,7 +21871,7 @@
 	module.exports = CheckersGameInfoContainer;
 
 /***/ },
-/* 181 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -21840,6 +21900,66 @@
 	};
 
 	module.exports = CheckersGameInfo;
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var Cell = __webpack_require__(181);
+
+	var CellContainer = React.createClass({
+	    displayName: 'CellContainer',
+
+	    propTypes: {
+	        style: React.PropTypes.object.isRequired,
+	        id: React.PropTypes.string.isRequired,
+	        handleClick: React.PropTypes.func.isRequired,
+	        highlighted: React.PropTypes.bool.isRequired,
+	        occupied: React.PropTypes.number.isRequired
+	    },
+
+	    handleClick: function () {
+	        this.props.handleClick(this);
+	    },
+
+	    render: function () {
+	        var newStyles = Object.assign({}, this.props.style);
+
+	        if (this.props.highlighted) {
+	            newStyles.boxShadow = '0px 0px 5px 5px #0f0';
+	        }
+
+	        return React.createElement(Cell, { style: newStyles, id: this.props.id, handleClick: this.handleClick });
+	    }
+	});
+
+	module.exports = CellContainer;
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	var Cell = React.createClass({
+	    displayName: 'Cell',
+
+	    render: function () {
+	        return React.createElement('div', { style: this.props.style,
+	            id: this.props.id,
+	            onClick: this.props.handleClick
+	        });
+	    }
+	});
+
+	Cell.propTypes = {
+	    style: React.PropTypes.object.isRequired,
+	    id: React.PropTypes.string.isRequired,
+	    handleClick: React.PropTypes.func.isRequired
+	};
+
+	module.exports = Cell;
 
 /***/ }
 /******/ ]);

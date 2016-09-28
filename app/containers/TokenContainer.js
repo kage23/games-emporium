@@ -8,7 +8,6 @@ var TokenContainer = React.createClass({
         startingCell: React.PropTypes.string.isRequired,
         color: React.PropTypes.string,
         owner: React.PropTypes.number.isRequired,
-        setActivePlayer: React.PropTypes.func.isRequired,
         handleClick: React.PropTypes.func.isRequired
     },
 
@@ -31,10 +30,6 @@ var TokenContainer = React.createClass({
 
     clearHighlight: function () {
         this.setState({highlighted: false});
-    },
-
-    setActivePlayer: function (bool) {
-        this.props.setActivePlayer(this, bool);
     },
 
     render: function () {
@@ -60,11 +55,12 @@ var TokenContainer = React.createClass({
         tokenStyle.left = (100 / this.props.boardSize) * (0.1 + tokenCol) + '%';
         tokenStyle.top = (100 / this.props.boardSize) * (0.1 + tokenRow) + '%';
 
-        tokenStyle.transition = 'left 0.5s ease-out, top 0.5s ease-out';
+        tokenStyle.transition = 'left 0.5s ease-out, top 0.5s ease-out, z-index 0s ease-out 0.5s';
 
-        if (this.state.activePlayer) tokenStyle.zIndex = 20;
-
-        if (this.state.highlighted) tokenStyle.boxShadow = '0px 0px 5px 5px #0f0';
+        if (this.state.highlighted) {
+            tokenStyle.boxShadow = '0px 0px 5px 5px #0f0';
+            tokenStyle.zIndex = 20;
+        }
 
         return (
             <Token style={tokenStyle} handleClick={this.handleClick} id={this.props.startingCell} />
