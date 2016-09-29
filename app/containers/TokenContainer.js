@@ -8,7 +8,8 @@ var TokenContainer = React.createClass({
         startingCell: React.PropTypes.string.isRequired,
         color: React.PropTypes.string,
         owner: React.PropTypes.number.isRequired,
-        handleClick: React.PropTypes.func.isRequired
+        handleClick: React.PropTypes.func.isRequired,
+        getState: React.PropTypes.func.isRequired
     },
 
     getInitialState: function () {
@@ -22,6 +23,10 @@ var TokenContainer = React.createClass({
 
     handleClick: function () {
         this.props.handleClick(this);
+    },
+
+    getState: function () {
+        this.props.getState(this);
     },
 
     highlightToken: function () {

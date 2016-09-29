@@ -7,8 +7,8 @@ var CheckersGameInfoContainer = React.createClass({
 
         return (
             <CheckersGameInfo
-                name={currentPlayer.name}
-                color={currentPlayer.color}
+                name={currentPlayer.getName()}
+                color={currentPlayer.getColor()}
             />
         );
     }
