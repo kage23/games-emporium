@@ -1,0 +1,14 @@
+.checkersBoard {
+	border: 3px solid gold;
+	overflow: hidden;
+	max-width: 650px;
+	position: relative;
+	float: left;
+	width: 100%;
+}
+
+.checkersBoard .cell {
+	position: relative;
+	float: left;
+	z-index: 1;
+}
