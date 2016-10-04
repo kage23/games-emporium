@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "react-addons-update": "^15.3.2",
     "react-scripts": "0.6.1"
   },
   "dependencies": {

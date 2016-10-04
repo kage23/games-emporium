@@ -1,31 +1,39 @@
 var React = require('react');
 
-function Token (props) {
-    var tokenCol, tokenRow, tokenSize, tokenStyle;
+var Token = React.createClass({
+    propTypes: {
+        boardSize: React.PropTypes.number.isRequired,
+        type: React.PropTypes.string.isRequired,
+        color: React.PropTypes.string.isRequired,
+        handleClick: React.PropTypes.func.isRequired,
+        position: React.PropTypes.string.isRequired,
+        king: React.PropTypes.bool.isRequired
+    },
 
-    tokenCol = parseInt(props.position.substr(props.position.indexOf('c') + 1));
-    tokenRow = parseInt(props.position.substr(props.position.indexOf('r') + 1));
+    handleClick: function () {
+        this.props.handleClick(this);
+    },
 
-    tokenSize = (100 / props.boardSize) * 0.8 + '%';
+    render: function () {
+        var tokenCol, tokenRow, tokenSize, tokenStyle;
 
-    tokenStyle = {
-        width: tokenSize,
-        paddingTop: tokenSize,
-        backgroundColor: props.color,
-        left: (100 / props.boardSize) * (0.1 + tokenCol) + '%',
-        top: (100 / props.boardSize) * (0.1 + tokenRow) + '%'
-    };
+        tokenCol = parseInt(this.props.position.substr(this.props.position.indexOf('c') + 1), 10);
+        tokenRow = parseInt(this.props.position.substr(this.props.position.indexOf('r') + 1), 10);
 
-    return (
-        <div className="token" style={tokenStyle}></div>
-    );
-}
+        tokenSize = (100 / this.props.boardSize) * 0.8 + '%';
 
-Token.propTypes = {
-    boardSize: React.PropTypes.number.isRequired,
-    color: React.PropTypes.string.isRequired,
-    type: React.PropTypes.string.isRequired,
-    position: React.PropTypes.string.isRequired
-};
+        tokenStyle = {
+            width: tokenSize,
+            paddingTop: tokenSize,
+            backgroundColor: this.props.color,
+            left: (100 / this.props.boardSize) * (0.1 + tokenCol) + '%',
+            top: (100 / this.props.boardSize) * (0.1 + tokenRow) + '%'
+        };
+
+        return (
+            <div className="token" style={tokenStyle} onClick={this.handleClick}></div>
+        );
+    }
+});
 
 module.exports = Token;
