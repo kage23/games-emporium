@@ -1,16 +1,19 @@
-var React = require('react');
+var React = require('react'),
 
-var CheckersGameInfo = React.createClass({
-    render: function () {
-        return (
-            <h3>It is <span style={{color:this.props.color}}>{this.props.name}</span>'s turn</h3>
-        );
-    }
-});
+    CheckersGameInfo = React.createClass({
+        render: function () {
+            var currentPlayer = this.props.gameState.players[this.props.gameState.currentTurn % 2];
+
+            return (
+                <div className="gameInfo">
+                    <h3>It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn.</h3>
+                </div>
+            );
+        }
+    });
 
 CheckersGameInfo.propTypes = {
-    name: React.PropTypes.string.isRequired,
-    color: React.PropTypes.string.isRequired
+    gameState: React.PropTypes.object.isRequired
 };
 
 module.exports = CheckersGameInfo;

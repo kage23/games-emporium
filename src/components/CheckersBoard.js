@@ -1,6 +1,6 @@
-var React = require('react');
+var React = require('react'),
 
-var Cell = require('./Cell');
+    Cell = require('./Cell');
 
 function CheckersBoard (props) {
     function generateCellArray (currentArray, boardSize, color, secondaryColor) {
@@ -41,5 +41,11 @@ function CheckersBoard (props) {
         </div>
     );
 }
+
+CheckersBoard.propTypes = {
+    size: React.PropTypes.number.isRequired,
+    color: React.PropTypes.string.isRequired,
+    secondaryColor: React.PropTypes.string.isRequired
+};
 
 module.exports = CheckersBoard;

@@ -15,4 +15,10 @@ function Cell (props) {
     );
 }
 
+Cell.propTypes = {
+    boardSize: React.PropTypes.number.isRequired,
+    id: React.PropTypes.string.isRequired,
+    style: React.PropTypes.object
+};
+
 module.exports = Cell;
