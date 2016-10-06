@@ -322,6 +322,7 @@ var React = require('react'),
             }.bind(this));
 
             if (validMoves.length) return validMoves;
+            else return [];
         },
 
         render: function () {
