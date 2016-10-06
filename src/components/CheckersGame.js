@@ -82,6 +82,26 @@ var React = require('react'),
             }
         },
 
+        isCellOccupied: function (col, row) {
+            var currentPlayer = this.state.players[this.state.currentTurn % 2],
+                cellIsOccupied = false,
+                cellId = 'c' + col + 'r' + row;
+
+            this.state.players.forEach(function (player, playerIndex) {
+                player.tokens.forEach(function (token) {
+                    if (token.position === cellId) {
+                        if (currentPlayer === this.state.players[playerIndex]) {
+                            cellIsOccupied = 'player';
+                        } else {
+                            cellIsOccupied = 'opponent';
+                        }
+                    }
+                }.bind(this));
+            }.bind(this));
+
+            return cellIsOccupied;
+        },
+
         determineValidMovesForPlayer: function (player) {
             var validMovesForPlayer = [];
 
@@ -100,7 +120,9 @@ var React = require('react'),
         },
 
         determineValidMovesForToken: function (token) {
-            var currentCol = parseInt(token.position[1]),
+            var tokenOwner = parseInt(token.id[0]),
+                currentPlayer = this.state.players[this.state.currentTurn % 2],
+                currentCol = parseInt(token.position[1]),
                 currentRow = parseInt(token.position[3]),
                 validCols = [],
                 validRows = [],
@@ -111,70 +133,48 @@ var React = require('react'),
             if (currentCol + 1 < this.config.boardSize)
                 validCols.push(currentCol + 1);
 
-            if ((parseInt(token.id[0]) == 0 || token.king) && currentRow - 1 >= 0)
+            if ((tokenOwner == 0 || token.king) && currentRow - 1 >= 0)
                 validRows.push(currentRow - 1);
 
-            if ((parseInt(token.id[0]) == 1 || token.king) && currentRow + 1 < this.config.boardSize)
+            if ((tokenOwner == 1 || token.king) && currentRow + 1 < this.config.boardSize)
                 validRows.push(currentRow + 1);
 
 
             validCols.forEach(function (col) {
                 validRows.forEach(function (row) {
-                    var cellIsValid = true,
-                        id = 'c' + col + 'r' + row;
+                    var newCol, newRow,
+                        cellIsOccupied = this.isCellOccupied(col, row);
 
 
-                    this.state.players.forEach(function (player) {
-                        player.tokens.forEach(function (token) {
-                            if (token.position === id) {
-                                // TODO: This needs to check if the cell is occupied by the current player or the opponent, and act accordingly
-                                cellIsValid = false;
+                    if (!cellIsOccupied) {
+                        validMoves.push({
+                            from: token.position,
+                            to: 'c' + col + 'r' + row
+                        });
+                    } else if (cellIsOccupied === 'opponent') {
+                        // Cell is occupied by opponent; see if the next space is open for jumping.
+                        if (currentCol < col && col + 1 < this.config.boardSize) {
+                            newCol = col + 1;
+                        } else if (currentCol > col && col - 1 >= 0) {
+                            newCol = col - 1;
+                        }
+
+                        if (currentRow < row && row + 1 < this.config.boardSize) {
+                            newRow = row + 1;
+                        } else if (currentRow > row && row - 1 >= 0) {
+                            newRow = row - 1;
+                        }
+
+                        if (typeof newRow !== 'undefined' && typeof newCol !== 'undefined') {
+                            if (! this.isCellOccupied(newCol, newRow)) {
+                                validMoves.push({
+                                    from: token.position,
+                                    to: 'c' + newCol + 'r' + newRow,
+                                    jump: 'c' + col + 'r' + row
+                                });
                             }
-                        }.bind(this));
-                    }.bind(this));
-
-
-                    if (cellIsValid) {
-                        validMoves.push(token.position + '-' + id);
+                        }
                     }
-
-                    //var checkCell = function (cell) {
-                    //    var currentTokenLocation = token.state.cell,
-                    //        checkLocation = cell.key,
-                    //        newLocation = 'c',
-                    //        newCell;
-                    //
-                    //    if (cell.key == id) {
-                    //        if (cell.props.occupied > -1) {
-                    //            if (cell.props.occupied != (this.state.currentTurn % 2)) {
-                    //                if (parseInt(checkLocation[1]) > parseInt(currentTokenLocation[1])) {
-                    //                    newLocation += (parseInt(checkLocation[1]) + 1) + 'r';
-                    //                } else {
-                    //                    newLocation += (parseInt(checkLocation[1]) - 1) + 'r';
-                    //                }
-                    //
-                    //                if (parseInt(checkLocation[3]) > parseInt(currentTokenLocation[3])) {
-                    //                    newLocation += (parseInt(checkLocation[3]) + 1);
-                    //                } else {
-                    //                    newLocation += (parseInt(checkLocation[3]) - 1);
-                    //                }
-                    //
-                    //                this.state.cells.forEach(function (cell) {
-                    //                    if (cell.key == newLocation) newCell = cell;
-                    //                });
-                    //
-                    //                if (newCell) {
-                    //                    id = newLocation;
-                    //                    return checkCell(newCell);
-                    //                }
-                    //            }
-                    //        } else {
-                    //            validCells.push(cell.key);
-                    //        }
-                    //    }
-                    //}.bind(this);
-
-                    //this.state.cells.forEach(checkCell);
                 }.bind(this))
             }.bind(this));
 
