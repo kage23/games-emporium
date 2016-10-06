@@ -15,11 +15,12 @@ var React = require('react'),
 
         render: function () {
             var winner,
-                currentPlayer = this.props.gameState.players[this.props.gameState.currentTurn % 2] || {name:'',color:''},
-                validMoves = this.props.determineValidMovesForPlayer(this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2]),
+                currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
+                validMoves = this.props.determineValidMovesForPlayer(currentPlayer),
                 noValidMovesStyle = {display:'none'};
 
-            if (validMoves.length === 0) noValidMovesStyle.display = 'inline';
+            if (validMoves.length === 0)
+                winner = this.props.gameState.players[(this.props.gameState.currentTurn + 1) % 2];
 
             this.props.gameState.players.forEach(function (player, playerIndex) {
                 if (player.tokens.length === 0) winner = this.props.gameState.players[(playerIndex + 1) % 2];
@@ -28,11 +29,7 @@ var React = require('react'),
             if (!winner) {
                 return (
                     <div className="gameInfo">
-                        <h3>
-                            It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn.
-                            <a style={noValidMovesStyle} href="#" onClick={this.handleClick}>There are no valid
-                                moves!</a>
-                        </h3>
+                        <h3>It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn.</h3>
                     </div>
                 );
             } else {
