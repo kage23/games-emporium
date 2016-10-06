@@ -1,5 +1,5 @@
 var React = require('react'),
-    update = require('react-addons-update'),
+    //update = require('react-addons-update'),
 
     CheckersGameInfo = require('./CheckersGameInfo'),
     CheckersBoard = require('./CheckersBoard'),
@@ -7,6 +7,7 @@ var React = require('react'),
 
     CheckersGame = React.createClass({
         config: {
+            debug: false,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
             boardSize: 8,                   // must be an even number. number of cells along each side of the board. board will be square.
             color: '#555',                  // color of playable squares
             secondaryColor: '#fff',         // color of alternate squares
@@ -57,7 +58,6 @@ var React = require('react'),
             return {
                 players: players,
                 currentTurn: -1,
-                validMoves: [],
                 highlightedToken: undefined,
                 highlightedCells: []
             };
@@ -68,28 +68,34 @@ var React = require('react'),
         },
 
         newTurn: function () {
-            var newTurn = this.state.currentTurn + 1,
-                newPlayer = this.state.players[newTurn % 2],
-                newValidMoves = this.determineValidMovesForPlayer(newPlayer);
+            var newTurn = this.state.currentTurn + 1;
+                //newPlayer = this.state.players[newTurn % 2];
+
+            if (this.config.debug) console.log('Starting turn',newTurn);
 
             this.setState({
                 currentTurn: newTurn,
-                validMoves: newValidMoves,
                 highlightedToken: undefined,
                 highlightedCells: []
             });
         },
 
         handleTokenClick: function (token) {
+            if (this.config.debug) console.log('tokenClick!',token.props.position);
+
             var newHighlightedCells = [],
-                validMovesForToken = this.state.validMoves.filter(function (move) {
-                return token.props.position === move.from;
-            });
+                currentPlayer = this.state.players[this.state.currentTurn % 2],
+                validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
+                validMovesForToken = validMovesForPlayer.filter(function (move) {
+                    return token.props.position === move.from;
+                });
 
             if (validMovesForToken.length) {
                 validMovesForToken.forEach(function (move) {
                     newHighlightedCells.push(move.to);
                 });
+
+                if (this.config.debug) console.log('Highlighting token',token,'Highlighting cells',newHighlightedCells);
 
                 this.setState({
                     highlightedToken: token,
@@ -99,25 +105,69 @@ var React = require('react'),
         },
 
         handleCellClick: function (cell) {
-            // TODO: handleCellClick
+            var move, newTokenIndex, newTokenObject, newTokensArray, newPlayerObject, newPlayersArray,
+                currentPlayer = this.state.players[this.state.currentTurn % 2],
+                validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
+
+            if (this.state.highlightedCells.indexOf(cell.props.id) > -1) {
+                if (this.config.debug) console.log('Clicked on highlighted cell', cell.props.id);
+
+                move = validMovesForPlayer.filter(function (move) {
+                    return (move.from === this.state.highlightedToken.props.position && move.to === cell.props.id);
+                }.bind(this))[0];
+
+                if (this.config.debug) console.log('Moving...',move);
+
+                currentPlayer.tokens.forEach(function (token, tokenIndex) {
+                    if (token.position === this.state.highlightedToken.props.position) {
+                        newTokenIndex = tokenIndex;
+                    }
+                }.bind(this));
+
+                newTokenObject = Object.assign({}, currentPlayer.tokens[newTokenIndex]);
+                newTokenObject.position = move.to;
+                newTokensArray = currentPlayer.tokens.map(function (token, tokenIndex) {
+                    if (tokenIndex === newTokenIndex) return newTokenObject;
+                    else return token;
+                });
+                newPlayerObject = Object.assign({}, currentPlayer, {tokens: newTokensArray});
+                newPlayersArray = this.state.players.map(function (player, playerIndex) {
+                    if (playerIndex === this.state.currentTurn % 2) return newPlayerObject;
+                    else return player;
+                }.bind(this));
+                this.setState({players: newPlayersArray});
+
+                if (move.jump) {
+                    if (this.config.debug) console.log('Move was a jump!');
+                    // TODO: Implement appropriate game logic here
+                    this.newTurn();
+                } else {
+                    this.newTurn();
+                }
+            }
         },
 
         isCellOccupied: function (col, row) {
-            var currentPlayer = this.state.players[this.state.currentTurn % 2] || this.state.players[0],
-                cellIsOccupied = false,
+            //var currentPlayer = this.state.players[this.state.currentTurn % 2] || this.state.players[0],
+            var cellIsOccupied = false,
                 cellId = 'c' + col + 'r' + row;
+
+            if (this.config.debug) console.log('Checking to see if',col,row,'is occupied or not');
 
             this.state.players.forEach(function (player, playerIndex) {
                 player.tokens.forEach(function (token) {
+                    if (this.config.debug) console.log('player',playerIndex,'token',token.id,'token position',token.position);
                     if (token.position === cellId) {
-                        if (currentPlayer === this.state.players[playerIndex]) {
-                            cellIsOccupied = 'player';
-                        } else {
-                            cellIsOccupied = 'opponent';
-                        }
+                        cellIsOccupied = playerIndex;
                     }
                 }.bind(this));
             }.bind(this));
+
+            if (typeof cellIsOccupied === 'number') {
+                if (this.config.debug) console.log(col + ' ' + row + ' is occupied by player ' + cellIsOccupied);
+            } else if (typeof cellIsOccupied === 'boolean') {
+                if (this.config.debug) console.log(col + ' ' + row + ' is not occupied');
+            }
 
             return cellIsOccupied;
         },
@@ -132,7 +182,9 @@ var React = require('react'),
                     validMovesForToken.forEach(function (move) {
                         validMovesForPlayer.push(move);
                         if (move.jump) jump = true;
+
                     });
+                    if (this.config.debug) console.log('player has ',validMovesForPlayer.length,'valid moves PRE JUMP CHECK');
                 }
             }.bind(this));
 
@@ -141,42 +193,49 @@ var React = require('react'),
                     return !!move.jump;
                 });
                 filteredValidMovesForPlayer.jumpMoves = true;
+
+                if (this.config.debug) console.log('its a jump move possibility so now player only has',filteredValidMovesForPlayer.length,'valid moves');
             }
 
             return jump ? filteredValidMovesForPlayer : validMovesForPlayer;
         },
 
         determineValidMovesForToken: function (token) {
-            var tokenOwner = parseInt(token.id[0]),
-                currentCol = parseInt(token.position[token.position.indexOf('c') + 1]),
-                currentRow = parseInt(token.position[token.position.indexOf('r') + 1]),
+            var tokenOwner = parseInt(token.id[0], 10),
+                currentCol = parseInt(token.position[token.position.indexOf('c') + 1], 10),
+                currentRow = parseInt(token.position[token.position.indexOf('r') + 1], 10),
                 validCols = [],
                 validRows = [],
                 validMoves = [];
+
+            if (this.config.debug) console.log('checking valid moves for',token.id);
 
             if (currentCol - 1 >= 0)
                 validCols.push(currentCol - 1);
             if (currentCol + 1 < this.config.boardSize)
                 validCols.push(currentCol + 1);
 
-            if ((tokenOwner == 0 || token.king) && currentRow - 1 >= 0)
+            if ((tokenOwner === 0 || token.king) && currentRow - 1 >= 0)
                 validRows.push(currentRow - 1);
 
-            if ((tokenOwner == 1 || token.king) && currentRow + 1 < this.config.boardSize)
+            if ((tokenOwner === 1 || token.king) && currentRow + 1 < this.config.boardSize)
                 validRows.push(currentRow + 1);
-
 
             validCols.forEach(function (col) {
                 validRows.forEach(function (row) {
                     var newCol, newRow,
                         cellIsOccupied = this.isCellOccupied(col, row);
 
-                    if (!cellIsOccupied) {
+                    if (cellIsOccupied === false) {
+                        if (this.config.debug) console.log(col,row,'is not occupied; it is valid for',token.id);
+
                         validMoves.push({
                             from: token.position,
                             to: 'c' + col + 'r' + row
                         });
-                    } else if (cellIsOccupied === 'opponent') {
+                    } else if (cellIsOccupied !== tokenOwner) {
+                        if (this.config.debug) console.log(col,row,'is occupied by the opponent of',token.id,'check for jump move');
+
                         // Cell is occupied by opponent; see if the next space is open for jumping.
                         if (currentCol < col && col + 1 < this.config.boardSize) {
                             newCol = col + 1;
@@ -191,14 +250,21 @@ var React = require('react'),
                         }
 
                         if (typeof newRow !== 'undefined' && typeof newCol !== 'undefined') {
-                            if (! this.isCellOccupied(newCol, newRow)) {
+                            if (this.config.debug) console.log('can we jump into',newCol,newRow,'?');
+
+                            if (this.isCellOccupied(newCol, newRow) === false) {
+                                if (this.config.debug) console.log('jumping into',newCol,newRow,'is a valid move for',token.id);
                                 validMoves.push({
                                     from: token.position,
                                     to: 'c' + newCol + 'r' + newRow,
                                     jump: 'c' + col + 'r' + row
                                 });
                             }
+                        } else {
+                            if (this.config.debug) console.log('no suitable space to jump into');
                         }
+                    } else {
+                        if (this.config.debug) console.log(col,row,'is occupied by the owner of',token.id);
                     }
                 }.bind(this))
             }.bind(this));
@@ -242,6 +308,7 @@ var React = require('react'),
                         color={this.config.color}
                         secondaryColor={this.config.secondaryColor}
                         highlightedCells={this.state.highlightedCells}
+                        handleCellClick={this.handleCellClick}
                         >
                         {tokens}
                     </CheckersBoard>

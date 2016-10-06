@@ -23,6 +23,7 @@ function CheckersBoard (props) {
 
             currentArray.push((
                 <Cell style={newStyle} id={id} key={id} boardSize={boardSize} highlighted={highlighted}
+                      handleClick={props.handleCellClick}
                     ></Cell>
             ));
 
@@ -44,7 +45,8 @@ CheckersBoard.propTypes = {
     size: React.PropTypes.number.isRequired,
     color: React.PropTypes.string.isRequired,
     secondaryColor: React.PropTypes.string.isRequired,
-    highlightedCells: React.PropTypes.array.isRequired
+    highlightedCells: React.PropTypes.array.isRequired,
+    handleCellClick: React.PropTypes.func.isRequired
 };
 
 module.exports = CheckersBoard;

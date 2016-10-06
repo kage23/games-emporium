@@ -1,5 +1,5 @@
 var React = require('react');
-var logo = require('./logo.svg');
+//var logo = require('./logo.svg');
 import './App.css';
 
 var CheckersGame = require('./components/CheckersGame');

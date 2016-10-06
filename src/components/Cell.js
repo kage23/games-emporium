@@ -1,28 +1,37 @@
 var React = require('react');
 
-function Cell (props) {
-    var style = Object.assign({}, props.style),
-        cellSize = (100 / props.boardSize).toFixed(8) + '%',
-        className = 'cell';
+var Cell = React.createClass({
+    propTypes: {
+        boardSize: React.PropTypes.number.isRequired,
+        id: React.PropTypes.string.isRequired,
+        highlighted: React.PropTypes.bool.isRequired,
+        handleClick: React.PropTypes.func.isRequired,
+        style: React.PropTypes.object
+    },
 
-    style.width = cellSize;
-    style.paddingTop = cellSize;
+    handleClick: function () {
+        this.props.handleClick(this);
+    },
 
-    if (props.highlighted) className += ' highlighted';
+    render: function () {
+        var style = Object.assign({}, this.props.style),
+            cellSize = (100 / this.props.boardSize).toFixed(8) + '%',
+            className = 'cell';
 
-    return (
-        <div className={className}
-             style={style}
-             id={props.id}
-            ></div>
-    );
-}
+        style.width = cellSize;
+        style.paddingTop = cellSize;
 
-Cell.propTypes = {
-    boardSize: React.PropTypes.number.isRequired,
-    id: React.PropTypes.string.isRequired,
-    highlighted: React.PropTypes.bool.isRequired,
-    style: React.PropTypes.object
-};
+        if (this.props.highlighted) className += ' highlighted';
+
+        return (
+            <div className={className}
+                 style={style}
+                 id={this.props.id}
+                 onClick={this.handleClick}
+                ></div>
+        );
+    }
+
+});
 
 module.exports = Cell;
