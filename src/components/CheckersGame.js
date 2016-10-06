@@ -346,6 +346,8 @@ var React = require('react'),
                 <div>
                     <CheckersGameInfo
                         gameState={this.state}
+                        determineValidMovesForPlayer={this.determineValidMovesForPlayer}
+                        newTurn={this.newTurn}
                         />
 
                     <CheckersBoard
