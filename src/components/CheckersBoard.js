@@ -4,7 +4,7 @@ var React = require('react'),
 
 function CheckersBoard (props) {
     function generateCellArray (currentArray, boardSize, color, secondaryColor) {
-        var id, col, row, newStyle = {}, count = boardSize * boardSize;
+        var id, col, row, highlighted = false, newStyle = {}, count = boardSize * boardSize;
 
         if (currentArray.length >= count) {
             return currentArray;
@@ -19,12 +19,10 @@ function CheckersBoard (props) {
                 newStyle.backgroundColor = secondaryColor;
             }
 
-            // TODO: highlighted cells for selected token
-            // TODO: maybe make a list of occupied cells
-            // TODO: Add the handleClick stuff
+            if (props.highlightedCells.indexOf(id) > -1) highlighted = true;
 
             currentArray.push((
-                <Cell style={newStyle} id={id} key={id} boardSize={boardSize}
+                <Cell style={newStyle} id={id} key={id} boardSize={boardSize} highlighted={highlighted}
                     ></Cell>
             ));
 
@@ -45,7 +43,8 @@ function CheckersBoard (props) {
 CheckersBoard.propTypes = {
     size: React.PropTypes.number.isRequired,
     color: React.PropTypes.string.isRequired,
-    secondaryColor: React.PropTypes.string.isRequired
+    secondaryColor: React.PropTypes.string.isRequired,
+    highlightedCells: React.PropTypes.array.isRequired
 };
 
 module.exports = CheckersBoard;

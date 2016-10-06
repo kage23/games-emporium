@@ -7,7 +7,8 @@ var Token = React.createClass({
         color: React.PropTypes.string.isRequired,
         handleClick: React.PropTypes.func.isRequired,
         position: React.PropTypes.string.isRequired,
-        king: React.PropTypes.bool.isRequired
+        king: React.PropTypes.bool.isRequired,
+        highlighted: React.PropTypes.bool.isRequired
     },
 
     handleClick: function () {
@@ -15,7 +16,7 @@ var Token = React.createClass({
     },
 
     render: function () {
-        var tokenCol, tokenRow, tokenSize, tokenStyle;
+        var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token';
 
         tokenCol = parseInt(this.props.position.substr(this.props.position.indexOf('c') + 1), 10);
         tokenRow = parseInt(this.props.position.substr(this.props.position.indexOf('r') + 1), 10);
@@ -30,8 +31,12 @@ var Token = React.createClass({
             top: (100 / this.props.boardSize) * (0.1 + tokenRow) + '%'
         };
 
+        if (this.props.highlighted) {
+            className += ' highlighted';
+        }
+
         return (
-            <div className="token" style={tokenStyle} onClick={this.handleClick}></div>
+            <div className={className} style={tokenStyle} onClick={this.handleClick}></div>
         );
     }
 });

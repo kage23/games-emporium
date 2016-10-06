@@ -57,7 +57,9 @@ var React = require('react'),
             return {
                 players: players,
                 currentTurn: -1,
-                validMoves: []
+                validMoves: [],
+                highlightedToken: undefined,
+                highlightedCells: []
             };
         },
 
@@ -72,22 +74,27 @@ var React = require('react'),
 
             this.setState({
                 currentTurn: newTurn,
-                validMoves: newValidMoves
+                validMoves: newValidMoves,
+                highlightedToken: undefined,
+                highlightedCells: []
             });
         },
 
         handleTokenClick: function (token) {
-            var currentPlayer, tokenBelongsToPlayer;
-
-            currentPlayer = this.state.players[this.state.currentTurn % 2];
-
-            currentPlayer.tokens.forEach(function (currentToken) {
-                if (currentToken.position === token.props.position) tokenBelongsToPlayer = true;
+            var newHighlightedCells = [],
+                validMovesForToken = this.state.validMoves.filter(function (move) {
+                return token.props.position === move.from;
             });
 
-            if (tokenBelongsToPlayer) {
-                // TODO: Determine and highlight valid moves
-                debugger;
+            if (validMovesForToken.length) {
+                validMovesForToken.forEach(function (move) {
+                    newHighlightedCells.push(move.to);
+                });
+
+                this.setState({
+                    highlightedToken: token,
+                    highlightedCells: newHighlightedCells
+                });
             }
         },
 
@@ -132,7 +139,8 @@ var React = require('react'),
             if (jump) {
                 filteredValidMovesForPlayer = validMovesForPlayer.filter(function (move) {
                     return !!move.jump;
-                })
+                });
+                filteredValidMovesForPlayer.jumpMoves = true;
             }
 
             return jump ? filteredValidMovesForPlayer : validMovesForPlayer;
@@ -206,10 +214,13 @@ var React = require('react'),
 
                 players.forEach(function (player) {
                     player.tokens.forEach(function (token) {
+                        var highlighted = typeof this.state.highlightedToken !== 'undefined' &&
+                            token.position === this.state.highlightedToken.props.position;
+
                         tokenArray.push((
                             <Token boardSize={this.config.boardSize} type='circle' color={player.color}
                                    handleClick={this.handleTokenClick} position={token.position} key={token.id}
-                                   king={token.king}
+                                   king={token.king} highlighted={highlighted}
                                 />
                         ));
                     }.bind(this));
@@ -230,6 +241,7 @@ var React = require('react'),
                         size={this.config.boardSize}
                         color={this.config.color}
                         secondaryColor={this.config.secondaryColor}
+                        highlightedCells={this.state.highlightedCells}
                         >
                         {tokens}
                     </CheckersBoard>
