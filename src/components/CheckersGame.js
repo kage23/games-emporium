@@ -58,8 +58,9 @@ var React = require('react'),
             return {
                 players: players,
                 currentTurn: -1,
-                highlightedToken: undefined,
-                highlightedCells: []
+                highlightedToken: '',
+                highlightedCells: [],
+                continuingAfterJump: false
             };
         },
 
@@ -69,39 +70,47 @@ var React = require('react'),
 
         newTurn: function () {
             var newTurn = this.state.currentTurn + 1;
-                //newPlayer = this.state.players[newTurn % 2];
 
             if (this.config.debug) console.log('Starting turn',newTurn);
 
             this.setState({
                 currentTurn: newTurn,
-                highlightedToken: undefined,
-                highlightedCells: []
+                highlightedToken: '',
+                highlightedCells: [],
+                continuingAfterJump: false
             });
         },
 
         handleTokenClick: function (token) {
             if (this.config.debug) console.log('tokenClick!',token.props.position);
 
-            var newHighlightedCells = [],
-                currentPlayer = this.state.players[this.state.currentTurn % 2],
+            var currentPlayer = this.state.players[this.state.currentTurn % 2],
                 validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
                 validMovesForToken = validMovesForPlayer.filter(function (move) {
                     return token.props.position === move.from;
                 });
 
-            if (validMovesForToken.length) {
-                validMovesForToken.forEach(function (move) {
-                    newHighlightedCells.push(move.to);
-                });
+            if (validMovesForToken.length && ! this.state.continuingAfterJump) {
+                this.highlightCells(validMovesForToken);
 
-                if (this.config.debug) console.log('Highlighting token',token,'Highlighting cells',newHighlightedCells);
+                if (this.config.debug) console.log('Highlighting token',token);
 
                 this.setState({
-                    highlightedToken: token,
-                    highlightedCells: newHighlightedCells
+                    highlightedToken: token.props.position
                 });
             }
+        },
+
+        highlightCells: function (validMoves) {
+            var highlightedCells = [];
+
+            validMoves.forEach(function (move) {
+                highlightedCells.push(move.to);
+            });
+
+            if (this.config.debug) console.log('Highlighting cells',highlightedCells);
+
+            this.setState({highlightedCells: highlightedCells});
         },
 
         handleCellClick: function (cell) {
@@ -109,20 +118,21 @@ var React = require('react'),
                 jumpedTokenIndex, newOpponentTokensArray, newOpponentObject, newPlayersArray,
                 currentPlayer = this.state.players[this.state.currentTurn % 2],
                 opponent = this.state.players[(this.state.currentTurn + 1) % 2],
-                validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
+                validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
+                newValidMoves, continueTurn = false;
 
             if (this.state.highlightedCells.indexOf(cell.props.id) > -1) {
                 if (this.config.debug) console.log('Clicked on highlighted cell', cell.props.id);
 
                 move = validMovesForPlayer.filter(function (move) {
-                    return (move.from === this.state.highlightedToken.props.position && move.to === cell.props.id);
+                    return (move.from === this.state.highlightedToken && move.to === cell.props.id);
                 }.bind(this))[0];
 
                 if (this.config.debug) console.log('Moving...',move);
 
                 // Find the correct token object
                 currentPlayer.tokens.forEach(function (token, tokenIndex) {
-                    if (token.position === this.state.highlightedToken.props.position) {
+                    if (token.position === this.state.highlightedToken) {
                         newTokenIndex = tokenIndex;
                     }
                 }.bind(this));
@@ -158,11 +168,22 @@ var React = require('react'),
                 newPlayersArray[this.state.currentTurn % 2] = newPlayerObject;
                 newPlayersArray[(this.state.currentTurn + 1) % 2] = move.jump ? newOpponentObject : opponent;
 
-                // TODO: If it was a jump, check for more jumps and continue the turn
-
                 this.setState({players: newPlayersArray});
 
-                this.newTurn();
+                // If it was a jump, check for more jumps and continue the turn
+                if (move.jump) {
+                    newValidMoves = this.determineValidMovesForPlayer(currentPlayer, newTokenObject);
+                    if (newValidMoves.length && newValidMoves.jumpMoves) {
+                        continueTurn = true;
+                        this.highlightCells(newValidMoves);
+                        this.setState({
+                            highlightedToken: newTokenObject.position,
+                            continuingAfterJump: true
+                        });
+                    }
+                }
+
+                if (! continueTurn) this.newTurn();
             }
         },
 
@@ -190,21 +211,28 @@ var React = require('react'),
             return cellIsOccupied;
         },
 
-        determineValidMovesForPlayer: function (player) {
+        determineValidMovesForPlayer: function (player, token) {
             var validMovesForPlayer = [], jump = false, filteredValidMovesForPlayer = [];
 
+            if (!token) {
             player.tokens.forEach(function (token) {
                 var validMovesForToken = this.determineValidMovesForToken(token);
 
                 if (validMovesForToken) {
                     validMovesForToken.forEach(function (move) {
                         validMovesForPlayer.push(move);
-                        if (move.jump) jump = true;
-
                     });
-                    if (this.config.debug) console.log('player has ',validMovesForPlayer.length,'valid moves PRE JUMP CHECK');
                 }
             }.bind(this));
+            } else {
+                validMovesForPlayer = this.determineValidMovesForToken(token);
+            }
+
+            if (this.config.debug) console.log('player has ', validMovesForPlayer.length, 'valid moves PRE JUMP CHECK');
+
+            validMovesForPlayer.forEach(function (move) {
+                if (move.jump) jump = true;
+            });
 
             if (jump) {
                 filteredValidMovesForPlayer = validMovesForPlayer.filter(function (move) {
@@ -298,8 +326,7 @@ var React = require('react'),
 
                 players.forEach(function (player) {
                     player.tokens.forEach(function (token) {
-                        var highlighted = typeof this.state.highlightedToken !== 'undefined' &&
-                            token.position === this.state.highlightedToken.props.position;
+                        var highlighted = token.position === this.state.highlightedToken;
 
                         tokenArray.push((
                             <Token boardSize={this.config.boardSize} type='circle' color={player.color}
