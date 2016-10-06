@@ -1,5 +1,4 @@
 var React = require('react'),
-    //update = require('react-addons-update'),
 
     CheckersGameInfo = require('./CheckersGameInfo'),
     CheckersBoard = require('./CheckersBoard'),
@@ -114,8 +113,8 @@ var React = require('react'),
         },
 
         handleCellClick: function (cell) {
-            var move, newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject,
-                jumpedTokenIndex, newOpponentTokensArray, newOpponentObject, newPlayersArray,
+            var move, newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
+                newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow,
                 currentPlayer = this.state.players[this.state.currentTurn % 2],
                 opponent = this.state.players[(this.state.currentTurn + 1) % 2],
                 validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
@@ -141,7 +140,14 @@ var React = require('react'),
                 newTokenObject = Object.assign({}, currentPlayer.tokens[newTokenIndex]);
                 newTokenObject.position = move.to;
 
-                // Create a new token array with the token in the new position
+                // Determine if the token should get kinged
+                moveToRow = parseInt(move.to.substr(move.to.indexOf('r') + 1));
+                if ((this.state.currentTurn % 2 === 0 && moveToRow === 0) ||
+                    (this.state.currentTurn % 2 === 1 && moveToRow === this.config.boardSize - 1)) {
+                    newTokenObject.king = true;
+                }
+
+                // Create a new token array with the token in the new position and king status
                 newPlayerTokensArray = currentPlayer.tokens;
                 newPlayerTokensArray.splice(newTokenIndex, 1, newTokenObject);
 
@@ -215,15 +221,15 @@ var React = require('react'),
             var validMovesForPlayer = [], jump = false, filteredValidMovesForPlayer = [];
 
             if (!token) {
-            player.tokens.forEach(function (token) {
-                var validMovesForToken = this.determineValidMovesForToken(token);
+                player.tokens.forEach(function (token) {
+                    var validMovesForToken = this.determineValidMovesForToken(token);
 
-                if (validMovesForToken) {
-                    validMovesForToken.forEach(function (move) {
-                        validMovesForPlayer.push(move);
-                    });
-                }
-            }.bind(this));
+                    if (validMovesForToken) {
+                        validMovesForToken.forEach(function (move) {
+                            validMovesForPlayer.push(move);
+                        });
+                    }
+                }.bind(this));
             } else {
                 validMovesForPlayer = this.determineValidMovesForToken(token);
             }

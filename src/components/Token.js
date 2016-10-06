@@ -16,7 +16,7 @@ var Token = React.createClass({
     },
 
     render: function () {
-        var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token';
+        var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token', kingSpan;
 
         tokenCol = parseInt(this.props.position.substr(this.props.position.indexOf('c') + 1), 10);
         tokenRow = parseInt(this.props.position.substr(this.props.position.indexOf('r') + 1), 10);
@@ -35,8 +35,12 @@ var Token = React.createClass({
             className += ' highlighted';
         }
 
+        if (this.props.king) {
+            kingSpan = <span className="king" style={{color:this.props.color}}>K</span>;
+        }
+
         return (
-            <div className={className} style={tokenStyle} onClick={this.handleClick}></div>
+            <div className={className} style={tokenStyle} onClick={this.handleClick}>{kingSpan}</div>
         );
     }
 });
