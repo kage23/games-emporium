@@ -105,8 +105,10 @@ var React = require('react'),
         },
 
         handleCellClick: function (cell) {
-            var move, newTokenIndex, newTokenObject, newTokensArray, newPlayerObject, newPlayersArray,
+            var move, newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject,
+                jumpedTokenIndex, newOpponentTokensArray, newOpponentObject, newPlayersArray,
                 currentPlayer = this.state.players[this.state.currentTurn % 2],
+                opponent = this.state.players[(this.state.currentTurn + 1) % 2],
                 validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
 
             if (this.state.highlightedCells.indexOf(cell.props.id) > -1) {
@@ -118,37 +120,53 @@ var React = require('react'),
 
                 if (this.config.debug) console.log('Moving...',move);
 
+                // Find the correct token object
                 currentPlayer.tokens.forEach(function (token, tokenIndex) {
                     if (token.position === this.state.highlightedToken.props.position) {
                         newTokenIndex = tokenIndex;
                     }
                 }.bind(this));
 
+                // Create a token object with the new position
                 newTokenObject = Object.assign({}, currentPlayer.tokens[newTokenIndex]);
                 newTokenObject.position = move.to;
-                newTokensArray = currentPlayer.tokens.map(function (token, tokenIndex) {
-                    if (tokenIndex === newTokenIndex) return newTokenObject;
-                    else return token;
-                });
-                newPlayerObject = Object.assign({}, currentPlayer, {tokens: newTokensArray});
-                newPlayersArray = this.state.players.map(function (player, playerIndex) {
-                    if (playerIndex === this.state.currentTurn % 2) return newPlayerObject;
-                    else return player;
-                }.bind(this));
+
+                // Create a new token array with the token in the new position
+                newPlayerTokensArray = currentPlayer.tokens;
+                newPlayerTokensArray.splice(newTokenIndex, 1, newTokenObject);
+
+                // Create a new player object with the new token array
+                newPlayerObject = Object.assign({}, currentPlayer, {tokens: newPlayerTokensArray});
+
+                // If it was a jump, remove the jumped piece from the opponent's tokens array
+                if (move.jump) {
+                    // Find the index
+                    opponent.tokens.forEach(function (token, tokenIndex) {
+                        if (token.position === move.jump) jumpedTokenIndex = tokenIndex;
+                    });
+
+                    // Create a new token array without the jumped piece
+                    newOpponentTokensArray = opponent.tokens;
+                    newOpponentTokensArray.splice(jumpedTokenIndex, 1);
+
+                    // Create a new player object with the new token array
+                    newOpponentObject = Object.assign({}, opponent, {tokens: newOpponentTokensArray});
+                }
+
+                // Create a new players array
+                newPlayersArray = new Array(2);
+                newPlayersArray[this.state.currentTurn % 2] = newPlayerObject;
+                newPlayersArray[(this.state.currentTurn + 1) % 2] = move.jump ? newOpponentObject : opponent;
+
+                // TODO: If it was a jump, check for more jumps and continue the turn
+
                 this.setState({players: newPlayersArray});
 
-                if (move.jump) {
-                    if (this.config.debug) console.log('Move was a jump!');
-                    // TODO: Implement appropriate game logic here
-                    this.newTurn();
-                } else {
-                    this.newTurn();
-                }
+                this.newTurn();
             }
         },
 
         isCellOccupied: function (col, row) {
-            //var currentPlayer = this.state.players[this.state.currentTurn % 2] || this.state.players[0],
             var cellIsOccupied = false,
                 cellId = 'c' + col + 'r' + row;
 
