@@ -2,7 +2,7 @@ var React = require('react'),
 
     CheckersGameInfo = React.createClass({
         render: function () {
-            var currentPlayer = this.props.gameState.players[this.props.gameState.currentTurn % 2];
+            var currentPlayer = this.props.gameState.players[this.props.gameState.currentTurn % 2] || {name:'',color:''};
 
             return (
                 <div className="gameInfo">

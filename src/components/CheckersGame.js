@@ -56,15 +56,24 @@ var React = require('react'),
 
             return {
                 players: players,
-                currentTurn: 0,
+                currentTurn: -1,
                 validMoves: []
             };
         },
 
         componentDidMount: function () {
-            var validMoves = this.determineValidMovesForPlayer(this.state.players[0]);
+            this.newTurn();
+        },
 
-            this.setState({validMoves:validMoves});
+        newTurn: function () {
+            var newTurn = this.state.currentTurn + 1,
+                newPlayer = this.state.players[newTurn % 2],
+                newValidMoves = this.determineValidMovesForPlayer(newPlayer);
+
+            this.setState({
+                currentTurn: newTurn,
+                validMoves: newValidMoves
+            });
         },
 
         handleTokenClick: function (token) {
@@ -77,13 +86,17 @@ var React = require('react'),
             });
 
             if (tokenBelongsToPlayer) {
-                // Determine and highlight valid moves
+                // TODO: Determine and highlight valid moves
                 debugger;
             }
         },
 
+        handleCellClick: function (cell) {
+            // TODO: handleCellClick
+        },
+
         isCellOccupied: function (col, row) {
-            var currentPlayer = this.state.players[this.state.currentTurn % 2],
+            var currentPlayer = this.state.players[this.state.currentTurn % 2] || this.state.players[0],
                 cellIsOccupied = false,
                 cellId = 'c' + col + 'r' + row;
 
@@ -103,27 +116,32 @@ var React = require('react'),
         },
 
         determineValidMovesForPlayer: function (player) {
-            var validMovesForPlayer = [];
+            var validMovesForPlayer = [], jump = false, filteredValidMovesForPlayer = [];
 
-            // TODO: So far there's no concept of a jump. Eventually, we need to implement the rule that if a jump is possible, it's REQUIRED.
             player.tokens.forEach(function (token) {
                 var validMovesForToken = this.determineValidMovesForToken(token);
 
                 if (validMovesForToken) {
                     validMovesForToken.forEach(function (move) {
                         validMovesForPlayer.push(move);
+                        if (move.jump) jump = true;
                     });
                 }
             }.bind(this));
 
-            return validMovesForPlayer;
+            if (jump) {
+                filteredValidMovesForPlayer = validMovesForPlayer.filter(function (move) {
+                    return !!move.jump;
+                })
+            }
+
+            return jump ? filteredValidMovesForPlayer : validMovesForPlayer;
         },
 
         determineValidMovesForToken: function (token) {
             var tokenOwner = parseInt(token.id[0]),
-                currentPlayer = this.state.players[this.state.currentTurn % 2],
-                currentCol = parseInt(token.position[1]),
-                currentRow = parseInt(token.position[3]),
+                currentCol = parseInt(token.position[token.position.indexOf('c') + 1]),
+                currentRow = parseInt(token.position[token.position.indexOf('r') + 1]),
                 validCols = [],
                 validRows = [],
                 validMoves = [];
@@ -144,7 +162,6 @@ var React = require('react'),
                 validRows.forEach(function (row) {
                     var newCol, newRow,
                         cellIsOccupied = this.isCellOccupied(col, row);
-
 
                     if (!cellIsOccupied) {
                         validMoves.push({
