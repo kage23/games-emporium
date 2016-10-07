@@ -101,10 +101,10 @@ var React = require('react'),
         },
 
         highlightCells: function (validMoves) {
-            var highlightedCells = [];
+            var highlightedCells;
 
-            validMoves.forEach(function (move) {
-                highlightedCells.push(move.to);
+            highlightedCells = validMoves.map(function (move) {
+                return move.to;
             });
 
             if (this.config.debug) console.log('Highlighting cells',highlightedCells);
@@ -120,28 +120,33 @@ var React = require('react'),
                 validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
                 newValidMoves, continueTurn = false;
 
+            // Check if a highlighted cell was clicked
+            // TODO: When we implement hints, cells will be highlighted without there being a selected token, so this
+            // TODO: will be a bad check then. So we should probably check it the clicked cell is the 'to' cell of a
+            // TODO: valid player move.
             if (this.state.highlightedCells.indexOf(cell.props.id) > -1) {
                 if (this.config.debug) console.log('Clicked on highlighted cell', cell.props.id);
 
+                // Find the move corresponding to the selected token and cell
                 move = validMovesForPlayer.filter(function (move) {
                     return (move.from === this.state.highlightedToken && move.to === cell.props.id);
                 }.bind(this))[0];
 
                 if (this.config.debug) console.log('Moving...',move);
 
-                // Find the correct token object
+                // Find the correct token object from the player's token array
                 currentPlayer.tokens.forEach(function (token, tokenIndex) {
                     if (token.position === this.state.highlightedToken) {
                         newTokenIndex = tokenIndex;
                     }
                 }.bind(this));
 
-                // Create a token object with the new position
+                // Create a new token object with the new position
                 newTokenObject = Object.assign({}, currentPlayer.tokens[newTokenIndex]);
                 newTokenObject.position = move.to;
 
                 // Determine if the token should get kinged
-                moveToRow = parseInt(move.to.substr(move.to.indexOf('r') + 1));
+                moveToRow = parseInt(move.to.substr(move.to.indexOf('r') + 1), 10);
                 if ((this.state.currentTurn % 2 === 0 && moveToRow === 0) ||
                     (this.state.currentTurn % 2 === 1 && moveToRow === this.config.boardSize - 1)) {
                     newTokenObject.king = true;
@@ -156,7 +161,7 @@ var React = require('react'),
 
                 // If it was a jump, remove the jumped piece from the opponent's tokens array
                 if (move.jump) {
-                    // Find the index
+                    // Find the index of the jumped token
                     opponent.tokens.forEach(function (token, tokenIndex) {
                         if (token.position === move.jump) jumpedTokenIndex = tokenIndex;
                     });

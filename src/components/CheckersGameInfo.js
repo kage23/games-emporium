@@ -16,8 +16,7 @@ var React = require('react'),
         render: function () {
             var winner,
                 currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
-                validMoves = this.props.determineValidMovesForPlayer(currentPlayer),
-                noValidMovesStyle = {display:'none'};
+                validMoves = this.props.determineValidMovesForPlayer(currentPlayer);
 
             if (validMoves.length === 0)
                 winner = this.props.gameState.players[(this.props.gameState.currentTurn + 1) % 2];
