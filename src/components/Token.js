@@ -1,21 +1,17 @@
-var React = require('react');
+import React from 'react';
 
-var Token = React.createClass({
-    propTypes: {
-        boardSize: React.PropTypes.number.isRequired,
-        type: React.PropTypes.string.isRequired,
-        color: React.PropTypes.string.isRequired,
-        handleClick: React.PropTypes.func.isRequired,
-        position: React.PropTypes.string.isRequired,
-        king: React.PropTypes.bool.isRequired,
-        highlighted: React.PropTypes.bool.isRequired
-    },
+export default class Token extends React.Component {
+    constructor() {
+        super();
 
-    handleClick: function () {
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick() {
         this.props.handleClick(this);
-    },
+    }
 
-    render: function () {
+    render() {
         var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token', kingSpan;
 
         tokenCol = parseInt(this.props.position.substr(this.props.position.indexOf('c') + 1), 10);
@@ -43,6 +39,14 @@ var Token = React.createClass({
             <div className={className} style={tokenStyle} onClick={this.handleClick}>{kingSpan}</div>
         );
     }
-});
+}
 
-module.exports = Token;
+Token.propTypes = {
+    boardSize: React.PropTypes.number.isRequired,
+    type: React.PropTypes.string.isRequired,
+    color: React.PropTypes.string.isRequired,
+    handleClick: React.PropTypes.func.isRequired,
+    position: React.PropTypes.string.isRequired,
+    king: React.PropTypes.bool.isRequired,
+    highlighted: React.PropTypes.bool.isRequired
+};

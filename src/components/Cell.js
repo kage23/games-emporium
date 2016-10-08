@@ -1,19 +1,17 @@
-var React = require('react');
+import React from 'react';
 
-var Cell = React.createClass({
-    propTypes: {
-        boardSize: React.PropTypes.number.isRequired,
-        id: React.PropTypes.string.isRequired,
-        highlighted: React.PropTypes.bool.isRequired,
-        handleClick: React.PropTypes.func.isRequired,
-        style: React.PropTypes.object
-    },
+export default class Cell extends React.Component {
+    constructor() {
+        super();
 
-    handleClick: function () {
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick() {
         this.props.handleClick(this);
-    },
+    }
 
-    render: function () {
+    render() {
         var style = Object.assign({}, this.props.style),
             cellSize = (100 / this.props.boardSize).toFixed(8) + '%',
             className = 'cell';
@@ -31,7 +29,12 @@ var Cell = React.createClass({
                 ></div>
         );
     }
+}
 
-});
-
-module.exports = Cell;
+Cell.propTypes = {
+    boardSize: React.PropTypes.number.isRequired,
+    id: React.PropTypes.string.isRequired,
+    highlighted: React.PropTypes.bool.isRequired,
+    handleClick: React.PropTypes.func.isRequired,
+    style: React.PropTypes.object
+};

@@ -1,44 +1,42 @@
-var React = require('react'),
+import React from 'react';
 
-    CheckersGameInfo = React.createClass({
-        propTypes: {
-            gameState: React.PropTypes.object.isRequired,
-            determineValidMovesForPlayer: React.PropTypes.func.isRequired,
-            newTurn: React.PropTypes.func.isRequired
-        },
+export default class CheckersGameInfo extends React.Component {
+    handleClick(evt) {
+        evt.preventDefault();
 
-        handleClick: function (evt) {
-            evt.preventDefault();
+        this.props.newTurn();
+    }
 
-            this.props.newTurn();
-        },
+    render() {
+        var winner,
+            currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
+            validMoves = this.props.determineValidMovesForPlayer(currentPlayer);
 
-        render: function () {
-            var winner,
-                currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
-                validMoves = this.props.determineValidMovesForPlayer(currentPlayer);
+        if (validMoves.length === 0)
+            winner = this.props.gameState.players[(this.props.gameState.currentTurn + 1) % 2];
 
-            if (validMoves.length === 0)
-                winner = this.props.gameState.players[(this.props.gameState.currentTurn + 1) % 2];
+        this.props.gameState.players.forEach(function (player, playerIndex) {
+            if (player.tokens.length === 0) winner = this.props.gameState.players[(playerIndex + 1) % 2];
+        }.bind(this));
 
-            this.props.gameState.players.forEach(function (player, playerIndex) {
-                if (player.tokens.length === 0) winner = this.props.gameState.players[(playerIndex + 1) % 2];
-            }.bind(this));
-
-            if (!winner) {
-                return (
-                    <div className="gameInfo">
-                        <h3>It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn.</h3>
-                    </div>
-                );
-            } else {
-                return (
-                    <div className="gameInfo">
-                        <h3 style={{color:winner.color,textTransform:'uppercase'}}>{winner.name} WINS!!!!</h3>
-                    </div>
-                );
-            }
+        if (!winner) {
+            return (
+                <div className="gameInfo">
+                    <h3>It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn.</h3>
+                </div>
+            );
+        } else {
+            return (
+                <div className="gameInfo">
+                    <h3 style={{color:winner.color,textTransform:'uppercase'}}>{winner.name} WINS!!!!</h3>
+                </div>
+            );
         }
-    });
+    }
+}
 
-module.exports = CheckersGameInfo;
+CheckersGameInfo.propTypes = {
+    gameState: React.PropTypes.object.isRequired,
+    determineValidMovesForPlayer: React.PropTypes.func.isRequired,
+    newTurn: React.PropTypes.func.isRequired
+};

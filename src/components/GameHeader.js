@@ -1,11 +1,10 @@
-var React = require('react');
+import React from 'react';
 
-function GameHeader (props) {
-    return <h2>WELCOME TO {props.game}</h2>;
-};
-
+export default class GameHeader extends React.Component {
+    render() {
+        return <h2>WELCOME TO {this.props.game}</h2>;
+    }
+}
 GameHeader.propTypes = {
     game: React.PropTypes.string.isRequired
 };
-
-module.exports = GameHeader;
