@@ -1,20 +1,19 @@
-var React = require('react');
-//var logo = require('./logo.svg');
+import React from 'react';
 import './App.css';
 
-var CheckersGame = require('./components/CheckersGame');
-var SiteHeader = require('./components/SiteHeader');
-var GameHeader = require('./components/GameHeader');
+import CheckersGame from './components/CheckersGame';
+import SiteHeader from './components/SiteHeader';
+import GameHeader from './components/GameHeader';
 
-function App () {
-    return (
-        <div>
-            <SiteHeader />
-            <GameHeader game="CHECKERSSSSSSSS" />
+export default class App extends React.Component {
+    render() {
+        return (
+            <div>
+                <SiteHeader />
+                <GameHeader game="CHECKERSSSSSSSS" />
 
-            <CheckersGame />
-        </div>
-    );
+                <CheckersGame />
+            </div>
+        );
+    }
 }
-
-module.exports = App;
