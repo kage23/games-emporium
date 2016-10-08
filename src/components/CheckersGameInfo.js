@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import { Link } from 'react-router'
 
 export default class CheckersGameInfo extends React.Component {
     handleClick(evt) {
@@ -23,13 +24,17 @@ export default class CheckersGameInfo extends React.Component {
         if (!winner) {
             return (
                 <div className="gameInfo">
-                    <h3>It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn.</h3>
+                    <h3>
+                        It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn. <Link to="/">New game</Link>
+                    </h3>
                 </div>
             );
         } else {
             return (
                 <div className="gameInfo">
-                    <h3 style={{color:winner.color,textTransform:'uppercase'}}>{winner.name} WINS!!!!</h3>
+                    <h3 style={{color:winner.color,textTransform:'uppercase'}}>
+                        {winner.name} WINS!!!! <Link to="/">New game</Link>
+                    </h3>
                 </div>
             );
         }
