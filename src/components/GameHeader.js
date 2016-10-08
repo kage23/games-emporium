@@ -5,6 +5,7 @@ export default class GameHeader extends React.Component {
         return <h2>WELCOME TO {this.props.game}</h2>;
     }
 }
+
 GameHeader.propTypes = {
     game: React.PropTypes.string.isRequired
 };

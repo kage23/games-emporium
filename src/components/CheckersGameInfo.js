@@ -12,12 +12,13 @@ export default class CheckersGameInfo extends React.Component {
             currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
             validMoves = this.props.determineValidMovesForPlayer(currentPlayer);
 
+        // TODO: Calculate winner in actual CheckersGame component instead of here
         if (validMoves.length === 0)
             winner = this.props.gameState.players[(this.props.gameState.currentTurn + 1) % 2];
 
-        this.props.gameState.players.forEach(function (player, playerIndex) {
+        this.props.gameState.players.forEach((player, playerIndex) => {
             if (player.tokens.length === 0) winner = this.props.gameState.players[(playerIndex + 1) % 2];
-        }.bind(this));
+        });
 
         if (!winner) {
             return (

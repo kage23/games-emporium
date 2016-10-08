@@ -10,6 +10,7 @@ export default class CheckersGame extends React.Component {
             boardSize: 8,                   // must be an even number. number of cells along each side of the board. board will be square.
             color: '#555',                  // color of playable squares
             secondaryColor: '#fff',         // color of alternate squares
+            defaultPlayerColors: ['red','black'],
             startingPositions: [
                 [
                     'c0r7', 'c2r7', 'c4r7', 'c6r7',
@@ -31,23 +32,16 @@ export default class CheckersGame extends React.Component {
         this.determineValidMovesForPlayer = this.determineValidMovesForPlayer.bind(this);
 
         function getInitialState (config) {
-            var players;
-
-            players = config.startingPositions.map(function (positions, playerIndex) {
+            var players = config.startingPositions.map((positions, playerIndex) => {
                 var name, color, tokens;
 
                 // Name and color hard-coded for now
-                if (playerIndex === 0) {
-                    name = 'Player 1';
-                    color = 'red';
-                } else if (playerIndex === 1) {
-                    name = 'Player 2';
-                    color = 'black';
-                }
+                name = 'Player ' + (playerIndex + 1);
+                color = config.defaultPlayerColors[playerIndex];
 
-                tokens = positions.map(function (position) {
+                tokens = positions.map(position => {
                     return {
-                        position: position,
+                        position,
                         king: false,
                         id: playerIndex + '-' + position
                     };
@@ -95,7 +89,7 @@ export default class CheckersGame extends React.Component {
 
         var currentPlayer = this.state.players[this.state.currentTurn % 2],
             validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
-            validMovesForToken = validMovesForPlayer.filter(function (move) {
+            validMovesForToken = validMovesForPlayer.filter(move => {
                 return token.props.position === move.from;
             });
 
@@ -113,7 +107,7 @@ export default class CheckersGame extends React.Component {
     highlightCells(validMoves) {
         var highlightedCells;
 
-        highlightedCells = validMoves.map(function (move) {
+        highlightedCells = validMoves.map(move => {
             return move.to;
         });
 
@@ -124,32 +118,34 @@ export default class CheckersGame extends React.Component {
 
     handleCellClick(cell) {
         var move, newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
-            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow,
+            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, cellIsValid,
             currentPlayer = this.state.players[this.state.currentTurn % 2],
             opponent = this.state.players[(this.state.currentTurn + 1) % 2],
             validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
             newValidMoves, continueTurn = false;
 
-        // Check if a highlighted cell was clicked
-        // TODO: When we implement hints, cells will be highlighted without there being a selected token, so this
-        // TODO: will be a bad check then. So we should probably check it the clicked cell is the 'to' cell of a
-        // TODO: valid player move.
-        if (this.state.highlightedCells.indexOf(cell.props.id) > -1) {
+        // Check if the clicked cell is a valid move
+        cellIsValid = validMovesForPlayer.reduce((val, move) => {
+            if (cell.props.id === move.to) val = true;
+            return val;
+        }, false);
+
+        if (cellIsValid) {
             if (this.state.config.debug) console.log('Clicked on highlighted cell', cell.props.id);
 
             // Find the move corresponding to the selected token and cell
-            move = validMovesForPlayer.filter(function (move) {
+            move = validMovesForPlayer.filter(move => {
                 return (move.from === this.state.highlightedToken && move.to === cell.props.id);
-            }.bind(this))[0];
+            })[0];
 
             if (this.state.config.debug) console.log('Moving...',move);
 
             // Find the correct token object from the player's token array
-            currentPlayer.tokens.forEach(function (token, tokenIndex) {
+            currentPlayer.tokens.forEach((token, tokenIndex) => {
                 if (token.position === this.state.highlightedToken) {
                     newTokenIndex = tokenIndex;
                 }
-            }.bind(this));
+            });
 
             // Create a new token object with the new position
             newTokenObject = Object.assign({}, currentPlayer.tokens[newTokenIndex]);
@@ -172,7 +168,7 @@ export default class CheckersGame extends React.Component {
             // If it was a jump, remove the jumped piece from the opponent's tokens array
             if (move.jump) {
                 // Find the index of the jumped token
-                opponent.tokens.forEach(function (token, tokenIndex) {
+                opponent.tokens.forEach((token, tokenIndex) => {
                     if (token.position === move.jump) jumpedTokenIndex = tokenIndex;
                 });
 
@@ -214,14 +210,14 @@ export default class CheckersGame extends React.Component {
 
         if (this.state.config.debug) console.log('Checking to see if',col,row,'is occupied or not');
 
-        this.state.players.forEach(function (player, playerIndex) {
-            player.tokens.forEach(function (token) {
+        this.state.players.forEach((player, playerIndex) => {
+            player.tokens.forEach(token => {
                 if (this.state.config.debug) console.log('player',playerIndex,'token',token.id,'token position',token.position);
                 if (token.position === cellId) {
                     cellIsOccupied = playerIndex;
                 }
-            }.bind(this));
-        }.bind(this));
+            });
+        });
 
         if (typeof cellIsOccupied === 'number') {
             if (this.state.config.debug) console.log(col + ' ' + row + ' is occupied by player ' + cellIsOccupied);
@@ -236,27 +232,27 @@ export default class CheckersGame extends React.Component {
         var validMovesForPlayer = [], jump = false, filteredValidMovesForPlayer = [];
 
         if (!token) {
-            player.tokens.forEach(function (token) {
+            player.tokens.forEach(token => {
                 var validMovesForToken = this.determineValidMovesForToken(token);
 
                 if (validMovesForToken) {
-                    validMovesForToken.forEach(function (move) {
+                    validMovesForToken.forEach(move => {
                         validMovesForPlayer.push(move);
                     });
                 }
-            }.bind(this));
+            });
         } else {
             validMovesForPlayer = this.determineValidMovesForToken(token);
         }
 
         if (this.state.config.debug) console.log('player has ', validMovesForPlayer.length, 'valid moves PRE JUMP CHECK');
 
-        validMovesForPlayer.forEach(function (move) {
+        validMovesForPlayer.forEach(move => {
             if (move.jump) jump = true;
         });
 
         if (jump) {
-            filteredValidMovesForPlayer = validMovesForPlayer.filter(function (move) {
+            filteredValidMovesForPlayer = validMovesForPlayer.filter(move => {
                 return !!move.jump;
             });
             filteredValidMovesForPlayer.jumpMoves = true;
@@ -288,8 +284,8 @@ export default class CheckersGame extends React.Component {
         if ((tokenOwner === 1 || token.king) && currentRow + 1 < this.state.config.boardSize)
             validRows.push(currentRow + 1);
 
-        validCols.forEach(function (col) {
-            validRows.forEach(function (row) {
+        validCols.forEach(col => {
+            validRows.forEach(row => {
                 var newCol, newRow,
                     cellIsOccupied = this.isCellOccupied(col, row);
 
@@ -304,37 +300,32 @@ export default class CheckersGame extends React.Component {
                     if (this.state.config.debug) console.log(col,row,'is occupied by the opponent of',token.id,'check for jump move');
 
                     // Cell is occupied by opponent; see if the next space is open for jumping.
-                    if (currentCol < col && col + 1 < this.state.config.boardSize) {
+                    if (currentCol < col && col + 1 < this.state.config.boardSize)
                         newCol = col + 1;
-                    } else if (currentCol > col && col - 1 >= 0) {
+                    else if (currentCol > col && col - 1 >= 0)
                         newCol = col - 1;
-                    }
 
-                    if (currentRow < row && row + 1 < this.state.config.boardSize) {
+                    if (currentRow < row && row + 1 < this.state.config.boardSize)
                         newRow = row + 1;
-                    } else if (currentRow > row && row - 1 >= 0) {
+                    else if (currentRow > row && row - 1 >= 0)
                         newRow = row - 1;
-                    }
 
                     if (typeof newRow !== 'undefined' && typeof newCol !== 'undefined') {
                         if (this.state.config.debug) console.log('can we jump into',newCol,newRow,'?');
 
                         if (this.isCellOccupied(newCol, newRow) === false) {
                             if (this.state.config.debug) console.log('jumping into',newCol,newRow,'is a valid move for',token.id);
+
                             validMoves.push({
                                 from: token.position,
                                 to: 'c' + newCol + 'r' + newRow,
                                 jump: 'c' + col + 'r' + row
                             });
                         }
-                    } else {
-                        if (this.state.config.debug) console.log('no suitable space to jump into');
-                    }
-                } else {
-                    if (this.state.config.debug) console.log(col,row,'is occupied by the owner of',token.id);
-                }
-            }.bind(this))
-        }.bind(this));
+                    } else if (this.state.config.debug) console.log('no suitable space to jump into');
+                } else if (this.state.config.debug) console.log(col, row, 'is occupied by the owner of', token.id);
+            })
+        });
 
         if (validMoves.length) return validMoves;
         else return [];
@@ -346,8 +337,8 @@ export default class CheckersGame extends React.Component {
         var generateTokenArray = function generateTokenArray (players) {
             var tokenArray = [];
 
-            players.forEach(function (player) {
-                player.tokens.forEach(function (token) {
+            players.forEach(player => {
+                player.tokens.forEach(token => {
                     var highlighted = token.position === this.state.highlightedToken;
 
                     tokenArray.push((
@@ -356,8 +347,8 @@ export default class CheckersGame extends React.Component {
                                king={token.king} highlighted={highlighted}
                             />
                     ));
-                }.bind(this));
-            }.bind(this));
+                });
+            });
 
             return tokenArray;
         }.bind(this);
