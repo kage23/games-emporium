@@ -2,10 +2,15 @@ import React from 'react'
 import { Link } from 'react-router'
 
 export default class CheckersGameInfo extends React.Component {
-    handleClick(evt) {
-        evt.preventDefault();
+    constructor() {
+        super();
 
-        this.props.newTurn();
+        this.newGame = this.newGame.bind(this);
+    }
+
+    newGame(evt) {
+        evt.preventDefault();
+        this.props.reset();
     }
 
     render() {
@@ -25,7 +30,7 @@ export default class CheckersGameInfo extends React.Component {
             return (
                 <div className="gameInfo">
                     <h3>
-                        It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn. <Link to="/">New game</Link>
+                        It is <span style={{color:currentPlayer.color}}>{currentPlayer.name}</span>'s turn. <a href="#" onClick={this.newGame}>New game</a>
                     </h3>
                 </div>
             );
@@ -44,5 +49,5 @@ export default class CheckersGameInfo extends React.Component {
 CheckersGameInfo.propTypes = {
     gameState: React.PropTypes.object.isRequired,
     determineValidMovesForPlayer: React.PropTypes.func.isRequired,
-    newTurn: React.PropTypes.func.isRequired
+    reset: React.PropTypes.func.isRequired
 };
