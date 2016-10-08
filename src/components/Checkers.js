@@ -1,13 +1,12 @@
 import React from 'react'
-import './App.css'
 
-import SiteHeader from './components/SiteHeader'
+import GameHeader from './GameHeader'
 
-export default class App extends React.Component {
+export default class extends React.Component {
     render() {
         return (
             <div>
-                <SiteHeader />
+                <GameHeader game="CHECKERSSSSSSSS" />
                 {this.props.children}
             </div>
         );
