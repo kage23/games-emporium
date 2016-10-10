@@ -5,7 +5,7 @@ import App from '../App'
 import Checkers from './Checkers'
 
 module.exports = (
-    <Route path="/" component={App}>
+    <Route path="/games/checkers/" component={App}>
         <IndexRoute component={Checkers} />
     </Route>
 );
