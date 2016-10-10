@@ -10,6 +10,7 @@ export default class CheckersConfig extends React.Component {
 
     onClick(evt) {
         var configIsValid = true,
+            allowedColorDistance = 225,
             player1Color = this.colorIsValid(this.props.gameState.players[0].color),
             player2Color = this.colorIsValid(this.props.gameState.players[1].color);
 
@@ -24,8 +25,16 @@ export default class CheckersConfig extends React.Component {
         } else if (!player2Color) {
             alert(this.props.gameState.players[1].name + ' must have a valid color!');
             configIsValid = false;
-        } else if (this.colorDistance(player1Color, player2Color) < 225) {
+        } else if (this.colorDistance(player1Color, player2Color) < allowedColorDistance) {
             alert('The players must have sufficiently different colors!');
+            configIsValid = false;
+        } else if (this.colorDistance(player1Color, this.colorIsValid(this.props.gameState.config.color)) < allowedColorDistance) {
+            alert(this.props.gameState.players[0].name +
+                '\'s color is too close to the board color (' + this.props.gameState.config.color + ')!');
+            configIsValid = false;
+        } else if (this.colorDistance(player2Color, this.colorIsValid(this.props.gameState.config.color)) < allowedColorDistance) {
+            alert(this.props.gameState.players[1].name +
+                '\'s color is too close to the board color (' + this.props.gameState.config.color + ')!');
             configIsValid = false;
         }
 
