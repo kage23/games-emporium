@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router'
 
 export default class CheckersGameInfo extends React.Component {
     constructor() {
@@ -14,19 +13,9 @@ export default class CheckersGameInfo extends React.Component {
     }
 
     render() {
-        var winner,
-            currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
-            validMoves = this.props.determineValidMovesForPlayer(currentPlayer);
+        var currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2]
 
-        // TODO: Calculate winner in actual CheckersGame component instead of here
-        if (validMoves.length === 0)
-            winner = this.props.gameState.players[(this.props.gameState.currentTurn + 1) % 2];
-
-        this.props.gameState.players.forEach((player, playerIndex) => {
-            if (player.tokens.length === 0) winner = this.props.gameState.players[(playerIndex + 1) % 2];
-        });
-
-        if (!winner) {
+        if (!this.props.gameState.winner) {
             return (
                 <div className="gameInfo">
                     <h3>
@@ -37,8 +26,8 @@ export default class CheckersGameInfo extends React.Component {
         } else {
             return (
                 <div className="gameInfo">
-                    <h3 style={{color:winner.color,textTransform:'uppercase'}}>
-                        {winner.name} WINS!!!! <Link to="/">New game</Link>
+                    <h3 style={{color:this.props.gameState.winner.color,textTransform:'uppercase'}}>
+                        {this.props.gameState.winner.name} WINS!!!! <a href="#" onClick={this.newGame}>New game</a>
                     </h3>
                 </div>
             );
@@ -48,6 +37,5 @@ export default class CheckersGameInfo extends React.Component {
 
 CheckersGameInfo.propTypes = {
     gameState: React.PropTypes.object.isRequired,
-    determineValidMovesForPlayer: React.PropTypes.func.isRequired,
     reset: React.PropTypes.func.isRequired
 };

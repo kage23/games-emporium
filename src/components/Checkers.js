@@ -55,7 +55,8 @@ export default class Checkers extends React.Component {
             currentTurn: -1,
             highlightedToken: '',
             highlightedCells: [],
-            continuingAfterJump: false
+            continuingAfterJump: false,
+            winner: undefined
         };
     }
 
@@ -81,12 +82,18 @@ export default class Checkers extends React.Component {
             currentTurn: 0,
             highlightedToken: '',
             highlightedCells: [],
-            continuingAfterJump: false
+            continuingAfterJump: false,
+            winner: undefined
         });
     }
 
     newTurn() {
-        var newTurn = this.state.currentTurn + 1;
+        var winner,
+            newTurn = this.state.currentTurn + 1;
+
+        if (this.isPlayerTheLoser(this.state.players[newTurn % 2])) {
+            winner = this.state.players[(newTurn + 1) % 2];
+        }
 
         if (this.state.config.debug) console.log('Starting turn',newTurn);
 
@@ -94,12 +101,19 @@ export default class Checkers extends React.Component {
             currentTurn: newTurn,
             highlightedToken: '',
             highlightedCells: [],
-            continuingAfterJump: false
+            continuingAfterJump: false,
+            winner
         });
     }
 
     reset() {
-        this.setState({currentTurn:-1});
+        this.setState({currentTurn:-1,winner:false});
+    }
+
+    isPlayerTheLoser(player) {
+        var moves = this.determineValidMovesForPlayer(player);
+
+        return moves.length <= 0;
     }
 
     handleTokenClick(token) {
@@ -367,7 +381,6 @@ export default class Checkers extends React.Component {
                     newTurn={this.newTurn}
                     newGame={this.newGame}
                     reset={this.reset}
-                    determineValidMovesForPlayer={this.determineValidMovesForPlayer}
                     handleCellClick={this.handleCellClick}
                     handleTokenClick={this.handleTokenClick}
                     updatePlayer={this.updatePlayer}
