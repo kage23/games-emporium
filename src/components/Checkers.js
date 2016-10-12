@@ -37,6 +37,7 @@ export default class Checkers extends React.Component {
         this.determineValidMovesForPlayer = this.determineValidMovesForPlayer.bind(this);
         this.determineValidMovesForToken = this.determineValidMovesForToken.bind(this);
         this.updatePlayer = this.updatePlayer.bind(this);
+        this.updateConfig = this.updateConfig.bind(this);
 
         this.state = {
             players: [
@@ -371,6 +372,10 @@ export default class Checkers extends React.Component {
         this.setState({players});
     }
 
+    updateConfig(config) {
+        this.setState({config});
+    }
+
     render() {
         return (
             <div>
@@ -384,6 +389,7 @@ export default class Checkers extends React.Component {
                     handleCellClick={this.handleCellClick}
                     handleTokenClick={this.handleTokenClick}
                     updatePlayer={this.updatePlayer}
+                    updateConfig={this.updateConfig}
                     />
             </div>
         );

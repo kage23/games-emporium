@@ -35,6 +35,7 @@ export default class CheckersContainer extends React.Component {
                 <CheckersConfig
                     gameState={this.props.gameState}
                     updatePlayer={this.props.updatePlayer}
+                    updateConfig={this.props.updateConfig}
                     newGame={this.props.newGame}
                     />
             );
@@ -69,5 +70,6 @@ CheckersContainer.propTypes = {
     reset: React.PropTypes.func.isRequired,
     handleCellClick: React.PropTypes.func.isRequired,
     handleTokenClick: React.PropTypes.func.isRequired,
-    updatePlayer: React.PropTypes.func.isRequired
+    updatePlayer: React.PropTypes.func.isRequired,
+    updateConfig: React.PropTypes.func.isRequired
 };

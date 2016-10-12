@@ -4,37 +4,52 @@ export default class CheckersConfig extends React.Component {
     constructor() {
         super();
 
-        this.onClick = this.onClick.bind(this);
-        this.onFormChange = this.onFormChange.bind(this);
+        this.playGame = this.playGame.bind(this);
+        this.onPlayerChange = this.onPlayerChange.bind(this);
+        this.boardConfig = this.boardConfig.bind(this);
     }
 
-    onClick(evt) {
+    playGame(evt) {
         var configIsValid = true,
             allowedColorDistance = 225,
             player1Color = this.colorIsValid(this.props.gameState.players[0].color),
-            player2Color = this.colorIsValid(this.props.gameState.players[1].color);
+            player2Color = this.colorIsValid(this.props.gameState.players[1].color),
+            boardColor = this.colorIsValid(this.props.gameState.config.color);
 
         evt.preventDefault();
 
         if (this.props.gameState.players[0].name === this.props.gameState.players[1].name) {
             alert('The players must have different names!');
             configIsValid = false;
-        } else if (!player1Color) {
+        }
+        if (!player1Color) {
             alert(this.props.gameState.players[0].name + ' must have a valid color!');
             configIsValid = false;
-        } else if (!player2Color) {
+        }
+        if (!player2Color) {
             alert(this.props.gameState.players[1].name + ' must have a valid color!');
             configIsValid = false;
-        } else if (this.colorDistance(player1Color, player2Color) < allowedColorDistance) {
+        }
+        if (this.colorDistance(player1Color, player2Color) < allowedColorDistance) {
             alert('The players must have sufficiently different colors!');
             configIsValid = false;
-        } else if (this.colorDistance(player1Color, this.colorIsValid(this.props.gameState.config.color)) < allowedColorDistance) {
-            alert(this.props.gameState.players[0].name +
-                '\'s color is too close to the board color (' + this.props.gameState.config.color + ')!');
+        }
+        if (!boardColor) {
+            alert('The board color must be valid!');
             configIsValid = false;
-        } else if (this.colorDistance(player2Color, this.colorIsValid(this.props.gameState.config.color)) < allowedColorDistance) {
+        }
+        if (this.colorDistance(boardColor, this.colorIsValid('white')) < allowedColorDistance) {
+            alert('The board color is too close to white!');
+            configIsValid = false;
+        }
+        if (this.colorDistance(player1Color, this.colorIsValid(boardColor)) < allowedColorDistance) {
+            alert(this.props.gameState.players[0].name +
+                '\'s color is too close to the board color (' + boardColor + ')!');
+            configIsValid = false;
+        }
+        if (this.colorDistance(player2Color, this.colorIsValid(boardColor)) < allowedColorDistance) {
             alert(this.props.gameState.players[1].name +
-                '\'s color is too close to the board color (' + this.props.gameState.config.color + ')!');
+                '\'s color is too close to the board color (' + boardColor + ')!');
             configIsValid = false;
         }
 
@@ -43,7 +58,16 @@ export default class CheckersConfig extends React.Component {
         }
     }
 
-    onFormChange(evt) {
+    boardConfig(evt) {
+        var configName = evt.target.dataset.config,
+            newConfigObject = Object.assign({}, this.props.gameState.config);
+
+        newConfigObject[configName] = evt.target.value;
+
+        this.props.updateConfig(newConfigObject);
+    }
+
+    onPlayerChange(evt) {
         var newPlayerObject, playerIndex;
 
         playerIndex = parseInt(evt.target.dataset.playerId, 10);
@@ -124,7 +148,7 @@ export default class CheckersConfig extends React.Component {
                        data-player-data="name"
                        type="text"
                        value={this.props.gameState.players[0].name}
-                       onChange={this.onFormChange}
+                       onChange={this.onPlayerChange}
                        />
 
                 <label htmlFor="player1color">Input CSS-friendly Color</label>
@@ -133,7 +157,7 @@ export default class CheckersConfig extends React.Component {
                        data-player-data="color"
                        type="text"
                        value={this.props.gameState.players[0].color}
-                       onChange={this.onFormChange}
+                       onChange={this.onPlayerChange}
                        />
 
                 <h4>Second Player</h4>
@@ -144,7 +168,7 @@ export default class CheckersConfig extends React.Component {
                        data-player-data="name"
                        type="text"
                        value={this.props.gameState.players[1].name}
-                       onChange={this.onFormChange}
+                       onChange={this.onPlayerChange}
                        />
 
                 <label htmlFor="player2color">Input CSS-friendly Color</label>
@@ -153,10 +177,19 @@ export default class CheckersConfig extends React.Component {
                        data-player-data="color"
                        type="text"
                        value={this.props.gameState.players[1].color}
-                       onChange={this.onFormChange}
+                       onChange={this.onPlayerChange}
                        />
 
-                <a href="#" onClick={this.onClick}>Play the game!</a>
+                <h4>Board config</h4>
+                <label htmlFor="boardColor">Board Color</label>
+                <input id="boardColor"
+                       type="text"
+                       value={this.props.gameState.config.color}
+                       data-config="color"
+                       onChange={this.boardConfig}
+                       />
+
+                <a href="#" onClick={this.playGame}>Play the game!</a>
             </div>
         );
     }
@@ -165,5 +198,6 @@ export default class CheckersConfig extends React.Component {
 CheckersConfig.propTypes = {
     gameState: React.PropTypes.object.isRequired,
     newGame: React.PropTypes.func.isRequired,
-    updatePlayer: React.PropTypes.func.isRequired
+    updatePlayer: React.PropTypes.func.isRequired,
+    updateConfig: React.PropTypes.func.isRequired
 };
