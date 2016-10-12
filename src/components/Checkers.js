@@ -108,6 +108,7 @@ export default class Checkers extends React.Component {
             currentPlayer = this.state.players[this.state.currentTurn % 2];
             validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
             selectedMove = validMovesForPlayer[Math.floor(Math.random() * validMovesForPlayer.length)];
+            // eslint-disable-next-line
             validMovesForToken = validMovesForPlayer.filter(move => {
                 if (move.from === selectedMove.from)
                     return true;

@@ -175,6 +175,7 @@ export default class CheckersConfig extends React.Component {
                        type="text"
                        value={this.props.gameState.players[1].name}
                        onChange={this.onPlayerChange}
+                       disabled={this.props.gameState.players[1].computer}
                        />
 
                 <label>
