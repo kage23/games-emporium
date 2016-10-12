@@ -28,11 +28,13 @@ export default class Checkers extends React.Component {
         players: [
             {
                 name: 'Player 1',
+                computer: false,
                 color: 'red',
                 tokens: []
             },
             {
                 name: 'Player 2',
+                computer: false,
                 color: 'black',
                 tokens: []
             }
@@ -58,6 +60,7 @@ export default class Checkers extends React.Component {
 
             return {
                 name: player.name,
+                computer: player.computer,
                 color: player.color,
                 tokens
             };
@@ -92,6 +95,39 @@ export default class Checkers extends React.Component {
             continuingAfterJump: false,
             winner
         });
+
+        if (!winner && this.state.players[newTurn % 2].computer) this.computerTurn();
+    };
+
+    computerTurn = () => {
+        var currentPlayer, validMovesForPlayer, selectedMove, validMovesForToken;
+
+        var executeTurn = () => {
+            // Callback 1
+            // 1s after the live player completes their turn, we select a move and highlight the token and its valid squares
+            currentPlayer = this.state.players[this.state.currentTurn % 2];
+            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
+            selectedMove = validMovesForPlayer[Math.floor(Math.random() * validMovesForPlayer.length)];
+            validMovesForToken = validMovesForPlayer.filter(move => {
+                if (move.from === selectedMove.from)
+                    return true;
+            });
+
+            this.setState({
+                selectedToken: selectedMove.from
+            });
+
+            this.highlightValidMovesForToken(validMovesForToken);
+
+            setTimeout(() => {
+                // Callback 2
+                // 1s after highlighting the token, we move it
+                this.moveToken(selectedMove);
+            }, 1000); // Callback 2
+        };
+
+        if (this.state.continuingAfterJump) executeTurn();
+        else setTimeout(executeTurn, 1000); // Callback 1
     };
 
     reset = () => {
@@ -149,12 +185,10 @@ export default class Checkers extends React.Component {
     };
 
     handleCellClick = (cell) => {
-        var move, newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
-            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, cellIsValid,
+        var move,
+            cellIsValid,
             currentPlayer = this.state.players[this.state.currentTurn % 2],
-            opponent = this.state.players[(this.state.currentTurn + 1) % 2],
-            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
-            newValidMoves, continueTurn = false;
+            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
 
         // Check if the clicked cell is a valid move
         cellIsValid = validMovesForPlayer.reduce((val, move) => {
@@ -170,70 +204,82 @@ export default class Checkers extends React.Component {
                 return (move.from === this.state.selectedToken && move.to === cell.props.id);
             })[0];
 
+            this.moveToken(move);
+        }
+    };
+
+    moveToken = (move) => {
+        var newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
+            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves,
+            continueTurn = false,
+            currentPlayer = this.state.players[this.state.currentTurn % 2],
+            opponent = this.state.players[(this.state.currentTurn + 1) % 2];
+
             if (this.state.config.debug) console.log('Moving...',move);
 
-            // Find the correct token object from the player's token array
-            currentPlayer.tokens.forEach((token, tokenIndex) => {
-                if (token.position === this.state.selectedToken) {
-                    newTokenIndex = tokenIndex;
-                }
+        // Find the correct token object from the player's token array
+        currentPlayer.tokens.forEach((token, tokenIndex) => {
+            if (token.position === this.state.selectedToken) {
+                newTokenIndex = tokenIndex;
+            }
+        });
+
+        // Create a new token object with the new position
+        newTokenObject = Object.assign({}, currentPlayer.tokens[newTokenIndex]);
+        newTokenObject.position = move.to;
+
+        // Determine if the token should get kinged
+        moveToRow = parseInt(move.to.substr(move.to.indexOf('r') + 1), 10);
+        if ((this.state.currentTurn % 2 === 0 && moveToRow === 0) ||
+            (this.state.currentTurn % 2 === 1 && moveToRow === this.state.config.boardSize - 1)) {
+            newTokenObject.king = true;
+        }
+
+        // Create a new token array with the token in the new position and king status
+        newPlayerTokensArray = currentPlayer.tokens;
+        newPlayerTokensArray.splice(newTokenIndex, 1, newTokenObject);
+
+        // Create a new player object with the new token array
+        newPlayerObject = Object.assign({}, currentPlayer, {tokens: newPlayerTokensArray});
+
+        // If it was a jump, remove the jumped piece from the opponent's tokens array
+        if (move.jump) {
+            // Find the index of the jumped token
+            opponent.tokens.forEach((token, tokenIndex) => {
+                if (token.position === move.jump) jumpedTokenIndex = tokenIndex;
             });
 
-            // Create a new token object with the new position
-            newTokenObject = Object.assign({}, currentPlayer.tokens[newTokenIndex]);
-            newTokenObject.position = move.to;
-
-            // Determine if the token should get kinged
-            moveToRow = parseInt(move.to.substr(move.to.indexOf('r') + 1), 10);
-            if ((this.state.currentTurn % 2 === 0 && moveToRow === 0) ||
-                (this.state.currentTurn % 2 === 1 && moveToRow === this.state.config.boardSize - 1)) {
-                newTokenObject.king = true;
-            }
-
-            // Create a new token array with the token in the new position and king status
-            newPlayerTokensArray = currentPlayer.tokens;
-            newPlayerTokensArray.splice(newTokenIndex, 1, newTokenObject);
+            // Create a new token array without the jumped piece
+            newOpponentTokensArray = opponent.tokens;
+            newOpponentTokensArray.splice(jumpedTokenIndex, 1);
 
             // Create a new player object with the new token array
-            newPlayerObject = Object.assign({}, currentPlayer, {tokens: newPlayerTokensArray});
+            newOpponentObject = Object.assign({}, opponent, {tokens: newOpponentTokensArray});
+        }
 
-            // If it was a jump, remove the jumped piece from the opponent's tokens array
-            if (move.jump) {
-                // Find the index of the jumped token
-                opponent.tokens.forEach((token, tokenIndex) => {
-                    if (token.position === move.jump) jumpedTokenIndex = tokenIndex;
+        // Create a new players array
+        newPlayersArray = new Array(2);
+        newPlayersArray[this.state.currentTurn % 2] = newPlayerObject;
+        newPlayersArray[(this.state.currentTurn + 1) % 2] = move.jump ? newOpponentObject : opponent;
+
+        this.setState({players: newPlayersArray});
+
+        // If it was a jump, check for more jumps and continue the turn
+        if (move.jump) {
+            newValidMoves = this.determineValidMovesForPlayer(currentPlayer, newTokenObject);
+            if (newValidMoves.length && newValidMoves.jumpMoves) {
+                continueTurn = true;
+                this.highlightValidMovesForToken(newValidMoves);
+                this.setState({
+                    selectedToken: newTokenObject.position,
+                    continuingAfterJump: true
                 });
 
-                // Create a new token array without the jumped piece
-                newOpponentTokensArray = opponent.tokens;
-                newOpponentTokensArray.splice(jumpedTokenIndex, 1);
-
-                // Create a new player object with the new token array
-                newOpponentObject = Object.assign({}, opponent, {tokens: newOpponentTokensArray});
+                if (currentPlayer.computer) this.computerTurn();
             }
-
-            // Create a new players array
-            newPlayersArray = new Array(2);
-            newPlayersArray[this.state.currentTurn % 2] = newPlayerObject;
-            newPlayersArray[(this.state.currentTurn + 1) % 2] = move.jump ? newOpponentObject : opponent;
-
-            this.setState({players: newPlayersArray});
-
-            // If it was a jump, check for more jumps and continue the turn
-            if (move.jump) {
-                newValidMoves = this.determineValidMovesForPlayer(currentPlayer, newTokenObject);
-                if (newValidMoves.length && newValidMoves.jumpMoves) {
-                    continueTurn = true;
-                    this.highlightValidMovesForToken(newValidMoves);
-                    this.setState({
-                        selectedToken: newTokenObject.position,
-                        continuingAfterJump: true
-                    });
-                }
-            }
-
-            if (! continueTurn) this.newTurn();
         }
+
+        if (! continueTurn) this.newTurn();
     };
 
     isCellOccupied = (col, row) => {

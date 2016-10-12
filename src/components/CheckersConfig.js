@@ -84,6 +84,13 @@ export default class CheckersConfig extends React.Component {
         this.props.updatePlayer(newPlayerObject, playerIndex);
     };
 
+    onAIToggle = () => {
+        var newPlayerObject = Object.assign({}, this.props.gameState.players[1]);
+        newPlayerObject.computer = ! newPlayerObject.computer;
+        if (newPlayerObject.computer) newPlayerObject.name = 'Rando Checkrissian';
+        this.props.updatePlayer(newPlayerObject, 1);
+    };
+
     colorIsValid(stringToTest) {
         // From http://stackoverflow.com/a/16994164
         // and http://stackoverflow.com/a/1573154
@@ -169,6 +176,13 @@ export default class CheckersConfig extends React.Component {
                        value={this.props.gameState.players[1].name}
                        onChange={this.onPlayerChange}
                        />
+
+                <label>
+                    <input type="checkbox"
+                           onChange={this.onAIToggle}
+                           />
+                    Activate the AI!!!
+                </label>
 
                 <label htmlFor="player2color">Input CSS-friendly Color</label>
                 <input id="player2color"
