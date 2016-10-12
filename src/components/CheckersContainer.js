@@ -14,7 +14,8 @@ export default class CheckersContainer extends React.Component {
 
             players.forEach(player => {
                 player.tokens.forEach(token => {
-                    var highlighted = token.position === this.props.gameState.highlightedToken;
+                    var highlighted = token.position === this.props.gameState.selectedToken ||
+                        this.props.gameState.highlightedTokens.indexOf(token.position) > -1;
 
                     tokenArray.push((
                         <Token boardSize={this.props.gameState.config.boardSize} type='circle' color={player.color}

@@ -31,7 +31,8 @@ export default class Checkers extends React.Component {
         this.newTurn = this.newTurn.bind(this);
         this.reset = this.reset.bind(this);
         this.handleTokenClick = this.handleTokenClick.bind(this);
-        this.highlightCells = this.highlightCells.bind(this);
+        this.highlightValidTokens = this.highlightValidTokens.bind(this);
+        this.highlightValidMovesForToken = this.highlightValidMovesForToken.bind(this);
         this.handleCellClick = this.handleCellClick.bind(this);
         this.isCellOccupied = this.isCellOccupied.bind(this);
         this.determineValidMovesForPlayer = this.determineValidMovesForPlayer.bind(this);
@@ -54,7 +55,8 @@ export default class Checkers extends React.Component {
             ],
             config: config,
             currentTurn: -1,
-            highlightedToken: '',
+            selectedToken: '',
+            highlightedTokens: [],
             highlightedCells: [],
             continuingAfterJump: false,
             winner: undefined
@@ -81,8 +83,9 @@ export default class Checkers extends React.Component {
         this.setState({
             players,
             currentTurn: 0,
-            highlightedToken: '',
+            selectedToken: '',
             highlightedCells: [],
+            highlightedTokens: [],
             continuingAfterJump: false,
             winner: undefined
         });
@@ -100,8 +103,9 @@ export default class Checkers extends React.Component {
 
         this.setState({
             currentTurn: newTurn,
-            highlightedToken: '',
+            selectedToken: '',
             highlightedCells: [],
+            highlightedTokens: [],
             continuingAfterJump: false,
             winner
         });
@@ -127,17 +131,29 @@ export default class Checkers extends React.Component {
             });
 
         if (validMovesForToken.length && ! this.state.continuingAfterJump) {
-            this.highlightCells(validMovesForToken);
+            this.highlightValidMovesForToken(validMovesForToken);
 
             if (this.state.config.debug) console.log('Highlighting token',token);
 
             this.setState({
-                highlightedToken: token.props.position
+                selectedToken: token.props.position
             });
+        } else if (validMovesForToken.length === 0) {
+            this.highlightValidTokens(validMovesForPlayer);
+
+            setTimeout(() => { this.highlightValidTokens([])}, 150);
         }
     }
 
-    highlightCells(validMoves) {
+    highlightValidTokens(validMoves) {
+        var highlightedTokens = validMoves.map(move => {
+            return move.from;
+        });
+
+        this.setState({highlightedTokens});
+    }
+
+    highlightValidMovesForToken(validMoves) {
         var highlightedCells;
 
         highlightedCells = validMoves.map(move => {
@@ -168,14 +184,14 @@ export default class Checkers extends React.Component {
 
             // Find the move corresponding to the selected token and cell
             move = validMovesForPlayer.filter(move => {
-                return (move.from === this.state.highlightedToken && move.to === cell.props.id);
+                return (move.from === this.state.selectedToken && move.to === cell.props.id);
             })[0];
 
             if (this.state.config.debug) console.log('Moving...',move);
 
             // Find the correct token object from the player's token array
             currentPlayer.tokens.forEach((token, tokenIndex) => {
-                if (token.position === this.state.highlightedToken) {
+                if (token.position === this.state.selectedToken) {
                     newTokenIndex = tokenIndex;
                 }
             });
@@ -225,9 +241,9 @@ export default class Checkers extends React.Component {
                 newValidMoves = this.determineValidMovesForPlayer(currentPlayer, newTokenObject);
                 if (newValidMoves.length && newValidMoves.jumpMoves) {
                     continueTurn = true;
-                    this.highlightCells(newValidMoves);
+                    this.highlightValidMovesForToken(newValidMoves);
                     this.setState({
-                        highlightedToken: newTokenObject.position,
+                        selectedToken: newTokenObject.position,
                         continuingAfterJump: true
                     });
                 }
