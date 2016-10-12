@@ -1,15 +1,17 @@
 import React from 'react'
 
 export default class Cell extends React.Component {
-    constructor() {
-        super();
+    static propTypes = {
+        boardSize: React.PropTypes.number.isRequired,
+        id: React.PropTypes.string.isRequired,
+        highlighted: React.PropTypes.bool.isRequired,
+        handleClick: React.PropTypes.func.isRequired,
+        style: React.PropTypes.object
+    };
 
-        this.handleClick = this.handleClick.bind(this);
-    }
-
-    handleClick() {
+    handleClick = () => {
         this.props.handleClick(this);
-    }
+    };
 
     render() {
         var style = Object.assign({}, this.props.style),
@@ -30,11 +32,3 @@ export default class Cell extends React.Component {
         );
     }
 }
-
-Cell.propTypes = {
-    boardSize: React.PropTypes.number.isRequired,
-    id: React.PropTypes.string.isRequired,
-    highlighted: React.PropTypes.bool.isRequired,
-    handleClick: React.PropTypes.func.isRequired,
-    style: React.PropTypes.object
-};

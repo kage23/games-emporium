@@ -2,6 +2,14 @@ import React from 'react'
 import Cell from './Cell'
 
 export default class CheckersBoard extends React.Component {
+    static propTypes = {
+        size: React.PropTypes.number.isRequired,
+        color: React.PropTypes.string.isRequired,
+        secondaryColor: React.PropTypes.string.isRequired,
+        highlightedCells: React.PropTypes.array.isRequired,
+        handleCellClick: React.PropTypes.func.isRequired
+    };
+
     render() {
         function generateCellArray (currentArray, props) {
             var id, col, row, highlighted = false, newStyle = {}, count = props.size * props.size;
@@ -41,11 +49,3 @@ export default class CheckersBoard extends React.Component {
         );
     }
 }
-
-CheckersBoard.propTypes = {
-    size: React.PropTypes.number.isRequired,
-    color: React.PropTypes.string.isRequired,
-    secondaryColor: React.PropTypes.string.isRequired,
-    highlightedCells: React.PropTypes.array.isRequired,
-    handleCellClick: React.PropTypes.func.isRequired
-};

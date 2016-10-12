@@ -1,16 +1,15 @@
 import React from 'react'
 
 export default class CheckersGameInfo extends React.Component {
-    constructor() {
-        super();
+    static propTypes = {
+        gameState: React.PropTypes.object.isRequired,
+        reset: React.PropTypes.func.isRequired
+    };
 
-        this.newGame = this.newGame.bind(this);
-    }
-
-    newGame(evt) {
+    newGame = (evt) => {
         evt.preventDefault();
         this.props.reset();
-    }
+    };
 
     render() {
         var currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2]
@@ -34,8 +33,3 @@ export default class CheckersGameInfo extends React.Component {
         }
     }
 }
-
-CheckersGameInfo.propTypes = {
-    gameState: React.PropTypes.object.isRequired,
-    reset: React.PropTypes.func.isRequired
-};

@@ -6,6 +6,17 @@ import CheckersBoard from './CheckersBoard'
 import Token from './Token'
 
 export default class CheckersContainer extends React.Component {
+    static propTypes = {
+        gameState: React.PropTypes.object.isRequired,
+        newTurn: React.PropTypes.func.isRequired,
+        newGame: React.PropTypes.func.isRequired,
+        reset: React.PropTypes.func.isRequired,
+        handleCellClick: React.PropTypes.func.isRequired,
+        handleTokenClick: React.PropTypes.func.isRequired,
+        updatePlayer: React.PropTypes.func.isRequired,
+        updateConfig: React.PropTypes.func.isRequired
+    };
+
     render() {
         var html, tokens;
 
@@ -63,14 +74,3 @@ export default class CheckersContainer extends React.Component {
         return html;
     }
 }
-
-CheckersContainer.propTypes = {
-    gameState: React.PropTypes.object.isRequired,
-    newTurn: React.PropTypes.func.isRequired,
-    newGame: React.PropTypes.func.isRequired,
-    reset: React.PropTypes.func.isRequired,
-    handleCellClick: React.PropTypes.func.isRequired,
-    handleTokenClick: React.PropTypes.func.isRequired,
-    updatePlayer: React.PropTypes.func.isRequired,
-    updateConfig: React.PropTypes.func.isRequired
-};

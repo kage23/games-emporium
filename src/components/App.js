@@ -1,7 +1,7 @@
 import React from 'react'
-import './App.css'
+import '../App.css'
 
-import SiteHeader from './components/SiteHeader'
+import SiteHeader from './SiteHeader'
 
 export default class App extends React.Component {
     render() {

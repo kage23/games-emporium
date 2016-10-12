@@ -24,46 +24,29 @@ var config = {
 };
 
 export default class Checkers extends React.Component {
-    constructor() {
-        super();
+    state = {
+        players: [
+            {
+                name: 'Player 1',
+                color: 'red',
+                tokens: []
+            },
+            {
+                name: 'Player 2',
+                color: 'black',
+                tokens: []
+            }
+        ],
+        config: config,
+        currentTurn: -1,
+        selectedToken: '',
+        highlightedTokens: [],
+        highlightedCells: [],
+        continuingAfterJump: false,
+        winner: undefined
+    };
 
-        this.newGame = this.newGame.bind(this);
-        this.newTurn = this.newTurn.bind(this);
-        this.reset = this.reset.bind(this);
-        this.handleTokenClick = this.handleTokenClick.bind(this);
-        this.highlightValidTokens = this.highlightValidTokens.bind(this);
-        this.highlightValidMovesForToken = this.highlightValidMovesForToken.bind(this);
-        this.handleCellClick = this.handleCellClick.bind(this);
-        this.isCellOccupied = this.isCellOccupied.bind(this);
-        this.determineValidMovesForPlayer = this.determineValidMovesForPlayer.bind(this);
-        this.determineValidMovesForToken = this.determineValidMovesForToken.bind(this);
-        this.updatePlayer = this.updatePlayer.bind(this);
-        this.updateConfig = this.updateConfig.bind(this);
-
-        this.state = {
-            players: [
-                {
-                    name: 'Player 1',
-                    color: 'red',
-                    tokens: []
-                },
-                {
-                    name: 'Player 2',
-                    color: 'black',
-                    tokens: []
-                }
-            ],
-            config: config,
-            currentTurn: -1,
-            selectedToken: '',
-            highlightedTokens: [],
-            highlightedCells: [],
-            continuingAfterJump: false,
-            winner: undefined
-        };
-    }
-
-    newGame() {
+    newGame = () => {
         var players = this.state.players.map((player, playerIndex) => {
             var tokens = this.state.config.startingPositions[playerIndex].map(position => {
                 return {
@@ -89,9 +72,9 @@ export default class Checkers extends React.Component {
             continuingAfterJump: false,
             winner: undefined
         });
-    }
+    };
 
-    newTurn() {
+    newTurn = () => {
         var winner,
             newTurn = this.state.currentTurn + 1;
 
@@ -109,11 +92,11 @@ export default class Checkers extends React.Component {
             continuingAfterJump: false,
             winner
         });
-    }
+    };
 
-    reset() {
+    reset = () => {
         this.setState({currentTurn:-1,winner:false});
-    }
+    };
 
     isPlayerTheLoser(player) {
         var moves = this.determineValidMovesForPlayer(player);
@@ -121,7 +104,7 @@ export default class Checkers extends React.Component {
         return moves.length <= 0;
     }
 
-    handleTokenClick(token) {
+    handleTokenClick = (token) => {
         if (this.state.config.debug) console.log('tokenClick!',token.props.position);
 
         var currentPlayer = this.state.players[this.state.currentTurn % 2],
@@ -143,17 +126,17 @@ export default class Checkers extends React.Component {
 
             setTimeout(() => { this.highlightValidTokens([])}, 150);
         }
-    }
+    };
 
-    highlightValidTokens(validMoves) {
+    highlightValidTokens = (validMoves) => {
         var highlightedTokens = validMoves.map(move => {
             return move.from;
         });
 
         this.setState({highlightedTokens});
-    }
+    };
 
-    highlightValidMovesForToken(validMoves) {
+    highlightValidMovesForToken = (validMoves) => {
         var highlightedCells;
 
         highlightedCells = validMoves.map(move => {
@@ -163,9 +146,9 @@ export default class Checkers extends React.Component {
         if (this.state.config.debug) console.log('Highlighting cells',highlightedCells);
 
         this.setState({highlightedCells: highlightedCells});
-    }
+    };
 
-    handleCellClick(cell) {
+    handleCellClick = (cell) => {
         var move, newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
             newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, cellIsValid,
             currentPlayer = this.state.players[this.state.currentTurn % 2],
@@ -251,9 +234,9 @@ export default class Checkers extends React.Component {
 
             if (! continueTurn) this.newTurn();
         }
-    }
+    };
 
-    isCellOccupied(col, row) {
+    isCellOccupied = (col, row) => {
         var cellIsOccupied = false,
             cellId = 'c' + col + 'r' + row;
 
@@ -275,9 +258,9 @@ export default class Checkers extends React.Component {
         }
 
         return cellIsOccupied;
-    }
+    };
 
-    determineValidMovesForPlayer(player, token) {
+    determineValidMovesForPlayer = (player, token) => {
         var validMovesForPlayer = [], jump = false, filteredValidMovesForPlayer = [];
 
         if (!token) {
@@ -310,9 +293,9 @@ export default class Checkers extends React.Component {
         }
 
         return jump ? filteredValidMovesForPlayer : validMovesForPlayer;
-    }
+    };
 
-    determineValidMovesForToken(token) {
+    determineValidMovesForToken = (token) => {
         var tokenOwner = parseInt(token.id[0], 10),
             currentCol = parseInt(token.position[token.position.indexOf('c') + 1], 10),
             currentRow = parseInt(token.position[token.position.indexOf('r') + 1], 10),
@@ -378,19 +361,19 @@ export default class Checkers extends React.Component {
 
         if (validMoves.length) return validMoves;
         else return [];
-    }
+    };
 
-    updatePlayer(player, playerIndex) {
+    updatePlayer = (player, playerIndex) => {
         var players = this.state.players;
 
         players[playerIndex] = player;
 
         this.setState({players});
-    }
+    };
 
-    updateConfig(config) {
+    updateConfig = (config) => {
         this.setState({config});
-    }
+    };
 
     render() {
         return (

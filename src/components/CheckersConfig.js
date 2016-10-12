@@ -1,15 +1,14 @@
 import React from 'react'
 
 export default class CheckersConfig extends React.Component {
-    constructor() {
-        super();
+    static propTypes = {
+        gameState: React.PropTypes.object.isRequired,
+        newGame: React.PropTypes.func.isRequired,
+        updatePlayer: React.PropTypes.func.isRequired,
+        updateConfig: React.PropTypes.func.isRequired
+    };
 
-        this.playGame = this.playGame.bind(this);
-        this.onPlayerChange = this.onPlayerChange.bind(this);
-        this.boardConfig = this.boardConfig.bind(this);
-    }
-
-    playGame(evt) {
+    playGame = (evt) => {
         var configIsValid = true,
             allowedColorDistance = 225,
             player1Color = this.colorIsValid(this.props.gameState.players[0].color),
@@ -56,18 +55,18 @@ export default class CheckersConfig extends React.Component {
         if (configIsValid) {
             this.props.newGame();
         }
-    }
+    };
 
-    boardConfig(evt) {
+    boardConfig = (evt) => {
         var configName = evt.target.dataset.config,
             newConfigObject = Object.assign({}, this.props.gameState.config);
 
         newConfigObject[configName] = evt.target.value;
 
         this.props.updateConfig(newConfigObject);
-    }
+    };
 
-    onPlayerChange(evt) {
+    onPlayerChange = (evt) => {
         var newPlayerObject, playerIndex;
 
         playerIndex = parseInt(evt.target.dataset.playerId, 10);
@@ -83,7 +82,7 @@ export default class CheckersConfig extends React.Component {
         newPlayerObject[evt.target.dataset.playerData] = evt.target.value;
 
         this.props.updatePlayer(newPlayerObject, playerIndex);
-    }
+    };
 
     colorIsValid(stringToTest) {
         // From http://stackoverflow.com/a/16994164
@@ -194,10 +193,3 @@ export default class CheckersConfig extends React.Component {
         );
     }
 }
-
-CheckersConfig.propTypes = {
-    gameState: React.PropTypes.object.isRequired,
-    newGame: React.PropTypes.func.isRequired,
-    updatePlayer: React.PropTypes.func.isRequired,
-    updateConfig: React.PropTypes.func.isRequired
-};

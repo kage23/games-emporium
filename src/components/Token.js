@@ -1,15 +1,19 @@
 import React from 'react'
 
 export default class Token extends React.Component {
-    constructor() {
-        super();
+    static propTypes = {
+        boardSize: React.PropTypes.number.isRequired,
+        type: React.PropTypes.string.isRequired,
+        color: React.PropTypes.string.isRequired,
+        handleClick: React.PropTypes.func.isRequired,
+        position: React.PropTypes.string.isRequired,
+        king: React.PropTypes.bool.isRequired,
+        highlighted: React.PropTypes.bool.isRequired
+    };
 
-        this.handleClick = this.handleClick.bind(this);
-    }
-
-    handleClick() {
+    handleClick = () => {
         this.props.handleClick(this);
-    }
+    };
 
     render() {
         var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token', kingSpan;
@@ -40,13 +44,3 @@ export default class Token extends React.Component {
         );
     }
 }
-
-Token.propTypes = {
-    boardSize: React.PropTypes.number.isRequired,
-    type: React.PropTypes.string.isRequired,
-    color: React.PropTypes.string.isRequired,
-    handleClick: React.PropTypes.func.isRequired,
-    position: React.PropTypes.string.isRequired,
-    king: React.PropTypes.bool.isRequired,
-    highlighted: React.PropTypes.bool.isRequired
-};
