@@ -84,9 +84,9 @@ export default class CheckersConfig extends React.Component {
         this.props.updatePlayer(newPlayerObject, playerIndex);
     };
 
-    onAIToggle = () => {
+    onAIToggle = (evt) => {
         var newPlayerObject = Object.assign({}, this.props.gameState.players[1]);
-        newPlayerObject.computer = ! newPlayerObject.computer;
+        newPlayerObject.computer = evt.target.checked;
         if (newPlayerObject.computer) newPlayerObject.name = 'Rando Checkrissian';
         this.props.updatePlayer(newPlayerObject, 1);
     };
@@ -180,6 +180,7 @@ export default class CheckersConfig extends React.Component {
 
                 <label>
                     <input type="checkbox"
+                           checked={this.props.gameState.players[1].computer}
                            onChange={this.onAIToggle}
                            />
                     Activate the AI!!!
