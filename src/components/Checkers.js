@@ -214,7 +214,7 @@ export default class Checkers extends React.Component {
     moveToken = (move) => {
         var newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
             newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves,
-            continueTurn = false,
+            continueTurn = false, tokenGotKinged = false,
             currentPlayer = this.state.players[this.state.currentTurn % 2],
             opponent = this.state.players[(this.state.currentTurn + 1) % 2];
 
@@ -236,6 +236,7 @@ export default class Checkers extends React.Component {
         if ((this.state.currentTurn % 2 === 0 && moveToRow === 0) ||
             (this.state.currentTurn % 2 === 1 && moveToRow === this.state.config.boardSize - 1)) {
             newTokenObject.king = true;
+            tokenGotKinged = true;
         }
 
         // Create a new token array with the token in the new position and king status
@@ -267,8 +268,8 @@ export default class Checkers extends React.Component {
 
         this.setState({players: newPlayersArray});
 
-        // If it was a jump, check for more jumps and continue the turn
-        if (move.jump) {
+        // If it was a jump, check for more jumps and continue the turn, unless the piece was freshly kinged
+        if (move.jump && !tokenGotKinged) {
             newValidMoves = this.determineValidMovesForPlayer(currentPlayer, newTokenObject);
             if (newValidMoves.length && newValidMoves.jumpMoves) {
                 continueTurn = true;
