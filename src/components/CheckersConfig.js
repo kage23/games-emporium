@@ -85,10 +85,13 @@ export default class CheckersConfig extends React.Component {
     };
 
     onAIToggle = (evt) => {
-        var newPlayerObject = Object.assign({}, this.props.gameState.players[1]);
+        var playerIndex = parseInt(evt.target.dataset.player, 10),
+            newPlayerObject = Object.assign({}, this.props.gameState.players[playerIndex]);
         newPlayerObject.computer = evt.target.checked;
-        if (newPlayerObject.computer) newPlayerObject.name = 'Rando Checkrissian';
-        this.props.updatePlayer(newPlayerObject, 1);
+        if (newPlayerObject.computer && playerIndex === 0) newPlayerObject.name = 'Randomontgomery Burns';
+        else if (newPlayerObject.computer && playerIndex === 1) newPlayerObject.name = 'Rando Checkrissian';
+        else newPlayerObject.name = 'Player ' + (playerIndex + 1);
+        this.props.updatePlayer(newPlayerObject, playerIndex);
     };
 
     colorIsValid(stringToTest) {
@@ -157,6 +160,15 @@ export default class CheckersConfig extends React.Component {
                        onChange={this.onPlayerChange}
                        />
 
+                <label>
+                    <input type="checkbox"
+                           data-player={0}
+                           checked={this.props.gameState.players[0].computer}
+                           onChange={this.onAIToggle}
+                        />
+                    Activate the AI!!!
+                </label>
+
                 <label htmlFor="player1color">Input CSS-friendly Color</label>
                 <input id="player1color"
                        data-player-id={0}
@@ -180,6 +192,7 @@ export default class CheckersConfig extends React.Component {
 
                 <label>
                     <input type="checkbox"
+                           data-player={1}
                            checked={this.props.gameState.players[1].computer}
                            onChange={this.onAIToggle}
                            />

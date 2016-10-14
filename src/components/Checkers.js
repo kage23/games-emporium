@@ -75,6 +75,8 @@ export default class Checkers extends React.Component {
             continuingAfterJump: false,
             winner: undefined
         });
+
+        if (players[0].computer) this.computerTurn();
     };
 
     newTurn = () => {
