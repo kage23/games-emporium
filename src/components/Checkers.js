@@ -3,43 +3,43 @@ import React from 'react'
 import GameHeader from './GameHeader'
 import CheckersContainer from './CheckersContainer'
 
-var config = {
-    debug: false,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
-    boardSize: 8,                   // must be an even number. number of cells along each side of the board. board will be square.
-    color: '#555',                  // color of playable squares
-    secondaryColor: '#fff',         // color of alternate squares
-    defaultPlayerColors: ['red','black'],
-    startingPositions: [
-        [
-            'c0r7', 'c2r7', 'c4r7', 'c6r7',
-            'c1r6', 'c3r6', 'c5r6', 'c7r6',
-            'c0r5', 'c2r5', 'c4r5', 'c6r5'
-        ],
-        [
-            'c1r0', 'c3r0', 'c5r0', 'c7r0',
-            'c0r1', 'c2r1', 'c4r1', 'c6r1',
-            'c1r2', 'c3r2', 'c5r2', 'c7r2'
-        ]
-    ]
-};
-
 export default class Checkers extends React.Component {
+    config = {
+        debug: false,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
+        boardSize: 8,                   // must be an even number. number of cells along each side of the board. board will be square.
+        color: 'green',                  // color of playable squares
+        secondaryColor: '#fff',         // color of alternate squares
+        defaultPlayerColors: ['red','white'],
+        startingPositions: [
+            [
+                'c0r7', 'c2r7', 'c4r7', 'c6r7',
+                'c1r6', 'c3r6', 'c5r6', 'c7r6',
+                'c0r5', 'c2r5', 'c4r5', 'c6r5'
+            ],
+            [
+                'c1r0', 'c3r0', 'c5r0', 'c7r0',
+                'c0r1', 'c2r1', 'c4r1', 'c6r1',
+                'c1r2', 'c3r2', 'c5r2', 'c7r2'
+            ]
+        ]
+    };
+
     state = {
         players: [
             {
                 name: 'Player 1',
                 computer: false,
-                color: 'red',
+                color: this.config.defaultPlayerColors[0],
                 tokens: []
             },
             {
                 name: 'Player 2',
                 computer: false,
-                color: 'black',
+                color: this.config.defaultPlayerColors[1],
                 tokens: []
             }
         ],
-        config: config,
+        config: this.config,
         currentTurn: -1,
         selectedToken: '',
         highlightedTokens: [],
@@ -424,6 +424,56 @@ export default class Checkers extends React.Component {
         this.setState({config});
     };
 
+    colorToRGB(stringToTest) {
+        // From http://stackoverflow.com/a/16994164
+        // and http://stackoverflow.com/a/1573154
+        var colorIsValid, d, returnColor;
+
+        if (stringToTest === "") { colorIsValid = false; }
+        if (stringToTest === "inherit") { colorIsValid = false; }
+        if (stringToTest === "transparent") { colorIsValid = false; }
+
+        d = document.createElement("div");
+        d.style.color = "rgb(0, 0, 0)";
+        d.style.color = stringToTest;
+        if (d.style.color !== "rgb(0, 0, 0)") { colorIsValid = true; }
+        else {
+            d.style.color = "rgb(255, 255, 255)";
+            d.style.color = stringToTest;
+            colorIsValid = d.style.color !== "rgb(255, 255, 255)";
+        }
+
+        if (colorIsValid) {
+            document.body.appendChild(d);
+            returnColor = window.getComputedStyle(d).color;
+            document.body.removeChild(d);
+            return returnColor;
+        } else { return false; }
+    }
+
+    colorDistance(color1, color2) {
+        var color1RGB, color2RGB;
+
+        function colorStringToRGBArray (colorString) {
+            return colorString.match(/\d+/g).map(numStr => { return parseInt(numStr, 10); });
+        }
+
+        function colorDistance (color1, color2) {
+            // From http://stackoverflow.com/a/2103422
+            var rmean, r, g, b;
+            rmean = (color1[0] + color2[0]) / 2;
+            r = color1[0] - color2[0];
+            g = color1[1] - color2[1];
+            b = color1[2] - color2[2];
+            return Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
+        }
+
+        color1RGB = colorStringToRGBArray(color1);
+        color2RGB = colorStringToRGBArray(color2);
+
+        return colorDistance(color1RGB, color2RGB);
+    }
+
     render() {
         return (
             <div>
@@ -438,6 +488,8 @@ export default class Checkers extends React.Component {
                     handleTokenClick={this.handleTokenClick}
                     updatePlayer={this.updatePlayer}
                     updateConfig={this.updateConfig}
+                    colorToRGB={this.colorToRGB}
+                    colorDistance={this.colorDistance}
                     />
             </div>
         );
