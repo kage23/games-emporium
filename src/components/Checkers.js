@@ -10,16 +10,18 @@ export default class Checkers extends React.Component {
         color: 'green',                  // color of playable squares
         secondaryColor: '#fff',         // color of alternate squares
         defaultPlayerColors: ['red','white'],
-        startingPositions: [
+        startingTokens: [
             [
-                'c0r7', 'c2r7', 'c4r7', 'c6r7',
-                'c1r6', 'c3r6', 'c5r6', 'c7r6',
-                'c0r5', 'c2r5', 'c4r5', 'c6r5'
+                {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false},
+                {position: 'c6r7', king: false}, {position: 'c1r6', king: false}, {position: 'c3r6', king: false},
+                {position: 'c5r6', king: false}, {position: 'c7r6', king: false}, {position: 'c0r5', king: false},
+                {position: 'c2r5', king: false}, {position: 'c4r5', king: false}, {position: 'c6r5', king: false}
             ],
             [
-                'c1r0', 'c3r0', 'c5r0', 'c7r0',
-                'c0r1', 'c2r1', 'c4r1', 'c6r1',
-                'c1r2', 'c3r2', 'c5r2', 'c7r2'
+                {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false},
+                {position: 'c7r0', king: false}, {position: 'c0r1', king: false}, {position: 'c2r1', king: false},
+                {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c1r2', king: false},
+                {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}
             ]
         ]
     };
@@ -50,11 +52,11 @@ export default class Checkers extends React.Component {
 
     newGame = () => {
         var players = this.state.players.map((player, playerIndex) => {
-            var tokens = this.state.config.startingPositions[playerIndex].map(position => {
+            var tokens = this.state.config.startingTokens[playerIndex].map(token => {
                 return {
-                    position,
-                    king: false,
-                    id: playerIndex + '-' + position
+                    position: token.position,
+                    king: token.king,
+                    id: playerIndex + '-' + token.position
                 };
             });
 
