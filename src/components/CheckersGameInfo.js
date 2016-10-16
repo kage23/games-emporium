@@ -14,7 +14,7 @@ export default class CheckersGameInfo extends React.Component {
     };
 
     render() {
-        var winnerTextStyle, allowedColorDistance = 225, playerKings, playerInfoBoxes, playerTurn, playerTurnOrd,
+        var winnerTextStyle, allowedColorDistance = 225, playerKings, playerInfoBoxes, playerTurn, playerTurnOrd, moveList,
             currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
             textStyle = {
                 color: currentPlayer.color
@@ -56,6 +56,15 @@ export default class CheckersGameInfo extends React.Component {
             );
         });
 
+        moveList = this.props.gameState.moves.map((move, moveIndex) => {
+            if (move.jump) return (
+                <p key={moveIndex}>From {move.from} to {move.to}, jumping {move.jump}</p>
+            );
+            else return (
+                <p key={moveIndex}>From {move.from} to {move.to}</p>
+            );
+        });
+
         if (!this.props.gameState.winner) {
             return (
                 <div className="gameInfo">
@@ -63,6 +72,7 @@ export default class CheckersGameInfo extends React.Component {
                         It is <span style={textStyle}>{currentPlayer.name}</span>'s {playerTurn + playerTurnOrd} turn. <a href="#" onClick={this.newGame}>New game</a>
                     </h3>
                     {playerInfoBoxes}
+                    {moveList}
                 </div>
             );
         } else {
@@ -86,6 +96,7 @@ export default class CheckersGameInfo extends React.Component {
                         <span style={winnerTextStyle}>{this.props.gameState.winner.name} Wins!!!!</span> <a href="#" onClick={this.newGame}>New game</a>
                     </h3>
                     {playerInfoBoxes}
+                    {moveList}
                 </div>
             );
         }

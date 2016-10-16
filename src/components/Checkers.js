@@ -49,6 +49,7 @@ export default class Checkers extends React.Component {
         highlightedTokens: [],
         highlightedCells: [],
         continuingAfterJump: false,
+        moves: [],
         winner: undefined
     };
 
@@ -77,6 +78,7 @@ export default class Checkers extends React.Component {
             selectedToken: '',
             highlightedCells: [],
             highlightedTokens: [],
+            moves: [],
             continuingAfterJump: false,
             winner: undefined
         });
@@ -218,7 +220,7 @@ export default class Checkers extends React.Component {
 
     moveToken = (move) => {
         var newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
-            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves,
+            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves, newMovesArray,
             continueTurn = false, tokenGotKinged = false,
             currentPlayer = this.state.players[this.state.currentTurn % 2],
             opponent = this.state.players[(this.state.currentTurn + 1) % 2];
@@ -274,7 +276,11 @@ export default class Checkers extends React.Component {
         newPlayersArray[this.state.currentTurn % 2] = newPlayerObject;
         newPlayersArray[(this.state.currentTurn + 1) % 2] = move.jump ? newOpponentObject : opponent;
 
-        this.setState({players: newPlayersArray});
+        // Create a new moves array
+        newMovesArray = this.state.moves;
+        newMovesArray.push(move);
+
+        this.setState({players: newPlayersArray, moves: newMovesArray});
 
         // If it was a jump, check for more jumps and continue the turn, unless the piece was freshly kinged
         if (move.jump && !tokenGotKinged) {
