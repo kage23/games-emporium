@@ -2,6 +2,8 @@ import React from 'react'
 
 export default class CheckersConfig extends React.Component {
     static propTypes = {
+        gameTypes: React.PropTypes.object.isRequired,
+        setGameType: React.PropTypes.func.isRequired,
         gameState: React.PropTypes.object.isRequired,
         newGame: React.PropTypes.func.isRequired,
         updatePlayer: React.PropTypes.func.isRequired,
@@ -96,7 +98,19 @@ export default class CheckersConfig extends React.Component {
         this.props.updatePlayer(newPlayerObject, playerIndex);
     };
 
+    onGameTypeChange = (evt) => {
+        var target = evt.target;
+
+        this.props.setGameType(target.value);
+    };
+
     render() {
+        var typeOptions = [];
+
+        this.props.gameTypes.forEach((value, key) => {
+            typeOptions.push(<option key={key} value={key}>{value.label}</option>);
+        });
+
         return (
             <div className="checkersConfig">
                 <h3>Checkers Config</h3>
@@ -159,6 +173,15 @@ export default class CheckersConfig extends React.Component {
                        value={this.props.gameState.players[1].color}
                        onChange={this.onPlayerChange}
                        />
+
+                <h4>Game config</h4>
+                <select
+                    value={this.props.gameState.gameType}
+                    onChange={this.onGameTypeChange}
+                    >
+                    {typeOptions}
+                </select>
+                {this.props.gameTypes.get(this.props.gameState.gameType).description}
 
                 <h4>Board config</h4>
                 <label htmlFor="boardColor">Board Color</label>

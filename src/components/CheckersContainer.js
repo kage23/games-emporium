@@ -7,6 +7,8 @@ import Token from './Token'
 
 export default class CheckersContainer extends React.Component {
     static propTypes = {
+        gameTypes: React.PropTypes.object.isRequired,
+        setGameType: React.PropTypes.func.isRequired,
         gameState: React.PropTypes.object.isRequired,
         newTurn: React.PropTypes.func.isRequired,
         newGame: React.PropTypes.func.isRequired,
@@ -47,6 +49,8 @@ export default class CheckersContainer extends React.Component {
         if (this.props.gameState.currentTurn < 0)
             html = (
                 <CheckersConfig
+                    gameTypes={this.props.gameTypes}
+                    setGameType={this.props.setGameType}
                     gameState={this.props.gameState}
                     updatePlayer={this.props.updatePlayer}
                     updateConfig={this.props.updateConfig}

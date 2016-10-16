@@ -25,7 +25,19 @@ export default class Checkers extends React.Component {
         ]
     };
 
+    gameTypes = new Map([
+        ['regular', {
+            label: 'Regular Checkers',
+            description: <p>Just regular-ole checkers.</p>
+        }],
+        ['anti', {
+            label: 'Anti-Checkers',
+            description: <p>Instead of losing when you have no valid moves, you win when you have no valid moves.</p>
+        }]
+    ]);
+
     state = {
+        gameType: 'regular',
         players: [
             {
                 name: 'Player 1',
@@ -50,6 +62,10 @@ export default class Checkers extends React.Component {
         continuingAfterJump: false,
         moves: [],
         winner: undefined
+    };
+
+    setGameType = (gameType) => {
+        this.setState({gameType});
     };
 
     newGame = () => {
@@ -89,11 +105,9 @@ export default class Checkers extends React.Component {
         var winner,
             newTurn = this.state.currentTurn + 1;
 
-        if (this.isPlayerTheLoser(this.state.players[newTurn % 2])) {
-            winner = this.state.players[(newTurn + 1) % 2];
-        }
-
         if (this.state.config.debug) console.log('Starting turn',newTurn);
+
+        winner = this.determineWinner(newTurn);
 
         this.setState({
             currentTurn: newTurn,
@@ -105,6 +119,18 @@ export default class Checkers extends React.Component {
         });
 
         if (!winner && this.state.players[newTurn % 2].computer) this.computerTurn();
+    };
+
+    determineWinner = (currentTurn) => {
+        var winner;
+
+        if (this.playerHasNoValidMoves(this.state.players[(currentTurn + 2) % 2])) {
+            // Anti-checkers win condition, lose condition otherwise
+            if (this.state.gameType === 'anti') winner = this.state.players[(currentTurn + 2) % 2];
+            else winner = this.state.players[(currentTurn + 1) % 2];
+        }
+
+        return winner;
     };
 
     computerTurn = () => {
@@ -145,7 +171,7 @@ export default class Checkers extends React.Component {
         this.setState({currentTurn:-1,winner:false});
     };
 
-    isPlayerTheLoser(player) {
+    playerHasNoValidMoves(player) {
         var moves = this.determineValidMovesForPlayer(player);
 
         return moves.length <= 0;
@@ -502,9 +528,11 @@ export default class Checkers extends React.Component {
     render() {
         return (
             <div>
-                <GameHeader game="CHECKERSSSSSSSS" />
+                <GameHeader game="CHECKERSSSSSSSS" gameType={this.gameTypes.get(this.state.gameType).label} />
 
                 <CheckersContainer
+                    gameTypes={this.gameTypes}
+                    setGameType={this.setGameType}
                     gameState={this.state}
                     newTurn={this.newTurn}
                     newGame={this.newGame}
