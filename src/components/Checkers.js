@@ -32,13 +32,15 @@ export default class Checkers extends React.Component {
                 name: 'Player 1',
                 computer: false,
                 color: this.config.defaultPlayerColors[0],
-                tokens: []
+                tokens: [],
+                captures: 0
             },
             {
                 name: 'Player 2',
                 computer: false,
                 color: this.config.defaultPlayerColors[1],
-                tokens: []
+                tokens: [],
+                captures: 0
             }
         ],
         config: this.config,
@@ -64,6 +66,7 @@ export default class Checkers extends React.Component {
                 name: player.name,
                 computer: player.computer,
                 color: player.color,
+                captures: player.captures,
                 tokens
             };
         });
@@ -248,7 +251,7 @@ export default class Checkers extends React.Component {
         // Create a new player object with the new token array
         newPlayerObject = Object.assign({}, currentPlayer, {tokens: newPlayerTokensArray});
 
-        // If it was a jump, remove the jumped piece from the opponent's tokens array
+        // If it was a jump, remove the jumped piece from the opponent's tokens array and increase the player's capture count
         if (move.jump) {
             // Find the index of the jumped token
             opponent.tokens.forEach((token, tokenIndex) => {
@@ -261,6 +264,9 @@ export default class Checkers extends React.Component {
 
             // Create a new player object with the new token array
             newOpponentObject = Object.assign({}, opponent, {tokens: newOpponentTokensArray});
+
+            // Increase the capture count on the new player object
+            newPlayerObject.captures = currentPlayer.captures + 1;
         }
 
         // Create a new players array

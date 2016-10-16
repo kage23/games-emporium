@@ -49,3 +49,7 @@
 
 	font-size: 7vmin;
 }
+
+.gameInfo {
+	float: left;
+}

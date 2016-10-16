@@ -58,13 +58,6 @@ export default class CheckersContainer extends React.Component {
         else
             html = (
                 <div>
-                    <CheckersGameInfo
-                        gameState={this.props.gameState}
-                        reset={this.props.reset}
-                        colorToRGB={this.props.colorToRGB}
-                        colorDistance={this.props.colorDistance}
-                        />
-
                     <CheckersBoard
                         size={this.props.gameState.config.boardSize}
                         color={this.props.gameState.config.color}
@@ -74,6 +67,13 @@ export default class CheckersContainer extends React.Component {
                         >
                         {tokens}
                     </CheckersBoard>
+
+                    <CheckersGameInfo
+                        gameState={this.props.gameState}
+                        reset={this.props.reset}
+                        colorToRGB={this.props.colorToRGB}
+                        colorDistance={this.props.colorDistance}
+                        />
                 </div>
             );
 
