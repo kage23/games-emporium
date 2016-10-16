@@ -1,10 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, browserHistory } from 'react-router'
-import routes from './components/routes'
+import { Router, browserHistory, Route, IndexRoute } from 'react-router'
+
+import App from './components/App'
+import GamesList from './components/GamesList'
+import Checkers from './components/Checkers'
+
 import './index.css'
 
 ReactDOM.render(
-    <Router routes={routes} history={browserHistory}></Router>,
+    <Router history={browserHistory}>
+        <Route path={'/games' || '/games/'} component={App}>
+            <IndexRoute component={GamesList} />
+        </Route>
+        <Route path="/games/checkers" component={Checkers} />
+    </Router>,
     document.getElementById('root')
 );

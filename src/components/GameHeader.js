@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 
 export default class GameHeader extends React.Component {
     static propTypes = {
@@ -12,6 +13,12 @@ export default class GameHeader extends React.Component {
         if (this.props.gameType)
             text += (' (' + this.props.gameType + ')');
 
-        return <h2>{text}</h2>;
+        return (
+            <div>
+                <h2>{text}</h2>
+
+                <Link to="/games/">Back to Games List</Link>
+            </div>
+        );
     }
 }
