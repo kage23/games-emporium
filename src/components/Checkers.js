@@ -10,18 +10,17 @@ export default class Checkers extends React.Component {
         color: 'green',                  // color of playable squares
         secondaryColor: '#fff',         // color of alternate squares
         defaultPlayerColors: ['red','white'],
+        computerDelay: 750,            // number of ms to delay between AI highlights and moves etc
         startingTokens: [
             [
-                {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false},
-                {position: 'c6r7', king: false}, {position: 'c1r6', king: false}, {position: 'c3r6', king: false},
-                {position: 'c5r6', king: false}, {position: 'c7r6', king: false}, {position: 'c0r5', king: false},
-                {position: 'c2r5', king: false}, {position: 'c4r5', king: false}, {position: 'c6r5', king: false}
+                {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false}, {position: 'c6r7', king: false},
+                {position: 'c1r6', king: false}, {position: 'c3r6', king: false}, {position: 'c5r6', king: false}, {position: 'c7r6', king: false},
+                {position: 'c0r5', king: false}, {position: 'c2r5', king: false}, {position: 'c4r5', king: false}, {position: 'c6r5', king: false}
             ],
             [
-                {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false},
-                {position: 'c7r0', king: false}, {position: 'c0r1', king: false}, {position: 'c2r1', king: false},
-                {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c1r2', king: false},
-                {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}
+                {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false},
+                {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false},
+                {position: 'c1r2', king: false}, {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}
             ]
         ]
     };
@@ -109,13 +108,14 @@ export default class Checkers extends React.Component {
     };
 
     computerTurn = () => {
-        var currentPlayer, validMovesForPlayer, selectedMove, validMovesForToken;
-
         var executeTurn = () => {
             // Callback 1
             // 1s after the live player completes their turn, we select a move and highlight the token and its valid squares
-            currentPlayer = this.state.players[this.state.currentTurn % 2];
-            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
+            var currentPlayer, validMovesForPlayer, selectedMove, validMovesForToken;
+
+            currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2];
+            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer, this.state.continuingAfterJump ?
+                this.getTokenByPosition(this.state.selectedToken) : undefined);
             selectedMove = validMovesForPlayer[Math.floor(Math.random() * validMovesForPlayer.length)];
             // eslint-disable-next-line
             validMovesForToken = validMovesForPlayer.filter(move => {
@@ -129,18 +129,19 @@ export default class Checkers extends React.Component {
 
             this.highlightValidMovesForToken(validMovesForToken);
 
-            setTimeout(() => {
+            this.computerTurnTimeout = setTimeout(() => {
                 // Callback 2
                 // 1s after highlighting the token, we move it
                 this.moveToken(selectedMove);
-            }, 1000); // Callback 2
+            }, this.state.config.computerDelay); // Callback 2
         };
 
         if (this.state.continuingAfterJump) executeTurn();
-        else setTimeout(executeTurn, 1000); // Callback 1
+        else this.computerTurnTimeout = setTimeout(executeTurn, this.state.config.computerDelay); // Callback 1
     };
 
     reset = () => {
+        clearTimeout(this.computerTurnTimeout);
         this.setState({currentTurn:-1,winner:false});
     };
 
@@ -153,7 +154,7 @@ export default class Checkers extends React.Component {
     handleTokenClick = (token) => {
         if (this.state.config.debug) console.log('tokenClick!',token.props.position);
 
-        var currentPlayer = this.state.players[this.state.currentTurn % 2],
+        var currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
             validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
             validMovesForToken = validMovesForPlayer.filter(move => {
                 return token.props.position === move.from;
@@ -197,7 +198,7 @@ export default class Checkers extends React.Component {
     handleCellClick = (cell) => {
         var move,
             cellIsValid,
-            currentPlayer = this.state.players[this.state.currentTurn % 2],
+            currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
             validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
 
         // Check if the clicked cell is a valid move
@@ -222,7 +223,7 @@ export default class Checkers extends React.Component {
         var newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
             newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves, newMovesArray,
             continueTurn = false, tokenGotKinged = false,
-            currentPlayer = this.state.players[this.state.currentTurn % 2],
+            currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
             opponent = this.state.players[(this.state.currentTurn + 1) % 2];
 
             if (this.state.config.debug) console.log('Moving...',move);
@@ -240,8 +241,8 @@ export default class Checkers extends React.Component {
 
         // Determine if the token should get kinged
         moveToRow = parseInt(move.to.substr(move.to.indexOf('r') + 1), 10);
-        if ((this.state.currentTurn % 2 === 0 && moveToRow === 0) ||
-            (this.state.currentTurn % 2 === 1 && moveToRow === this.state.config.boardSize - 1)) {
+        if (((this.state.currentTurn + 2) % 2 === 0 && moveToRow === 0) ||
+            ((this.state.currentTurn + 2) % 2 === 1 && moveToRow === this.state.config.boardSize - 1)) {
             newTokenObject.king = true;
             tokenGotKinged = true;
         }
@@ -273,7 +274,7 @@ export default class Checkers extends React.Component {
 
         // Create a new players array
         newPlayersArray = new Array(2);
-        newPlayersArray[this.state.currentTurn % 2] = newPlayerObject;
+        newPlayersArray[(this.state.currentTurn + 2) % 2] = newPlayerObject;
         newPlayersArray[(this.state.currentTurn + 1) % 2] = move.jump ? newOpponentObject : opponent;
 
         // Create a new moves array
@@ -437,6 +438,15 @@ export default class Checkers extends React.Component {
 
     updateConfig = (config) => {
         this.setState({config});
+    };
+
+    getTokenByPosition = (position) => {
+        return this.state.players.reduce((prevPlayer, currPlayer) => {
+            return currPlayer.tokens.reduce((prevToken, currToken) => {
+                if (currToken.position === position) return currToken;
+                else return prevToken;
+            }, prevPlayer);
+        }, false);
     };
 
     colorToRGB(stringToTest) {

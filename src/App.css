@@ -28,9 +28,9 @@
 	border: 1px solid #000;
 	position: absolute;
 	z-index: 10;
-	transition: left 0.5s ease-out,
-				top 0.5s ease-out,
-				z-index 0s ease-out 0.5s;
+	transition: left 0.35s ease-out,
+				top 0.35s ease-out,
+				z-index 0s ease-out 0.35s;
 }
 
 .checkersBoard .token .king {
