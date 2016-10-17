@@ -1,6 +1,8 @@
 import React from 'react'
 import { Panel, Button, Row, Col } from 'react-bootstrap'
 
+import PlayerInfoListing from './PlayerInfoListing'
+
 export default class CheckersGameInfo extends React.Component {
     static propTypes = {
         gameState: React.PropTypes.object.isRequired,
@@ -15,45 +17,26 @@ export default class CheckersGameInfo extends React.Component {
     };
 
     render() {
-        var winnerTextStyle, allowedColorDistance = 225, playerKings, playerInfoBoxes, playerTurn, playerTurnOrd, moveList,
-            currentPlayer = this.props.gameState.players[(this.props.gameState.currentTurn + 2) % 2],
-            textStyle = {
-                color: currentPlayer.color
-            };
-
-        playerTurn = Math.ceil((this.props.gameState.currentTurn + 1) / 2);
-
-        if (playerTurn % 10 === 1 && playerTurn % 100 !== 11) playerTurnOrd = 'st';
-        else if (playerTurn % 10 === 2 && playerTurn % 100 !== 12) playerTurnOrd = 'nd';
-        else if (playerTurn % 10=== 3 && playerTurn % 100 !== 13) playerTurnOrd = 'rd';
-        else playerTurnOrd = 'th';
-
-        if (this.props.colorDistance(
-                this.props.colorToRGB(currentPlayer.color), this.props.colorToRGB('white')
-            ) < allowedColorDistance) {
-            textStyle = {
-                color: 'black',
-                WebkitTextFillColor: currentPlayer.color,
-                WebkitTextStrokeWidth: 1,
-                WebkitTextStrokeColor: 'black'
-            };
-        }
-
-        playerKings = this.props.gameState.players.map(player => {
-            return player.tokens.reduce((kingCount, token) => {
-                if (token.king) return kingCount + 1;
-                else return kingCount;
-            }, 0);
-        });
+        var playerInfoBoxes, moveList;
 
         playerInfoBoxes = this.props.gameState.players.map((player, playerIndex) => {
             return (
                 <Col lg={6} key={playerIndex}>
-                    <Panel header={(<h3>{player.name}</h3>)}>
-                        <p><strong>Total men remaining:</strong> {player.tokens.length}</p>
-                        <p><strong>Kings:</strong> {playerKings[playerIndex]}</p>
-                        <p><strong>Captures:</strong> {player.captures}</p>
-                    </Panel>
+                    <PlayerInfoListing playerName={player.name} dataListing={[
+                        {
+                            label: 'Total men remaining',
+                            value: player.tokens.length
+                        },
+                        {
+                            label: 'Kings',
+                            value: player.tokens.filter(token => {return token.king;}).length
+                        },
+                        {
+                            label: 'Captures',
+                            value: player.captures
+                        }
+                    ]}
+                    />
                 </Col>
             );
         });
@@ -67,45 +50,16 @@ export default class CheckersGameInfo extends React.Component {
             );
         });
 
-        if (!this.props.gameState.winner) {
-            return (
-                <div className="gameInfo">
-                    <h4>
-                        It is <span style={textStyle}>{currentPlayer.name}</span>'s {playerTurn + playerTurnOrd} turn.
-                    </h4>
-                    <Button bsStyle="primary" onClick={this.newGame}>New game</Button>
-                    <Row style={{marginTop:8}}>
-                        {playerInfoBoxes}
-                    </Row>
-                    <Panel collapsible defaultExpanded={true} header={(<h3>Moves List (click to show/hide)</h3>)}>
-                        {moveList}
-                    </Panel>
-                </div>
-            );
-        } else {
-            winnerTextStyle = {
-                color: this.props.gameState.winner.color,
-                textTransform: 'uppercase'
-            };
-            if (this.props.colorDistance(
-                    this.props.colorToRGB(winnerTextStyle.color), this.props.colorToRGB('white')
-                ) < allowedColorDistance) {
-                winnerTextStyle = {
-                    color: 'black',
-                    WebkitTextFillColor: this.props.gameState.winner.color,
-                    WebkitTextStrokeWidth: 1,
-                    WebkitTextStrokeColor: 'black'
-                };
-            }
-            return (
-                <div className="gameInfo">
-                    <h3>
-                        <span style={winnerTextStyle}>{this.props.gameState.winner.name} Wins!!!!</span> <a href="#" onClick={this.newGame}>New game</a>
-                    </h3>
+        return (
+            <div className="gameInfo">
+                <Button bsStyle="primary" onClick={this.newGame}>New game</Button>
+                <Row style={{marginTop:8}}>
                     {playerInfoBoxes}
+                </Row>
+                <Panel collapsible defaultExpanded={true} header={(<h3>Moves List (click to show/hide)</h3>)}>
                     {moveList}
-                </div>
-            );
-        }
+                </Panel>
+            </div>
+        );
     }
 }

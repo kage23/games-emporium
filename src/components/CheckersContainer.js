@@ -2,6 +2,7 @@ import React from 'react'
 import { Row, Col } from 'react-bootstrap'
 
 import CheckersConfig from './CheckersConfig'
+import TurnOrWinnerHeader from './TurnOrWinnerHeader'
 import CheckersGameInfo from './CheckersGameInfo'
 import CheckersBoard from './CheckersBoard'
 import Token from './Token'
@@ -62,28 +63,31 @@ export default class CheckersContainer extends React.Component {
             );
         else
             html = (
-                <Row>
-                    <Col sm={8} lg={7}>
-                        <CheckersBoard
-                            size={this.props.gameState.config.boardSize}
-                            color={this.props.gameState.config.color}
-                            secondaryColor={this.props.gameState.config.secondaryColor}
-                            highlightedCells={this.props.gameState.highlightedCells}
-                            handleCellClick={this.props.handleCellClick}
-                            >
-                            {tokens}
-                        </CheckersBoard>
-                    </Col>
+                <div>
+                    <TurnOrWinnerHeader gameState={this.props.gameState} />
+                    <Row>
+                        <Col sm={8} lg={7}>
+                            <CheckersBoard
+                                size={this.props.gameState.config.boardSize}
+                                color={this.props.gameState.config.color}
+                                secondaryColor={this.props.gameState.config.secondaryColor}
+                                highlightedCells={this.props.gameState.highlightedCells}
+                                handleCellClick={this.props.handleCellClick}
+                                >
+                                {tokens}
+                            </CheckersBoard>
+                        </Col>
 
-                    <Col sm={4} lg={5}>
-                        <CheckersGameInfo
-                            gameState={this.props.gameState}
-                            reset={this.props.reset}
-                            colorToRGB={this.props.colorToRGB}
-                            colorDistance={this.props.colorDistance}
-                            />
-                    </Col>
-                </Row>
+                        <Col sm={4} lg={5}>
+                            <CheckersGameInfo
+                                gameState={this.props.gameState}
+                                reset={this.props.reset}
+                                colorToRGB={this.props.colorToRGB}
+                                colorDistance={this.props.colorDistance}
+                                />
+                        </Col>
+                    </Row>
+                </div>
             );
 
         return html;
