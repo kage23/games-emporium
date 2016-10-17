@@ -1,5 +1,7 @@
 import React from 'react'
-import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, Checkbox } from 'react-bootstrap'
+import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, Checkbox, Button } from 'react-bootstrap'
+
+import CheckersBoard from './CheckersBoard'
 
 export default class CheckersConfig extends React.Component {
     static propTypes = {
@@ -114,9 +116,12 @@ export default class CheckersConfig extends React.Component {
 
         return (
             <div className="checkersConfig">
-                <Row>
-                    <Col xs={12}>
-                        <h3>Checkers Config</h3>
+                <Row style={{marginBottom:8}}>
+                    <Col xs={8}>
+                        <h3 style={{marginTop:0}}>Checkers Config</h3>
+                    </Col>
+                    <Col xs={4}>
+                        <Button bsStyle="primary" style={{float:'right'}} href="#" onClick={this.playGame}>Let's play!</Button>
                     </Col>
                 </Row>
 
@@ -197,29 +202,41 @@ export default class CheckersConfig extends React.Component {
                     </Col>
                 </Row>
 
-
-
-
-
-                <h4>Game config</h4>
-                <select
-                    value={this.props.gameState.gameType}
-                    onChange={this.onGameTypeChange}
-                    >
-                    {typeOptions}
-                </select>
-                {this.props.gameTypes.get(this.props.gameState.gameType).description}
-
-                <h4>Board config</h4>
-                <label htmlFor="boardColor">Board Color</label>
-                <input id="boardColor"
-                       type="text"
-                       value={this.props.gameState.config.color}
-                       data-config="color"
-                       onChange={this.boardConfig}
-                       />
-
-                <a href="#" onClick={this.playGame}>Play the game!</a>
+                <Row>
+                    <Col sm={6}>
+                        <Panel header={(<h3>Game Config</h3>)}>
+                            <FormGroup controlId="gameType">
+                                <ControlLabel>Game Type</ControlLabel>
+                                <FormControl
+                                    componentClass="select"
+                                    placeholder="select"
+                                    value={this.props.gameState.gameType}
+                                    onChange={this.onGameTypeChange}
+                                    >
+                                    {typeOptions}
+                                </FormControl>
+                            </FormGroup>
+                            <Panel collapsible header='Show/Hide description'>
+                                {this.props.gameTypes.get(this.props.gameState.gameType).description}
+                            </Panel>
+                            <FormGroup controlId="boardColor">
+                                <ControlLabel>Board Color</ControlLabel>
+                                <FormControl
+                                    type="text"
+                                    value={this.props.gameState.config.color}
+                                    data-config="color"
+                                    onChange={this.boardConfig}
+                                    />
+                            </FormGroup>
+                        </Panel>
+                    </Col>
+                    <Col sm={6} xsHidden>
+                        <Panel>
+                            CheckersBoard sample w/Tokens
+                            {/*<CheckersBoard />*/}
+                        </Panel>
+                    </Col>
+                </Row>
             </div>
         );
     }
