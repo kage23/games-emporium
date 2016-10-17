@@ -1,4 +1,5 @@
 import React from 'react'
+import { Grid } from 'react-bootstrap'
 
 import GameHeader from './GameHeader'
 import CheckersContainer from './CheckersContainer'
@@ -527,8 +528,8 @@ export default class Checkers extends React.Component {
 
     render() {
         return (
-            <div>
-                <GameHeader game="CHECKERSSSSSSSS" gameType={this.gameTypes.get(this.state.gameType).label} />
+            <Grid>
+                <GameHeader game="Checkers" gameType={this.gameTypes.get(this.state.gameType).label} />
 
                 <CheckersContainer
                     gameTypes={this.gameTypes}
@@ -544,7 +545,7 @@ export default class Checkers extends React.Component {
                     colorToRGB={this.colorToRGB}
                     colorDistance={this.colorDistance}
                     />
-            </div>
+            </Grid>
         );
     }
 }

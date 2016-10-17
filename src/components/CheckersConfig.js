@@ -1,4 +1,5 @@
 import React from 'react'
+import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, Checkbox } from 'react-bootstrap'
 
 export default class CheckersConfig extends React.Component {
     static propTypes = {
@@ -113,66 +114,92 @@ export default class CheckersConfig extends React.Component {
 
         return (
             <div className="checkersConfig">
-                <h3>Checkers Config</h3>
+                <Row>
+                    <Col xs={12}>
+                        <h3>Checkers Config</h3>
+                    </Col>
+                </Row>
 
-                <h4>First Player</h4>
+                <Row>
+                    <Col sm={6}>
+                        <Panel header={(<h3>First Player</h3>)}>
+                            <FormGroup
+                                controlId="player1name">
+                                <ControlLabel>Input Name</ControlLabel>
+                                <FormControl
+                                    type="text"
+                                    value={this.props.gameState.players[0].name}
+                                    placeholder="Input Name"
+                                    onChange={this.onPlayerChange}
+                                    data-player-id={0}
+                                    data-player-data="name"
+                                    />
+                            </FormGroup>
 
-                <label htmlFor="player1name">Input Name</label>
-                <input id="player1name"
-                       data-player-id={0}
-                       data-player-data="name"
-                       type="text"
-                       value={this.props.gameState.players[0].name}
-                       onChange={this.onPlayerChange}
-                       />
+                            <Checkbox
+                                data-player={0}
+                                checked={this.props.gameState.players[0].computer}
+                                onChange={this.onAIToggle}
+                                >
+                                Activate the AI!!!
+                            </Checkbox>
 
-                <label>
-                    <input type="checkbox"
-                           data-player={0}
-                           checked={this.props.gameState.players[0].computer}
-                           onChange={this.onAIToggle}
-                        />
-                    Activate the AI!!!
-                </label>
+                            <FormGroup
+                                controlId="player1color">
+                                <ControlLabel>Input CSS-friendly Color</ControlLabel>
+                                <FormControl
+                                    type="text"
+                                    value={this.props.gameState.players[0].color}
+                                    placeholder="Input Color"
+                                    onChange={this.onPlayerChange}
+                                    data-player-id={0}
+                                    data-player-data="color"
+                                    />
+                            </FormGroup>
+                        </Panel>
+                    </Col>
+                    <Col sm={6}>
+                        <Panel header={(<h3>Second Player</h3>)}>
+                            <FormGroup
+                                controlId="player2name">
+                                <ControlLabel>Input Name</ControlLabel>
+                                <FormControl
+                                    type="text"
+                                    value={this.props.gameState.players[1].name}
+                                    placeholder="Input Name"
+                                    onChange={this.onPlayerChange}
+                                    data-player-id={1}
+                                    data-player-data="name"
+                                    />
+                            </FormGroup>
 
-                <label htmlFor="player1color">Input CSS-friendly Color</label>
-                <input id="player1color"
-                       data-player-id={0}
-                       data-player-data="color"
-                       type="text"
-                       value={this.props.gameState.players[0].color}
-                       onChange={this.onPlayerChange}
-                       />
+                            <Checkbox
+                                data-player={1}
+                                checked={this.props.gameState.players[1].computer}
+                                onChange={this.onAIToggle}
+                                >
+                                Activate the AI!!!
+                            </Checkbox>
 
-                <h4>Second Player</h4>
+                            <FormGroup
+                                controlId="player2color">
+                                <ControlLabel>Input CSS-friendly Color</ControlLabel>
+                                <FormControl
+                                    type="text"
+                                    value={this.props.gameState.players[1].color}
+                                    placeholder="Input Color"
+                                    onChange={this.onPlayerChange}
+                                    data-player-id={1}
+                                    data-player-data="color"
+                                    />
+                            </FormGroup>
+                        </Panel>
+                    </Col>
+                </Row>
 
-                <label htmlFor="player2name">Input Name</label>
-                <input id="player2name"
-                       data-player-id={1}
-                       data-player-data="name"
-                       type="text"
-                       value={this.props.gameState.players[1].name}
-                       onChange={this.onPlayerChange}
-                       disabled={this.props.gameState.players[1].computer}
-                       />
 
-                <label>
-                    <input type="checkbox"
-                           data-player={1}
-                           checked={this.props.gameState.players[1].computer}
-                           onChange={this.onAIToggle}
-                           />
-                    Activate the AI!!!
-                </label>
 
-                <label htmlFor="player2color">Input CSS-friendly Color</label>
-                <input id="player2color"
-                       data-player-id={1}
-                       data-player-data="color"
-                       type="text"
-                       value={this.props.gameState.players[1].color}
-                       onChange={this.onPlayerChange}
-                       />
+
 
                 <h4>Game config</h4>
                 <select

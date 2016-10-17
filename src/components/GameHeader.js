@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router'
+import { PageHeader, Breadcrumb } from 'react-bootstrap'
 
 export default class GameHeader extends React.Component {
     static propTypes = {
@@ -8,16 +8,22 @@ export default class GameHeader extends React.Component {
     };
 
     render() {
-        var text = 'WELCOME TO ' + this.props.game;
-
-        if (this.props.gameType)
-            text += (' (' + this.props.gameType + ')');
-
         return (
             <div>
-                <h2>{text}</h2>
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/games/">
+                        Games
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item active>
+                        Checkers
+                    </Breadcrumb.Item>
+                </Breadcrumb>
 
-                <Link to="/games/">Back to Games List</Link>
+                <PageHeader>
+                    Welcome to {this.props.game}! {
+                    this.props.gameType ? ( <small>({this.props.gameType})</small> ) : ''
+                }
+                </PageHeader>
             </div>
         );
     }

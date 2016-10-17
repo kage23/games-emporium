@@ -1,9 +1,10 @@
 import React from 'react'
+import { PageHeader } from 'react-bootstrap'
 
 export default class SiteHeader extends React.Component {
     render() {
         return (
-            <h1>KAGE'S UNLICENSED GAME EMPORIUM!!!</h1>
+            <PageHeader>Kage's Game Emporium!!!</PageHeader>
         );
     }
 }
