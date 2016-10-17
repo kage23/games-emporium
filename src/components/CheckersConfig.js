@@ -2,6 +2,7 @@ import React from 'react'
 import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, Checkbox, Button } from 'react-bootstrap'
 
 import CheckersBoard from './CheckersBoard'
+import Token from './Token'
 
 export default class CheckersConfig extends React.Component {
     static propTypes = {
@@ -231,9 +232,37 @@ export default class CheckersConfig extends React.Component {
                         </Panel>
                     </Col>
                     <Col sm={6} xsHidden>
-                        <Panel>
-                            CheckersBoard sample w/Tokens
-                            {/*<CheckersBoard />*/}
+                        <Panel header={<h3>Board Sample</h3>}>
+                            <div style={{maxWidth:206}}>
+                                <CheckersBoard
+                                    size={2}
+                                    color={this.props.gameState.config.color}
+                                    secondaryColor={this.props.gameState.config.secondaryColor}
+                                    highlightedCells={[]}
+                                    handleCellClick={() => {}}
+                                >
+                                    <Token
+                                        boardSize={2}
+                                        type={'circle'}
+                                        color={this.props.gameState.players[0].color}
+                                        handleClick={() => {}}
+                                        position={'c0r1'}
+                                        king={false}
+                                        highlighted={false}
+                                        key="player1SampleToken"
+                                    />
+                                    <Token
+                                        boardSize={2}
+                                        type={'circle'}
+                                        color={this.props.gameState.players[1].color}
+                                        handleClick={() => {}}
+                                        position={'c1r0'}
+                                        king={false}
+                                        highlighted={false}
+                                        key="player2SampleToken"
+                                    />
+                                </CheckersBoard>
+                            </div>
                         </Panel>
                     </Col>
                 </Row>
