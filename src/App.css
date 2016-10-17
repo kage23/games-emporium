@@ -9,7 +9,6 @@
 	overflow: hidden;
 	max-width: 620px;
 	position: relative;
-	float: left;
 	width: 100%;
 }
 
@@ -48,10 +47,6 @@
 	filter: invert(100%);
 
 	font-size: 7vmin;
-}
-
-.gameInfo {
-	float: left;
 }
 
 .breadcrumb + .page-header {

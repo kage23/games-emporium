@@ -4,7 +4,8 @@ import { PageHeader, Breadcrumb } from 'react-bootstrap'
 export default class GameHeader extends React.Component {
     static propTypes = {
         game: React.PropTypes.string.isRequired,
-        gameType: React.PropTypes.string
+        gameTypeKey: React.PropTypes.string,
+        gameTypeObject: React.PropTypes.object
     };
 
     render() {
@@ -21,7 +22,8 @@ export default class GameHeader extends React.Component {
 
                 <PageHeader>
                     Welcome to {this.props.game}! {
-                    this.props.gameType ? ( <small>({this.props.gameType})</small> ) : ''
+                    (this.props.gameTypeKey && this.props.gameTypeKey !== 'regular') ?
+                        ( <small>({this.props.gameTypeObject.label})</small> ) : ''
                 }
                 </PageHeader>
             </div>

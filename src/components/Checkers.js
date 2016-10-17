@@ -529,7 +529,10 @@ export default class Checkers extends React.Component {
     render() {
         return (
             <Grid>
-                <GameHeader game="Checkers" gameType={this.gameTypes.get(this.state.gameType).label} />
+                <GameHeader game="Checkers"
+                            gameTypeKey={this.state.gameType}
+                            gameTypeObject={this.gameTypes.get(this.state.gameType)}
+                />
 
                 <CheckersContainer
                     gameTypes={this.gameTypes}

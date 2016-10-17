@@ -1,4 +1,5 @@
 import React from 'react'
+import { Panel, Button, Row, Col } from 'react-bootstrap'
 
 export default class CheckersGameInfo extends React.Component {
     static propTypes = {
@@ -47,12 +48,13 @@ export default class CheckersGameInfo extends React.Component {
 
         playerInfoBoxes = this.props.gameState.players.map((player, playerIndex) => {
             return (
-                <div className="playerScoreBox" key={playerIndex}>
-                    <p className="name">{player.name}</p>
-                    <p><strong>Total men remaining:</strong> {player.tokens.length}</p>
-                    <p><strong>Kings:</strong> {playerKings[playerIndex]}</p>
-                    <p><strong>Captures:</strong> {player.captures}</p>
-                </div>
+                <Col lg={6} key={playerIndex}>
+                    <Panel header={(<h3>{player.name}</h3>)}>
+                        <p><strong>Total men remaining:</strong> {player.tokens.length}</p>
+                        <p><strong>Kings:</strong> {playerKings[playerIndex]}</p>
+                        <p><strong>Captures:</strong> {player.captures}</p>
+                    </Panel>
+                </Col>
             );
         });
 
@@ -68,11 +70,16 @@ export default class CheckersGameInfo extends React.Component {
         if (!this.props.gameState.winner) {
             return (
                 <div className="gameInfo">
-                    <h3>
-                        It is <span style={textStyle}>{currentPlayer.name}</span>'s {playerTurn + playerTurnOrd} turn. <a href="#" onClick={this.newGame}>New game</a>
-                    </h3>
-                    {playerInfoBoxes}
-                    {moveList}
+                    <h4>
+                        It is <span style={textStyle}>{currentPlayer.name}</span>'s {playerTurn + playerTurnOrd} turn.
+                    </h4>
+                    <Button bsStyle="primary" onClick={this.newGame}>New game</Button>
+                    <Row style={{marginTop:8}}>
+                        {playerInfoBoxes}
+                    </Row>
+                    <Panel collapsible defaultExpanded={true} header={(<h3>Moves List (click to show/hide)</h3>)}>
+                        {moveList}
+                    </Panel>
                 </div>
             );
         } else {

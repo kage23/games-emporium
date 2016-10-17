@@ -1,4 +1,5 @@
 import React from 'react'
+import { Row, Col } from 'react-bootstrap'
 
 import CheckersConfig from './CheckersConfig'
 import CheckersGameInfo from './CheckersGameInfo'
@@ -61,24 +62,28 @@ export default class CheckersContainer extends React.Component {
             );
         else
             html = (
-                <div>
-                    <CheckersBoard
-                        size={this.props.gameState.config.boardSize}
-                        color={this.props.gameState.config.color}
-                        secondaryColor={this.props.gameState.config.secondaryColor}
-                        highlightedCells={this.props.gameState.highlightedCells}
-                        handleCellClick={this.props.handleCellClick}
-                        >
-                        {tokens}
-                    </CheckersBoard>
+                <Row>
+                    <Col sm={8} lg={7}>
+                        <CheckersBoard
+                            size={this.props.gameState.config.boardSize}
+                            color={this.props.gameState.config.color}
+                            secondaryColor={this.props.gameState.config.secondaryColor}
+                            highlightedCells={this.props.gameState.highlightedCells}
+                            handleCellClick={this.props.handleCellClick}
+                            >
+                            {tokens}
+                        </CheckersBoard>
+                    </Col>
 
-                    <CheckersGameInfo
-                        gameState={this.props.gameState}
-                        reset={this.props.reset}
-                        colorToRGB={this.props.colorToRGB}
-                        colorDistance={this.props.colorDistance}
-                        />
-                </div>
+                    <Col sm={4} lg={5}>
+                        <CheckersGameInfo
+                            gameState={this.props.gameState}
+                            reset={this.props.reset}
+                            colorToRGB={this.props.colorToRGB}
+                            colorDistance={this.props.colorDistance}
+                            />
+                    </Col>
+                </Row>
             );
 
         return html;
