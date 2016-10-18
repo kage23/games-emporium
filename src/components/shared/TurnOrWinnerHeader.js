@@ -1,7 +1,7 @@
 import React from 'react'
 
 import PlayerNameSpan from './PlayerNameSpan'
-import NumberWithOrd from '../utilities/NumberWithOrd'
+import NumberWithOrd from '../../utilities/NumberWithOrd'
 
 export default class TurnOrWinnerHeader extends React.Component {
     static propTypes = {

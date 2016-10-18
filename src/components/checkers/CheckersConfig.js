@@ -5,8 +5,8 @@ import PlayerConfigPanel from '../shared/PlayerConfigPanel'
 import CheckerBoard from '../shared/CheckerBoard'
 import Token from '../shared/Token'
 
-import ColorDistance from '../utilities/ColorDistance'
-import ColorToRGB from '../utilities/ColorToRGB'
+import ColorDistance from '../../utilities/ColorDistance'
+import ColorToRGB from '../../utilities/ColorToRGB'
 
 export default class CheckersConfig extends React.Component {
     static propTypes = {

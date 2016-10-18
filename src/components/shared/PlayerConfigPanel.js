@@ -1,7 +1,7 @@
 import React from 'react'
 import { Panel, FormGroup, ControlLabel, FormControl, Checkbox } from 'react-bootstrap'
 
-import NumberToOrdWord from '../utilities/NumberToOrdWord'
+import NumberToOrdWord from '../../utilities/NumberToOrdWord'
 
 export default class PlayerConfigPanel extends React.Component {
     static propTypes = {

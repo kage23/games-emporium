@@ -4,7 +4,7 @@ import { Router, browserHistory, Route, IndexRoute } from 'react-router'
 
 import App from './components/App'
 import GamesList from './components/GamesList'
-import Checkers from './components/Checkers'
+import Checkers from './components/checkers/Checkers'
 
 import './index.css'
 

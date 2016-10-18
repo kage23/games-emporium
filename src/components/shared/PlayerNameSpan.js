@@ -1,7 +1,7 @@
 import React from 'react'
 
-import ColorToRGB from '../utilities/ColorToRGB'
-import ColorDistance from '../utilities/ColorDistance'
+import ColorToRGB from '../../utilities/ColorToRGB'
+import ColorDistance from '../../utilities/ColorDistance'
 
 export default class PlayerNameSpan extends React.Component {
     static propTypes = {
