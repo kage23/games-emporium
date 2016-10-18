@@ -1,14 +1,13 @@
 import React from 'react'
-import { Panel, Button, Row, Col } from 'react-bootstrap'
+import { Button, Row, Col } from 'react-bootstrap'
 
-import PlayerInfoListing from './PlayerInfoListing'
+import PlayerInfoListing from '../shared/PlayerInfoListing'
+import MovesListPanel from '../shared/MovesListPanel'
 
 export default class CheckersGameInfo extends React.Component {
     static propTypes = {
         gameState: React.PropTypes.object.isRequired,
-        reset: React.PropTypes.func.isRequired,
-        colorToRGB: React.PropTypes.func.isRequired,
-        colorDistance: React.PropTypes.func.isRequired
+        reset: React.PropTypes.func.isRequired
     };
 
     newGame = (evt) => {
@@ -17,9 +16,7 @@ export default class CheckersGameInfo extends React.Component {
     };
 
     render() {
-        var playerInfoBoxes, moveList;
-
-        playerInfoBoxes = this.props.gameState.players.map((player, playerIndex) => {
+        var generatePlayerInfoBox = (player, playerIndex) => {
             return (
                 <Col lg={6} key={playerIndex}>
                     <PlayerInfoListing playerName={player.name} dataListing={[
@@ -36,29 +33,18 @@ export default class CheckersGameInfo extends React.Component {
                             value: player.captures
                         }
                     ]}
-                    />
+                        />
                 </Col>
             );
-        });
-
-        moveList = this.props.gameState.moves.map((move, moveIndex) => {
-            if (move.jump) return (
-                <p key={moveIndex}>From {move.from} to {move.to}, jumping {move.jump}</p>
-            );
-            else return (
-                <p key={moveIndex}>From {move.from} to {move.to}</p>
-            );
-        });
+        };
 
         return (
             <div className="gameInfo">
                 <Button bsStyle="primary" onClick={this.newGame}>New game</Button>
                 <Row style={{marginTop:8}}>
-                    {playerInfoBoxes}
+                    {this.props.gameState.players.map(generatePlayerInfoBox)}
                 </Row>
-                <Panel collapsible defaultExpanded={true} header={(<h3>Moves List (click to show/hide)</h3>)}>
-                    {moveList}
-                </Panel>
+                <MovesListPanel moves={this.props.gameState.moves} />
             </div>
         );
     }

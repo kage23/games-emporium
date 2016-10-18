@@ -1,8 +1,12 @@
 import React from 'react'
-import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, Checkbox, Button } from 'react-bootstrap'
+import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap'
 
-import CheckersBoard from './CheckersBoard'
-import Token from './Token'
+import PlayerConfigPanel from '../shared/PlayerConfigPanel'
+import CheckerBoard from '../shared/CheckerBoard'
+import Token from '../shared/Token'
+
+import ColorDistance from '../utilities/ColorDistance'
+import ColorToRGB from '../utilities/ColorToRGB'
 
 export default class CheckersConfig extends React.Component {
     static propTypes = {
@@ -11,17 +15,15 @@ export default class CheckersConfig extends React.Component {
         gameState: React.PropTypes.object.isRequired,
         newGame: React.PropTypes.func.isRequired,
         updatePlayer: React.PropTypes.func.isRequired,
-        updateConfig: React.PropTypes.func.isRequired,
-        colorToRGB: React.PropTypes.func.isRequired,
-        colorDistance: React.PropTypes.func.isRequired
+        updateConfig: React.PropTypes.func.isRequired
     };
 
     playGame = (evt) => {
         var configIsValid = true,
             allowedColorDistance = 225,
-            player1Color = this.props.colorToRGB(this.props.gameState.players[0].color),
-            player2Color = this.props.colorToRGB(this.props.gameState.players[1].color),
-            boardColor = this.props.colorToRGB(this.props.gameState.config.color);
+            player1Color = ColorToRGB(this.props.gameState.players[0].color),
+            player2Color = ColorToRGB(this.props.gameState.players[1].color),
+            boardColor = ColorToRGB(this.props.gameState.config.color);
 
         evt.preventDefault();
 
@@ -37,7 +39,7 @@ export default class CheckersConfig extends React.Component {
             alert(this.props.gameState.players[1].name + ' must have a valid color!');
             configIsValid = false;
         }
-        if (this.props.colorDistance(player1Color, player2Color) < allowedColorDistance) {
+        if (ColorDistance(player1Color, player2Color) < allowedColorDistance) {
             alert('The players must have sufficiently different colors!');
             configIsValid = false;
         }
@@ -45,16 +47,16 @@ export default class CheckersConfig extends React.Component {
             alert('The board color must be valid!');
             configIsValid = false;
         }
-        if (this.props.colorDistance(boardColor, this.props.colorToRGB('white')) < allowedColorDistance) {
+        if (ColorDistance(boardColor, ColorToRGB('white')) < allowedColorDistance) {
             alert('The board color is too close to white!');
             configIsValid = false;
         }
-        if (this.props.colorDistance(player1Color, this.props.colorToRGB(boardColor)) < allowedColorDistance) {
+        if (ColorDistance(player1Color, ColorToRGB(boardColor)) < allowedColorDistance) {
             alert(this.props.gameState.players[0].name +
                 '\'s color is too close to the board color (' + boardColor + ')!');
             configIsValid = false;
         }
-        if (this.props.colorDistance(player2Color, this.props.colorToRGB(boardColor)) < allowedColorDistance) {
+        if (ColorDistance(player2Color, ColorToRGB(boardColor)) < allowedColorDistance) {
             alert(this.props.gameState.players[1].name +
                 '\'s color is too close to the board color (' + boardColor + ')!');
             configIsValid = false;
@@ -122,84 +124,26 @@ export default class CheckersConfig extends React.Component {
                         <h3 style={{marginTop:0}}>Checkers Config</h3>
                     </Col>
                     <Col xs={4}>
-                        <Button bsStyle="primary" style={{float:'right'}} href="#" onClick={this.playGame}>Let's play!</Button>
+                        <Button bsStyle="primary" style={{float:'right'}} href="#" onClick={this.playGame}>
+                            Let's play!
+                        </Button>
                     </Col>
                 </Row>
 
                 <Row>
                     <Col sm={6}>
-                        <Panel header={(<h3>First Player</h3>)}>
-                            <FormGroup
-                                controlId="player1name">
-                                <ControlLabel>Input Name</ControlLabel>
-                                <FormControl
-                                    type="text"
-                                    value={this.props.gameState.players[0].name}
-                                    placeholder="Input Name"
-                                    onChange={this.onPlayerChange}
-                                    data-player-id={0}
-                                    data-player-data="name"
-                                    />
-                            </FormGroup>
-
-                            <Checkbox
-                                data-player={0}
-                                checked={this.props.gameState.players[0].computer}
-                                onChange={this.onAIToggle}
-                                >
-                                Activate the AI!!!
-                            </Checkbox>
-
-                            <FormGroup
-                                controlId="player1color">
-                                <ControlLabel>Input CSS-friendly Color</ControlLabel>
-                                <FormControl
-                                    type="text"
-                                    value={this.props.gameState.players[0].color}
-                                    placeholder="Input Color"
-                                    onChange={this.onPlayerChange}
-                                    data-player-id={0}
-                                    data-player-data="color"
-                                    />
-                            </FormGroup>
-                        </Panel>
+                        <PlayerConfigPanel
+                            player={this.props.gameState.players[0]}
+                            playerIndex={0}
+                            updatePlayer={this.props.updatePlayer}
+                            />
                     </Col>
                     <Col sm={6}>
-                        <Panel header={(<h3>Second Player</h3>)}>
-                            <FormGroup
-                                controlId="player2name">
-                                <ControlLabel>Input Name</ControlLabel>
-                                <FormControl
-                                    type="text"
-                                    value={this.props.gameState.players[1].name}
-                                    placeholder="Input Name"
-                                    onChange={this.onPlayerChange}
-                                    data-player-id={1}
-                                    data-player-data="name"
-                                    />
-                            </FormGroup>
-
-                            <Checkbox
-                                data-player={1}
-                                checked={this.props.gameState.players[1].computer}
-                                onChange={this.onAIToggle}
-                                >
-                                Activate the AI!!!
-                            </Checkbox>
-
-                            <FormGroup
-                                controlId="player2color">
-                                <ControlLabel>Input CSS-friendly Color</ControlLabel>
-                                <FormControl
-                                    type="text"
-                                    value={this.props.gameState.players[1].color}
-                                    placeholder="Input Color"
-                                    onChange={this.onPlayerChange}
-                                    data-player-id={1}
-                                    data-player-data="color"
-                                    />
-                            </FormGroup>
-                        </Panel>
+                        <PlayerConfigPanel
+                            player={this.props.gameState.players[1]}
+                            playerIndex={1}
+                            updatePlayer={this.props.updatePlayer}
+                            />
                     </Col>
                 </Row>
 
@@ -217,7 +161,7 @@ export default class CheckersConfig extends React.Component {
                                     {typeOptions}
                                 </FormControl>
                             </FormGroup>
-                            <Panel collapsible header='Show/Hide description'>
+                            <Panel collapsible defaultExpanded={true} header='Show/Hide description'>
                                 {this.props.gameTypes.get(this.props.gameState.gameType).description}
                             </Panel>
                             <FormGroup controlId="boardColor">
@@ -234,7 +178,7 @@ export default class CheckersConfig extends React.Component {
                     <Col sm={6} xsHidden>
                         <Panel header={<h3>Board Sample</h3>}>
                             <div style={{maxWidth:206}}>
-                                <CheckersBoard
+                                <CheckerBoard
                                     size={2}
                                     color={this.props.gameState.config.color}
                                     secondaryColor={this.props.gameState.config.secondaryColor}
@@ -261,7 +205,7 @@ export default class CheckersConfig extends React.Component {
                                         highlighted={false}
                                         key="player2SampleToken"
                                     />
-                                </CheckersBoard>
+                                </CheckerBoard>
                             </div>
                         </Panel>
                     </Col>

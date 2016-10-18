@@ -1,7 +1,7 @@
 import React from 'react'
 
 import PlayerNameSpan from './PlayerNameSpan'
-import NumberWithOrd from './NumberWithOrd'
+import NumberWithOrd from '../utilities/NumberWithOrd'
 
 export default class TurnOrWinnerHeader extends React.Component {
     static propTypes = {
@@ -16,7 +16,7 @@ export default class TurnOrWinnerHeader extends React.Component {
         if (!this.props.gameState.winner) {
             html = (
                 <h4>
-                    It is <PlayerNameSpan player={currentPlayer} />'s <NumberWithOrd number={playerTurn} /> turn.
+                    It is <PlayerNameSpan player={currentPlayer} />'s {NumberWithOrd(playerTurn)} turn.
                 </h4>
             );
         } else {

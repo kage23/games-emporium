@@ -3,7 +3,7 @@
 	display: block;
 }
 
-.checkersBoard {
+.checkerBoard {
 	box-sizing: border-box;
 	border: 3px solid gold;
 	overflow: hidden;
@@ -12,17 +12,17 @@
 	width: 100%;
 }
 
-.checkersBoard .highlighted {
+.checkerBoard .highlighted {
 	box-shadow: 0 0 5px 5px #0f0;
 	z-index: 20;
 }
 
-.checkersBoard .cell {
+.checkerBoard .cell {
 	position: relative;
 	float: left;
 }
 
-.checkersBoard .token {
+.checkerBoard .token {
 	border-radius: 50%;
 	border: 1px solid #000;
 	position: absolute;
@@ -32,7 +32,7 @@
 				z-index 0s ease-out 0.35s;
 }
 
-.checkersBoard .token .king {
+.checkerBoard .token .king {
 	position: absolute;
 	top: 0;
 	right: 0;

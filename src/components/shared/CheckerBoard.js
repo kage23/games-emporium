@@ -1,7 +1,7 @@
 import React from 'react'
 import Cell from './Cell'
 
-export default class CheckersBoard extends React.Component {
+export default class CheckerBoard extends React.Component {
     static propTypes = {
         size: React.PropTypes.number.isRequired,
         color: React.PropTypes.string.isRequired,
@@ -42,7 +42,7 @@ export default class CheckersBoard extends React.Component {
         var cells = generateCellArray([], this.props);
 
         return (
-            <div className="checkersBoard">
+            <div className="checkerBoard">
                 {cells}
                 {this.props.children}
             </div>

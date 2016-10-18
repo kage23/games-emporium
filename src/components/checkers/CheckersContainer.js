@@ -2,10 +2,10 @@ import React from 'react'
 import { Row, Col } from 'react-bootstrap'
 
 import CheckersConfig from './CheckersConfig'
-import TurnOrWinnerHeader from './TurnOrWinnerHeader'
+import TurnOrWinnerHeader from '../shared/TurnOrWinnerHeader'
 import CheckersGameInfo from './CheckersGameInfo'
-import CheckersBoard from './CheckersBoard'
-import Token from './Token'
+import CheckerBoard from '../shared/CheckerBoard'
+import Token from '../shared/Token'
 
 export default class CheckersContainer extends React.Component {
     static propTypes = {
@@ -18,9 +18,7 @@ export default class CheckersContainer extends React.Component {
         handleCellClick: React.PropTypes.func.isRequired,
         handleTokenClick: React.PropTypes.func.isRequired,
         updatePlayer: React.PropTypes.func.isRequired,
-        updateConfig: React.PropTypes.func.isRequired,
-        colorToRGB: React.PropTypes.func.isRequired,
-        colorDistance: React.PropTypes.func.isRequired
+        updateConfig: React.PropTypes.func.isRequired
     };
 
     render() {
@@ -57,8 +55,6 @@ export default class CheckersContainer extends React.Component {
                     updatePlayer={this.props.updatePlayer}
                     updateConfig={this.props.updateConfig}
                     newGame={this.props.newGame}
-                    colorToRGB={this.props.colorToRGB}
-                    colorDistance={this.props.colorDistance}
                     />
             );
         else
@@ -67,7 +63,7 @@ export default class CheckersContainer extends React.Component {
                     <TurnOrWinnerHeader gameState={this.props.gameState} />
                     <Row>
                         <Col sm={8} lg={7}>
-                            <CheckersBoard
+                            <CheckerBoard
                                 size={this.props.gameState.config.boardSize}
                                 color={this.props.gameState.config.color}
                                 secondaryColor={this.props.gameState.config.secondaryColor}
@@ -75,7 +71,7 @@ export default class CheckersContainer extends React.Component {
                                 handleCellClick={this.props.handleCellClick}
                                 >
                                 {tokens}
-                            </CheckersBoard>
+                            </CheckerBoard>
                         </Col>
 
                         <Col sm={4} lg={5}>
