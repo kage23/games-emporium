@@ -1,6 +1,5 @@
 import React from 'react'
 import { Grid, Breadcrumb } from 'react-bootstrap'
-import '../App.css'
 
 import SiteHeader from './SiteHeader'
 

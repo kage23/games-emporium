@@ -3,3 +3,64 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.checkersConfig label,
+.checkersConfig input {
+    display: block;
+}
+
+.checkerBoard {
+    box-sizing: border-box;
+    border: 3px solid gold;
+    overflow: hidden;
+    max-width: 620px;
+    position: relative;
+    width: 100%;
+}
+
+.checkerBoard .highlighted {
+    box-shadow: 0 0 5px 5px #0f0;
+    z-index: 20;
+}
+
+.checkerBoard .cell {
+    position: relative;
+    float: left;
+}
+
+.checkerBoard .token {
+    border-radius: 50%;
+    border: 1px solid #000;
+    position: absolute;
+    z-index: 10;
+    transition: left 0.35s ease-out,
+    top 0.35s ease-out,
+    z-index 0s ease-out 0.35s;
+}
+
+.checkerBoard .token .king {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    filter: invert(100%);
+
+    font-size: 6vmin;
+}
+
+.breadcrumb + .page-header {
+    margin-top: 20px;
+}
+
+@media screen and (max-width: 767px) {
+    .page-header h1 small {
+        display: block;
+    }
+}
