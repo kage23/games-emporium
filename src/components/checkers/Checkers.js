@@ -5,7 +5,7 @@ import GameHeader from '../shared/GameHeader'
 import CheckersContainer from './CheckersContainer'
 
 export default class Checkers extends React.Component {
-    config = {
+    defaultConfigs = {
         debug: false,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
         boardSize: 8,                   // must be an even number. number of cells along each side of the board. board will be square.
         color: 'green',                  // color of playable squares
@@ -29,11 +29,23 @@ export default class Checkers extends React.Component {
     gameTypes = new Map([
         ['regular', {
             label: 'Regular Checkers',
-            description: <p>Just regular-ole checkers.</p>
+            description: <p>Just regular-ole checkers.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 8,
+                    startingTokens: this.defaultConfigs.startingTokens
+                });
+            }
         }],
         ['anti', {
             label: 'Anti-Checkers',
-            description: <p>Instead of losing when you have no valid moves, you win when you have no valid moves.</p>
+            description: <p>Instead of losing when you have no valid moves, you win when you have no valid moves.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 8,
+                    startingTokens: this.defaultConfigs.startingTokens
+                });
+            }
         }]
     ]);
 
@@ -43,19 +55,19 @@ export default class Checkers extends React.Component {
             {
                 name: 'Player 1',
                 computer: false,
-                color: this.config.defaultPlayerColors[0],
+                color: this.defaultConfigs.defaultPlayerColors[0],
                 tokens: [],
                 captures: 0
             },
             {
                 name: 'Player 2',
                 computer: false,
-                color: this.config.defaultPlayerColors[1],
+                color: this.defaultConfigs.defaultPlayerColors[1],
                 tokens: [],
                 captures: 0
             }
         ],
-        config: this.config,
+        config: this.defaultConfigs,
         currentTurn: -1,
         selectedToken: '',
         highlightedTokens: [],
@@ -65,8 +77,18 @@ export default class Checkers extends React.Component {
         winner: undefined
     };
 
+    setConfig = (inConfig) => {
+        var config = Object.assign({}, this.state.config, inConfig);
+
+        this.setState({config});
+    };
+
     setGameType = (gameType) => {
         this.setState({gameType});
+
+        if (this.gameTypes.get(gameType).callback) {
+            this.gameTypes.get(gameType).callback.apply(this);
+        }
     };
 
     newGame = () => {
