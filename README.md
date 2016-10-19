@@ -1,3 +1,13 @@
+Below is the automatic README that gets generated for [Create React App](https://github.com/facebookincubator/create-react-app)
+projects. All you need to know to run the project locally and develop on it is this:
+
+1. First, clone it then run `npm install`.
+1. Then, just run `npm start` to start a local dev server. Redirect your browser to `http://localhost:3000/games/`.
+1. When you're ready, `npm run build` will make an optimized production build and `npm run deploy:prod` will deploy it
+ to [kage23.com/games](http://www.kage23.com/games)
+
+*****
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.  
