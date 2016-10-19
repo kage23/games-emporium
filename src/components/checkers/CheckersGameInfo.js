@@ -19,7 +19,7 @@ export default class CheckersGameInfo extends React.Component {
         var generatePlayerInfoBox = (player, playerIndex) => {
             return (
                 <Col lg={6} key={playerIndex}>
-                    <PlayerInfoListing playerName={player.name} dataListing={[
+                    <PlayerInfoListing player={player} dataListing={[
                         {
                             label: 'Total men remaining',
                             value: player.tokens.length
