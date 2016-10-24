@@ -124,6 +124,10 @@ export default class Checkers extends React.Component {
         if (players[0].computer) this.computerTurn();
     };
 
+    loadGame = (saveGameText) => {
+        this.setState(JSON.parse(atob(saveGameText)));
+    };
+
     newTurn = () => {
         var winner,
             newTurn = this.state.currentTurn + 1;
@@ -498,13 +502,18 @@ export default class Checkers extends React.Component {
         }, false);
     };
 
+    exportStateAsString = () => {
+        return btoa(JSON.stringify(this.state));
+    };
+
     render() {
         return (
             <Grid>
-                <GameHeader game="Checkers"
-                            gameTypeKey={this.state.gameType}
-                            gameTypeObject={this.gameTypes.get(this.state.gameType)}
-                />
+                <GameHeader
+                    game="Checkers"
+                    gameTypeKey={this.state.gameType}
+                    gameTypeObject={this.gameTypes.get(this.state.gameType)}
+                    />
 
                 <CheckersContainer
                     gameTypes={this.gameTypes}
@@ -512,7 +521,9 @@ export default class Checkers extends React.Component {
                     gameState={this.state}
                     newTurn={this.newTurn}
                     newGame={this.newGame}
+                    loadGame={this.loadGame}
                     reset={this.reset}
+                    saveGame={this.exportStateAsString}
                     handleCellClick={this.handleCellClick}
                     handleTokenClick={this.handleTokenClick}
                     updatePlayer={this.updatePlayer}

@@ -1,18 +1,36 @@
 import React from 'react'
-import { Button, Row, Col } from 'react-bootstrap'
+import { ButtonToolbar, Button, Row, Col } from 'react-bootstrap'
 
 import PlayerInfoListing from '../shared/PlayerInfoListing'
 import MovesListPanel from '../shared/MovesListPanel'
+import ModalSaveGame from '../shared/ModalSaveGame'
 
 export default class CheckersGameInfo extends React.Component {
     static propTypes = {
         gameState: React.PropTypes.object.isRequired,
-        reset: React.PropTypes.func.isRequired
+        reset: React.PropTypes.func.isRequired,
+        saveGame: React.PropTypes.func.isRequired
+    };
+
+    state = {
+        showSaveModal: false
     };
 
     newGame = (evt) => {
         evt.preventDefault();
         this.props.reset();
+    };
+
+    saveGame = (evt) => {
+        evt.preventDefault();
+
+        this.setState({ showSaveModal: true });
+    };
+
+    closeSaveModal = (evt) => {
+        evt.preventDefault();
+
+        this.setState({ showSaveModal: false });
     };
 
     render() {
@@ -40,11 +58,22 @@ export default class CheckersGameInfo extends React.Component {
 
         return (
             <div className="gameInfo">
-                <Button bsStyle="primary" onClick={this.newGame}>New game</Button>
+                <Row>
+                    <Col xs={12}>
+                        <ButtonToolbar>
+                            <Button bsStyle="primary" className="pull-right" onClick={this.newGame}>Abandon game</Button>
+                            <Button bsStyle="primary" className="pull-right" onClick={this.saveGame}>Save game</Button>
+                        </ButtonToolbar>
+                    </Col>
+                </Row>
                 <Row style={{marginTop:8}}>
                     {this.props.gameState.players.map(generatePlayerInfoBox)}
                 </Row>
                 <MovesListPanel moves={this.props.gameState.moves} />
+
+                <ModalSaveGame showModal={this.state.showSaveModal}
+                               saveGameText={this.props.saveGame()}
+                               closeModal={this.closeSaveModal} />
             </div>
         );
     }

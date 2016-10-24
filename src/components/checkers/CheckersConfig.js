@@ -1,9 +1,10 @@
 import React from 'react'
-import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap'
+import { Row, Col, Panel, FormGroup, ControlLabel, FormControl, ButtonToolbar, Button } from 'react-bootstrap'
 
 import PlayerConfigPanel from '../shared/PlayerConfigPanel'
 import CheckerBoard from '../shared/CheckerBoard'
 import Token from '../shared/Token'
+import ModalLoadGame from '../shared/ModalLoadGame'
 
 import ColorDistance from '../../utilities/ColorDistance'
 import ColorToRGB from '../../utilities/ColorToRGB'
@@ -15,7 +16,12 @@ export default class CheckersConfig extends React.Component {
         gameState: React.PropTypes.object.isRequired,
         newGame: React.PropTypes.func.isRequired,
         updatePlayer: React.PropTypes.func.isRequired,
-        updateConfig: React.PropTypes.func.isRequired
+        updateConfig: React.PropTypes.func.isRequired,
+        loadGame: React.PropTypes.func.isRequired
+    };
+
+    state = {
+        showLoadModal: false
     };
 
     playGame = (evt) => {
@@ -65,6 +71,16 @@ export default class CheckersConfig extends React.Component {
         if (configIsValid) {
             this.props.newGame();
         }
+    };
+
+    showLoadModal = (evt) => {
+        evt.preventDefault();
+
+        this.setState({showLoadModal:true});
+    };
+
+    closeLoadModal = () => {
+        this.setState({showLoadModal:false});
     };
 
     boardConfig = (evt) => {
@@ -124,9 +140,14 @@ export default class CheckersConfig extends React.Component {
                         <h3 style={{marginTop:0}}>Checkers Config</h3>
                     </Col>
                     <Col xs={4}>
-                        <Button bsStyle="primary" style={{float:'right'}} href="#" onClick={this.playGame}>
-                            Let's play!
-                        </Button>
+                        <ButtonToolbar className="pull-right">
+                            <Button bsStyle="primary" href="#" onClick={this.showLoadModal}>
+                                Load game
+                            </Button>
+                            <Button bsStyle="primary" href="#" onClick={this.playGame}>
+                                Let's play!
+                            </Button>
+                        </ButtonToolbar>
                     </Col>
                 </Row>
 
@@ -210,6 +231,12 @@ export default class CheckersConfig extends React.Component {
                         </Panel>
                     </Col>
                 </Row>
+
+                <ModalLoadGame
+                    showModal={this.state.showLoadModal}
+                    closeModal={this.closeLoadModal}
+                    loadGame={this.props.loadGame}
+                    />
             </div>
         );
     }

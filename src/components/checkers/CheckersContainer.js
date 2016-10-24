@@ -14,6 +14,7 @@ export default class CheckersContainer extends React.Component {
         gameState: React.PropTypes.object.isRequired,
         newTurn: React.PropTypes.func.isRequired,
         newGame: React.PropTypes.func.isRequired,
+        loadGame: React.PropTypes.func.isRequired,
         reset: React.PropTypes.func.isRequired,
         handleCellClick: React.PropTypes.func.isRequired,
         handleTokenClick: React.PropTypes.func.isRequired,
@@ -55,14 +56,15 @@ export default class CheckersContainer extends React.Component {
                     updatePlayer={this.props.updatePlayer}
                     updateConfig={this.props.updateConfig}
                     newGame={this.props.newGame}
+                    loadGame={this.props.loadGame}
                     />
             );
         else
             html = (
                 <div>
-                    <TurnOrWinnerHeader gameState={this.props.gameState} />
                     <Row>
                         <Col sm={8} lg={7}>
+                            <TurnOrWinnerHeader gameState={this.props.gameState} />
                             <CheckerBoard
                                 size={this.props.gameState.config.boardSize}
                                 color={this.props.gameState.config.color}
@@ -78,8 +80,7 @@ export default class CheckersContainer extends React.Component {
                             <CheckersGameInfo
                                 gameState={this.props.gameState}
                                 reset={this.props.reset}
-                                colorToRGB={this.props.colorToRGB}
-                                colorDistance={this.props.colorDistance}
+                                saveGame={this.props.saveGame}
                                 />
                         </Col>
                     </Row>
