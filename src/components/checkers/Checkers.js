@@ -6,7 +6,7 @@ import CheckersContainer from './CheckersContainer'
 
 export default class Checkers extends React.Component {
     defaultConfigs = {
-        debug: false,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
+        debug: true,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
         boardSize: 8,                   // must be an even number. number of cells along each side of the board. board will be square.
         color: 'green',                  // color of playable squares
         secondaryColor: '#fff',         // color of alternate squares
@@ -78,6 +78,8 @@ export default class Checkers extends React.Component {
     };
 
     setConfig = (inConfig) => {
+        if (this.state.config.debug) console.log('DEBUG: setConfig', inConfig);
+
         var config = Object.assign({}, this.state.config, inConfig);
 
         this.setState({config});
@@ -85,6 +87,8 @@ export default class Checkers extends React.Component {
 
     setGameType = (gameType) => {
         this.setState({gameType});
+        if (this.state.config.debug) console.log('DEBUG: setGameType', gameType);
+
 
         if (this.gameTypes.get(gameType).callback) {
             this.gameTypes.get(gameType).callback.apply(this);
@@ -100,6 +104,7 @@ export default class Checkers extends React.Component {
                     id: playerIndex + '-' + token.position
                 };
             });
+        if (this.state.config.debug) console.log('DEBUG: newGame');
 
             return {
                 name: player.name,
@@ -125,14 +130,16 @@ export default class Checkers extends React.Component {
     };
 
     loadGame = (saveGameText) => {
+        if (this.state.config.debug) console.log('DEBUG: loadGame', saveGameText);
+
         this.setState(JSON.parse(atob(saveGameText)));
     };
 
     newTurn = () => {
         var winner,
             newTurn = this.state.currentTurn + 1;
+        if (this.state.config.debug) console.log('DEBUG: newTurn');
 
-        if (this.state.config.debug) console.log('Starting turn',newTurn);
 
         winner = this.determineWinner(newTurn);
 
@@ -149,6 +156,8 @@ export default class Checkers extends React.Component {
     };
 
     determineWinner = (currentTurn) => {
+        if (this.state.config.debug) console.log('DEBUG: checkWinLose', currentTurn);
+
         var winner;
 
         if (this.playerHasNoValidMoves(this.state.players[(currentTurn + 2) % 2])) {
@@ -161,6 +170,8 @@ export default class Checkers extends React.Component {
     };
 
     computerTurn = () => {
+        if (this.state.config.debug) console.log('DEBUG: computerTurn');
+
         var executeTurn = () => {
             // Callback 1
             // 1s after the live player completes their turn, we select a move and highlight the token and its valid squares
@@ -194,6 +205,8 @@ export default class Checkers extends React.Component {
     };
 
     reset = () => {
+        if (this.state.config.debug) console.log('DEBUG: reset');
+
         clearTimeout(this.computerTurnTimeout);
         this.setState({currentTurn:-1,winner:false});
     };
@@ -205,7 +218,7 @@ export default class Checkers extends React.Component {
     };
 
     handleTokenClick = (token) => {
-        if (this.state.config.debug) console.log('tokenClick!',token.props.position);
+        if (this.state.config.debug) console.log('DEBUG: handleTokenClick', token);
 
         var currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
             validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
@@ -215,8 +228,6 @@ export default class Checkers extends React.Component {
 
         if (validMovesForToken.length && ! this.state.continuingAfterJump) {
             this.highlightValidMovesForToken(validMovesForToken);
-
-            if (this.state.config.debug) console.log('Highlighting token',token);
 
             this.setState({
                 selectedToken: token.props.position
@@ -229,6 +240,8 @@ export default class Checkers extends React.Component {
     };
 
     highlightValidTokens = (validMoves) => {
+        if (this.state.config.debug) console.log('DEBUG: highlightValidTokens', validMoves);
+
         var highlightedTokens = validMoves.map(move => {
             return move.from;
         });
@@ -237,6 +250,8 @@ export default class Checkers extends React.Component {
     };
 
     highlightValidMovesForToken = (validMoves) => {
+        if (this.state.config.debug) console.log('DEBUG: highlightValidMovesForToken', validMoves);
+
         var highlightedCells;
 
         highlightedCells = validMoves.map(move => {
@@ -249,6 +264,8 @@ export default class Checkers extends React.Component {
     };
 
     handleCellClick = (cell) => {
+        if (this.state.config.debug) console.log('DEBUG: handleCellClick', cell);
+
         var move,
             cellIsValid,
             currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
@@ -261,8 +278,6 @@ export default class Checkers extends React.Component {
         }, false);
 
         if (cellIsValid) {
-            if (this.state.config.debug) console.log('Clicked on highlighted cell', cell.props.id);
-
             // Find the move corresponding to the selected token and cell
             move = validMovesForPlayer.filter(move => {
                 return (move.from === this.state.selectedToken && move.to === cell.props.id);
@@ -273,13 +288,13 @@ export default class Checkers extends React.Component {
     };
 
     moveToken = (move) => {
+        if (this.state.config.debug) console.log('DEBUG: move', move);
+
         var newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
             newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves, newMovesArray,
             continueTurn = false, tokenGotKinged = false,
             currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
             opponent = this.state.players[(this.state.currentTurn + 1) % 2];
-
-            if (this.state.config.debug) console.log('Moving...',move);
 
         // Find the correct token object from the player's token array
         currentPlayer.tokens.forEach((token, tokenIndex) => {
@@ -355,30 +370,25 @@ export default class Checkers extends React.Component {
     };
 
     isCellOccupied = (col, row) => {
+        if (this.state.config.debug) console.log('DEBUG: isCellOccupied', col, row);
+
         var cellIsOccupied = false,
             cellId = 'c' + col + 'r' + row;
 
-        if (this.state.config.debug) console.log('Checking to see if',col,row,'is occupied or not');
-
         this.state.players.forEach((player, playerIndex) => {
             player.tokens.forEach(token => {
-                if (this.state.config.debug) console.log('player',playerIndex,'token',token.id,'token position',token.position);
                 if (token.position === cellId) {
                     cellIsOccupied = playerIndex;
                 }
             });
         });
 
-        if (typeof cellIsOccupied === 'number') {
-            if (this.state.config.debug) console.log(col + ' ' + row + ' is occupied by player ' + cellIsOccupied);
-        } else if (typeof cellIsOccupied === 'boolean') {
-            if (this.state.config.debug) console.log(col + ' ' + row + ' is not occupied');
-        }
-
         return cellIsOccupied;
     };
 
     determineValidMovesForPlayer = (player, token) => {
+        if (this.state.config.debug) console.log('DEBUG: determineValidMovesForPlayer', player, token);
+
         var validMovesForPlayer = [], jump = false, filteredValidMovesForPlayer = [];
 
         if (!token) {
@@ -395,8 +405,6 @@ export default class Checkers extends React.Component {
             validMovesForPlayer = this.determineValidMovesForToken(token);
         }
 
-        if (this.state.config.debug) console.log('player has ', validMovesForPlayer.length, 'valid moves PRE JUMP CHECK');
-
         validMovesForPlayer.forEach(move => {
             if (move.jump) jump = true;
         });
@@ -406,22 +414,20 @@ export default class Checkers extends React.Component {
                 return !!move.jump;
             });
             filteredValidMovesForPlayer.jumpMoves = true;
-
-            if (this.state.config.debug) console.log('its a jump move possibility so now player only has',filteredValidMovesForPlayer.length,'valid moves');
         }
 
         return jump ? filteredValidMovesForPlayer : validMovesForPlayer;
     };
 
     determineValidMovesForToken = (token) => {
+        if (this.state.config.debug) console.log('DEBUG: determineValidMovesForToken', token);
+
         var tokenOwner = parseInt(token.id[0], 10),
             currentCol = parseInt(token.position[token.position.indexOf('c') + 1], 10),
             currentRow = parseInt(token.position[token.position.indexOf('r') + 1], 10),
             validCols = [],
             validRows = [],
             validMoves = [];
-
-        if (this.state.config.debug) console.log('checking valid moves for',token.id);
 
         if (currentCol - 1 >= 0)
             validCols.push(currentCol - 1);
@@ -440,15 +446,11 @@ export default class Checkers extends React.Component {
                     cellIsOccupied = this.isCellOccupied(col, row);
 
                 if (cellIsOccupied === false) {
-                    if (this.state.config.debug) console.log(col,row,'is not occupied; it is valid for',token.id);
-
                     validMoves.push({
                         from: token.position,
                         to: 'c' + col + 'r' + row
                     });
                 } else if (cellIsOccupied !== tokenOwner) {
-                    if (this.state.config.debug) console.log(col,row,'is occupied by the opponent of',token.id,'check for jump move');
-
                     // Cell is occupied by opponent; see if the next space is open for jumping.
                     if (currentCol < col && col + 1 < this.state.config.boardSize)
                         newCol = col + 1;
@@ -461,19 +463,15 @@ export default class Checkers extends React.Component {
                         newRow = row - 1;
 
                     if (typeof newRow !== 'undefined' && typeof newCol !== 'undefined') {
-                        if (this.state.config.debug) console.log('can we jump into',newCol,newRow,'?');
-
                         if (this.isCellOccupied(newCol, newRow) === false) {
-                            if (this.state.config.debug) console.log('jumping into',newCol,newRow,'is a valid move for',token.id);
-
                             validMoves.push({
                                 from: token.position,
                                 to: 'c' + newCol + 'r' + newRow,
                                 jump: 'c' + col + 'r' + row
                             });
                         }
-                    } else if (this.state.config.debug) console.log('no suitable space to jump into');
-                } else if (this.state.config.debug) console.log(col, row, 'is occupied by the owner of', token.id);
+                    }
+                }
             })
         });
 
@@ -482,6 +480,8 @@ export default class Checkers extends React.Component {
     };
 
     updatePlayer = (player, playerIndex) => {
+        if (this.state.config.debug) console.log('DEBUG: updatePlayer', player, playerIndex);
+
         var players = this.state.players;
 
         players[playerIndex] = player;
@@ -490,10 +490,14 @@ export default class Checkers extends React.Component {
     };
 
     updateConfig = (config) => {
+        if (this.state.config.debug) console.log('DEBUG: updateConfig', config);
+
         this.setState({config});
     };
 
     getTokenByPosition = (position) => {
+        if (this.state.config.debug) console.log('DEBUG: getTokenByPosition', position);
+
         return this.state.players.reduce((prevPlayer, currPlayer) => {
             return currPlayer.tokens.reduce((prevToken, currToken) => {
                 if (currToken.position === position) return currToken;
@@ -503,6 +507,8 @@ export default class Checkers extends React.Component {
     };
 
     exportStateAsString = () => {
+        if (this.state.config.debug) console.log('DEBUG: exportStateAsString');
+
         return btoa(JSON.stringify(this.state));
     };
 
