@@ -61,7 +61,9 @@ export default class CheckersGameInfo extends React.Component {
                 <Row>
                     <Col xs={12}>
                         <ButtonToolbar>
-                            <Button bsStyle="primary" className="pull-right" onClick={this.newGame}>Abandon game</Button>
+                            <Button bsStyle="primary" className="pull-right" onClick={this.newGame}>
+                                {this.props.gameState.winner ? 'New' : 'Abandon'} game
+                            </Button>
                             <Button bsStyle="primary" className="pull-right" onClick={this.saveGame}>Save game</Button>
                         </ButtonToolbar>
                     </Col>
@@ -69,7 +71,7 @@ export default class CheckersGameInfo extends React.Component {
                 <Row style={{marginTop:8}}>
                     {this.props.gameState.players.map(generatePlayerInfoBox)}
                 </Row>
-                <MovesListPanel moves={this.props.gameState.moves} />
+                <MovesListPanel moves={this.props.gameState.movesHistory} />
 
                 <ModalSaveGame showModal={this.state.showSaveModal}
                                saveGameText={this.props.saveGame()}

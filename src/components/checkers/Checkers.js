@@ -73,7 +73,8 @@ export default class Checkers extends React.Component {
         highlightedTokens: [],
         highlightedCells: [],
         continuingAfterJump: false,
-        moves: [],
+        movesHistory: [],
+        validMoves: [],
         winner: undefined
     };
 
@@ -86,47 +87,55 @@ export default class Checkers extends React.Component {
     };
 
     setGameType = (gameType) => {
-        this.setState({gameType});
         if (this.state.config.debug) console.log('DEBUG: setGameType', gameType);
 
+        this.setState({gameType}, applyCallback);
 
-        if (this.gameTypes.get(gameType).callback) {
-            this.gameTypes.get(gameType).callback.apply(this);
+        function applyCallback () {
+            if (this.gameTypes.get(gameType).callback) {
+                this.gameTypes.get(gameType).callback.apply(this);
+            }
         }
     };
 
     newGame = () => {
-        var players = this.state.players.map((player, playerIndex) => {
-            var tokens = this.state.config.startingTokens[playerIndex].map(token => {
-                return {
-                    position: token.position,
-                    king: token.king,
-                    id: playerIndex + '-' + token.position
-                };
-            });
         if (this.state.config.debug) console.log('DEBUG: newGame');
 
-            return {
-                name: player.name,
-                computer: player.computer,
-                color: player.color,
-                captures: player.captures,
-                tokens
-            };
-        });
+        var players = this.state.players.map(this.generatePlayerWithTokens);
 
         this.setState({
             players,
-            currentTurn: 0,
+            currentTurn: -1,
             selectedToken: '',
             highlightedCells: [],
             highlightedTokens: [],
-            moves: [],
+            movesHistory: [],
             continuingAfterJump: false,
             winner: undefined
-        });
+        }, this.newTurn);
+    };
 
-        if (players[0].computer) this.computerTurn();
+    generatePlayerWithTokens = (player, playerIndex) => {
+        var newPlayer = {},
+            tokens = this.state.config.startingTokens[playerIndex].map(generateToken);
+
+        Object.keys(player).forEach(generateNewPlayerItem);
+
+        newPlayer.tokens = tokens;
+
+        return newPlayer;
+
+        function generateNewPlayerItem (key) {
+            newPlayer[key] = player[key];
+        }
+
+        function generateToken (token) {
+            return {
+                position: token.position,
+                king: token.king,
+                id: playerIndex + '-' + token.position
+            };
+        }
     };
 
     loadGame = (saveGameText) => {
@@ -137,11 +146,14 @@ export default class Checkers extends React.Component {
 
     newTurn = () => {
         var winner,
-            newTurn = this.state.currentTurn + 1;
+            validMoves,
+            newTurn = this.state.currentTurn + 1,
+            newPlayer = this.state.players[(newTurn + 2) % 2];
+
         if (this.state.config.debug) console.log('DEBUG: newTurn');
 
-
-        winner = this.determineWinner(newTurn);
+        winner = this.checkWinLose(newTurn);
+        validMoves = this.determineValidMovesForPlayer(newPlayer);
 
         this.setState({
             currentTurn: newTurn,
@@ -149,18 +161,21 @@ export default class Checkers extends React.Component {
             highlightedCells: [],
             highlightedTokens: [],
             continuingAfterJump: false,
-            winner
-        });
+            winner,
+            validMoves
+        }, checkComputerTurn);
 
-        if (!winner && this.state.players[newTurn % 2].computer) this.computerTurn();
+        function checkComputerTurn () {
+            if (!winner && newPlayer.computer) this.computerTurn();
+        }
     };
 
-    determineWinner = (currentTurn) => {
+    checkWinLose = (currentTurn) => {
         if (this.state.config.debug) console.log('DEBUG: checkWinLose', currentTurn);
 
         var winner;
 
-        if (this.playerHasNoValidMoves(this.state.players[(currentTurn + 2) % 2])) {
+        if (this.determineValidMovesForPlayer(this.state.players[(currentTurn + 2) % 2]).length <= 0) {
             // Anti-checkers win condition, lose condition otherwise
             if (this.state.gameType === 'anti') winner = this.state.players[(currentTurn + 2) % 2];
             else winner = this.state.players[(currentTurn + 1) % 2];
@@ -174,7 +189,7 @@ export default class Checkers extends React.Component {
 
         var executeTurn = () => {
             // Callback 1
-            // 1s after the live player completes their turn, we select a move and highlight the token and its valid squares
+            // 1delay after the live player completes their turn, we select a move and highlight the token and its valid squares
             var currentPlayer, validMovesForPlayer, selectedMove, validMovesForToken;
 
             currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2];
@@ -189,15 +204,18 @@ export default class Checkers extends React.Component {
 
             this.setState({
                 selectedToken: selectedMove.from
-            });
+            }, highlightMovesAndSetTimeout.bind(this));
 
-            this.highlightValidMovesForToken(validMovesForToken);
+            function highlightMovesAndSetTimeout () {
+                this.highlightValidMovesForToken(validMovesForToken);
 
-            this.computerTurnTimeout = setTimeout(() => {
-                // Callback 2
-                // 1s after highlighting the token, we move it
-                this.moveToken(selectedMove);
-            }, this.state.config.computerDelay); // Callback 2
+                //noinspection JSPotentiallyInvalidUsageOfThis
+                this.computerTurnTimeout = setTimeout(() => {
+                    // Callback 2
+                    // 1s after highlighting the token, we move it
+                    this.moveToken(selectedMove);
+                }, this.state.config.computerDelay); // Callback 2
+            }
         };
 
         if (this.state.continuingAfterJump) executeTurn();
@@ -205,16 +223,14 @@ export default class Checkers extends React.Component {
     };
 
     reset = () => {
+        var players = this.state.players.map(player => {
+            return Object.assign({}, player, {captures: 0});
+        });
+
         if (this.state.config.debug) console.log('DEBUG: reset');
 
         clearTimeout(this.computerTurnTimeout);
-        this.setState({currentTurn:-1,winner:false});
-    };
-
-    playerHasNoValidMoves = (player) => {
-        var moves = this.determineValidMovesForPlayer(player);
-
-        return moves.length <= 0;
+        this.setState({players, currentTurn: -1, winner: false});
     };
 
     handleTokenClick = (token) => {
@@ -258,9 +274,7 @@ export default class Checkers extends React.Component {
             return move.to;
         });
 
-        if (this.state.config.debug) console.log('Highlighting cells',highlightedCells);
-
-        this.setState({highlightedCells: highlightedCells});
+        this.setState({highlightedCells});
     };
 
     handleCellClick = (cell) => {
@@ -291,7 +305,7 @@ export default class Checkers extends React.Component {
         if (this.state.config.debug) console.log('DEBUG: move', move);
 
         var newTokenIndex, newTokenObject, newPlayerTokensArray, newPlayerObject, jumpedTokenIndex,
-            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves, newMovesArray,
+            newOpponentTokensArray, newOpponentObject, newPlayersArray, moveToRow, newValidMoves, newMovesHistoryArray,
             continueTurn = false, tokenGotKinged = false,
             currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
             opponent = this.state.players[(this.state.currentTurn + 1) % 2];
@@ -345,28 +359,32 @@ export default class Checkers extends React.Component {
         newPlayersArray[(this.state.currentTurn + 2) % 2] = newPlayerObject;
         newPlayersArray[(this.state.currentTurn + 1) % 2] = move.jump ? newOpponentObject : opponent;
 
-        // Create a new moves array
-        newMovesArray = this.state.moves;
-        newMovesArray.push(move);
+        // Create a new movesHistory array
+        newMovesHistoryArray = this.state.movesHistory;
+        newMovesHistoryArray.push(move);
 
-        this.setState({players: newPlayersArray, moves: newMovesArray});
+        this.setState({players: newPlayersArray, movesHistory: newMovesHistoryArray}, checkJumpAndContinue);
 
-        // If it was a jump, check for more jumps and continue the turn, unless the piece was freshly kinged
-        if (move.jump && !tokenGotKinged) {
-            newValidMoves = this.determineValidMovesForPlayer(currentPlayer, newTokenObject);
-            if (newValidMoves.length && newValidMoves.jumpMoves) {
-                continueTurn = true;
-                this.highlightValidMovesForToken(newValidMoves);
-                this.setState({
-                    selectedToken: newTokenObject.position,
-                    continuingAfterJump: true
-                });
+        function checkJumpAndContinue () {
+            // If it was a jump, check for more jumps and continue the turn, unless the piece was freshly kinged
+            if (move.jump && !tokenGotKinged) {
+                newValidMoves = this.determineValidMovesForPlayer(currentPlayer, newTokenObject);
+                if (newValidMoves.length && newValidMoves.jumpMoves) {
+                    continueTurn = true;
+                    this.highlightValidMovesForToken(newValidMoves);
+                    this.setState({
+                        selectedToken: newTokenObject.position,
+                        continuingAfterJump: true
+                    }, checkComputerTurn);
 
-                if (currentPlayer.computer) this.computerTurn();
+                    function checkComputerTurn () {
+                        if (currentPlayer.computer) this.computerTurn();
+                    }
+                }
             }
-        }
 
-        if (! continueTurn) this.newTurn();
+            if (!continueTurn) this.newTurn();
+        }
     };
 
     isCellOccupied = (col, row) => {
@@ -475,8 +493,7 @@ export default class Checkers extends React.Component {
             })
         });
 
-        if (validMoves.length) return validMoves;
-        else return [];
+        return validMoves;
     };
 
     updatePlayer = (player, playerIndex) => {
