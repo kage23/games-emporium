@@ -148,12 +148,17 @@ export default class Checkers extends React.Component {
         var winner,
             validMoves,
             newTurn = this.state.currentTurn + 1,
-            newPlayer = this.state.players[(newTurn + 2) % 2];
+            newPlayer = this.state.players[newTurn % 2];
 
         if (this.state.config.debug) console.log('DEBUG: newTurn');
 
-        winner = this.checkWinLose(newTurn);
         validMoves = this.determineValidMovesForPlayer(newPlayer);
+
+        if (validMoves.length <= 0) {
+            // Anti-checkers win condition, lose condition otherwise
+            if (this.state.gameType === 'anti') winner = newPlayer;
+            else winner = this.state.players[(newTurn - 1) % 2];
+        }
 
         this.setState({
             currentTurn: newTurn,
@@ -190,25 +195,22 @@ export default class Checkers extends React.Component {
         var executeTurn = () => {
             // Callback 1
             // 1delay after the live player completes their turn, we select a move and highlight the token and its valid squares
-            var currentPlayer, validMovesForPlayer, selectedMove, validMovesForToken;
+            var selectedMove, validMovesForToken;
 
-            currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2];
-            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer, this.state.continuingAfterJump ?
-                this.getTokenByPosition(this.state.selectedToken) : undefined);
-            selectedMove = validMovesForPlayer[Math.floor(Math.random() * validMovesForPlayer.length)];
+            selectedMove = this.state.validMoves[Math.floor(Math.random() * this.state.validMoves.length)];
             // eslint-disable-next-line
-            validMovesForToken = validMovesForPlayer.filter(move => {
+            validMovesForToken = this.state.validMoves.filter(move => {
                 if (move.from === selectedMove.from)
                     return true;
             });
 
+            this.highlightValidMovesForToken(validMovesForToken);
+
             this.setState({
                 selectedToken: selectedMove.from
-            }, highlightMovesAndSetTimeout.bind(this));
+            }, setMoveTimeout.bind(this));
 
-            function highlightMovesAndSetTimeout () {
-                this.highlightValidMovesForToken(validMovesForToken);
-
+            function setMoveTimeout () {
                 //noinspection JSPotentiallyInvalidUsageOfThis
                 this.computerTurnTimeout = setTimeout(() => {
                     // Callback 2
@@ -222,12 +224,12 @@ export default class Checkers extends React.Component {
         else this.computerTurnTimeout = setTimeout(executeTurn, this.state.config.computerDelay); // Callback 1
     };
 
-    reset = () => {
+    backToConfig = () => {
         var players = this.state.players.map(player => {
             return Object.assign({}, player, {captures: 0});
         });
 
-        if (this.state.config.debug) console.log('DEBUG: reset');
+        if (this.state.config.debug) console.log('DEBUG: backToConfig');
 
         clearTimeout(this.computerTurnTimeout);
         this.setState({players, currentTurn: -1, winner: false});
@@ -236,9 +238,7 @@ export default class Checkers extends React.Component {
     handleTokenClick = (token) => {
         if (this.state.config.debug) console.log('DEBUG: handleTokenClick', token);
 
-        var currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
-            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer),
-            validMovesForToken = validMovesForPlayer.filter(move => {
+        var validMovesForToken = this.state.validMoves.filter(move => {
                 return token.props.position === move.from;
             });
 
@@ -249,7 +249,7 @@ export default class Checkers extends React.Component {
                 selectedToken: token.props.position
             });
         } else if (validMovesForToken.length === 0) {
-            this.highlightValidTokens(validMovesForPlayer);
+            this.highlightValidTokens(this.state.validMoves);
 
             setTimeout(() => { this.highlightValidTokens([])}, 150);
         }
@@ -281,23 +281,23 @@ export default class Checkers extends React.Component {
         if (this.state.config.debug) console.log('DEBUG: handleCellClick', cell);
 
         var move,
-            cellIsValid,
-            currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
-            validMovesForPlayer = this.determineValidMovesForPlayer(currentPlayer);
+            cellIsValid;
 
-        // Check if the clicked cell is a valid move
-        cellIsValid = validMovesForPlayer.reduce((val, move) => {
-            if (cell.props.id === move.to) val = true;
-            return val;
-        }, false);
+        if (this.state.selectedToken) {
+            // Check if the clicked cell is a valid move
+            cellIsValid = this.state.validMoves.reduce((val, move) => {
+                if (cell.props.id === move.to) val = true;
+                return val;
+            }, false);
 
-        if (cellIsValid) {
-            // Find the move corresponding to the selected token and cell
-            move = validMovesForPlayer.filter(move => {
-                return (move.from === this.state.selectedToken && move.to === cell.props.id);
-            })[0];
+            if (cellIsValid) {
+                // Find the move corresponding to the selected token and cell
+                move = this.state.validMoves.filter(move => {
+                    return (move.from === this.state.selectedToken && move.to === cell.props.id);
+                })[0];
 
-            this.moveToken(move);
+                this.moveToken(move);
+            }
         }
     };
 
@@ -310,7 +310,7 @@ export default class Checkers extends React.Component {
             currentPlayer = this.state.players[(this.state.currentTurn + 2) % 2],
             opponent = this.state.players[(this.state.currentTurn + 1) % 2];
 
-        // Find the correct token object from the player's token array
+        // Find the index of the correct token object from the player's token array
         currentPlayer.tokens.forEach((token, tokenIndex) => {
             if (token.position === this.state.selectedToken) {
                 newTokenIndex = tokenIndex;
@@ -363,7 +363,7 @@ export default class Checkers extends React.Component {
         newMovesHistoryArray = this.state.movesHistory;
         newMovesHistoryArray.push(move);
 
-        this.setState({players: newPlayersArray, movesHistory: newMovesHistoryArray}, checkJumpAndContinue);
+        this.setState({players: newPlayersArray, movesHistory: newMovesHistoryArray}, checkJumpAndContinue.bind(this));
 
         function checkJumpAndContinue () {
             // If it was a jump, check for more jumps and continue the turn, unless the piece was freshly kinged
@@ -372,9 +372,11 @@ export default class Checkers extends React.Component {
                 if (newValidMoves.length && newValidMoves.jumpMoves) {
                     continueTurn = true;
                     this.highlightValidMovesForToken(newValidMoves);
+                    //noinspection JSPotentiallyInvalidUsageOfThis
                     this.setState({
                         selectedToken: newTokenObject.position,
-                        continuingAfterJump: true
+                        continuingAfterJump: true,
+                        validMoves: newValidMoves
                     }, checkComputerTurn);
 
                     function checkComputerTurn () {
@@ -407,34 +409,24 @@ export default class Checkers extends React.Component {
     determineValidMovesForPlayer = (player, token) => {
         if (this.state.config.debug) console.log('DEBUG: determineValidMovesForPlayer', player, token);
 
-        var validMovesForPlayer = [], jump = false, filteredValidMovesForPlayer = [];
+        var validMovesForPlayer = [], jumpMovesForPlayer = [];
 
         if (!token) {
             player.tokens.forEach(token => {
-                var validMovesForToken = this.determineValidMovesForToken(token);
-
-                if (validMovesForToken) {
-                    validMovesForToken.forEach(move => {
-                        validMovesForPlayer.push(move);
-                    });
-                }
+                this.determineValidMovesForToken(token).forEach(move => {
+                    validMovesForPlayer.push(move);
+                });
             });
         } else {
             validMovesForPlayer = this.determineValidMovesForToken(token);
         }
 
-        validMovesForPlayer.forEach(move => {
-            if (move.jump) jump = true;
+        jumpMovesForPlayer = validMovesForPlayer.filter(move => {
+            return !!move.jump;
         });
+        jumpMovesForPlayer.jumpMoves = true;
 
-        if (jump) {
-            filteredValidMovesForPlayer = validMovesForPlayer.filter(move => {
-                return !!move.jump;
-            });
-            filteredValidMovesForPlayer.jumpMoves = true;
-        }
-
-        return jump ? filteredValidMovesForPlayer : validMovesForPlayer;
+        return jumpMovesForPlayer.length > 0 ? jumpMovesForPlayer : validMovesForPlayer;
     };
 
     determineValidMovesForToken = (token) => {
@@ -545,7 +537,7 @@ export default class Checkers extends React.Component {
                     newTurn={this.newTurn}
                     newGame={this.newGame}
                     loadGame={this.loadGame}
-                    reset={this.reset}
+                    backToConfig={this.backToConfig}
                     saveGame={this.exportStateAsString}
                     handleCellClick={this.handleCellClick}
                     handleTokenClick={this.handleTokenClick}

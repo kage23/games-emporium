@@ -20,9 +20,7 @@ export default class CheckersConfig extends React.Component {
         loadGame: React.PropTypes.func.isRequired
     };
 
-    state = {
-        showLoadModal: false
-    };
+    state = { showLoadModal: false };
 
     playGame = (evt) => {
         var configIsValid = true,
@@ -90,34 +88,6 @@ export default class CheckersConfig extends React.Component {
         newConfigObject[configName] = evt.target.value;
 
         this.props.updateConfig(newConfigObject);
-    };
-
-    onPlayerChange = (evt) => {
-        var newPlayerObject, playerIndex;
-
-        playerIndex = parseInt(evt.target.dataset.playerId, 10);
-        newPlayerObject = Object.assign({}, this.props.gameState.players[playerIndex]);
-
-        if (evt.target.dataset.playerData === 'name') {
-            if (evt.target.value === this.props.gameState.players[(playerIndex + 1) % 2].name) {
-                alert('Your name must be different from ' +
-                    this.props.gameState.players[(playerIndex + 1) % 2].name + '\'s!');
-            }
-        }
-
-        newPlayerObject[evt.target.dataset.playerData] = evt.target.value;
-
-        this.props.updatePlayer(newPlayerObject, playerIndex);
-    };
-
-    onAIToggle = (evt) => {
-        var playerIndex = parseInt(evt.target.dataset.player, 10),
-            newPlayerObject = Object.assign({}, this.props.gameState.players[playerIndex]);
-        newPlayerObject.computer = evt.target.checked;
-        if (newPlayerObject.computer && playerIndex === 0) newPlayerObject.name = 'Randmontgomery Burns';
-        else if (newPlayerObject.computer && playerIndex === 1) newPlayerObject.name = 'Rando Checkrissian';
-        else newPlayerObject.name = 'Player ' + (playerIndex + 1);
-        this.props.updatePlayer(newPlayerObject, playerIndex);
     };
 
     onGameTypeChange = (evt) => {

@@ -11,6 +11,15 @@ export default class CheckerBoard extends React.Component {
     };
 
     render() {
+        var cells = generateCellArray([], this.props);
+
+        return (
+            <div className="checkerBoard">
+                {cells}
+                {this.props.children}
+            </div>
+        );
+
         function generateCellArray (currentArray, props) {
             var id, col, row, highlighted = false, newStyle = {}, count = props.size * props.size;
 
@@ -38,14 +47,5 @@ export default class CheckerBoard extends React.Component {
                 return generateCellArray(currentArray, props);
             }
         }
-
-        var cells = generateCellArray([], this.props);
-
-        return (
-            <div className="checkerBoard">
-                {cells}
-                {this.props.children}
-            </div>
-        );
     }
 }

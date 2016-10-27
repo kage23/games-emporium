@@ -8,7 +8,7 @@ import ModalSaveGame from '../shared/ModalSaveGame'
 export default class CheckersGameInfo extends React.Component {
     static propTypes = {
         gameState: React.PropTypes.object.isRequired,
-        reset: React.PropTypes.func.isRequired,
+        backToConfig: React.PropTypes.func.isRequired,
         saveGame: React.PropTypes.func.isRequired
     };
 
@@ -16,12 +16,12 @@ export default class CheckersGameInfo extends React.Component {
         showSaveModal: false
     };
 
-    newGame = (evt) => {
+    newGameClickHandler = (evt) => {
         evt.preventDefault();
-        this.props.reset();
+        this.props.backToConfig();
     };
 
-    saveGame = (evt) => {
+    saveGameClickHandler = (evt) => {
         evt.preventDefault();
 
         this.setState({ showSaveModal: true });
@@ -61,10 +61,10 @@ export default class CheckersGameInfo extends React.Component {
                 <Row>
                     <Col xs={12}>
                         <ButtonToolbar>
-                            <Button bsStyle="primary" className="pull-right" onClick={this.newGame}>
+                            <Button bsStyle="primary" className="pull-right" onClick={this.newGameClickHandler}>
                                 {this.props.gameState.winner ? 'New' : 'Abandon'} game
                             </Button>
-                            <Button bsStyle="primary" className="pull-right" onClick={this.saveGame}>Save game</Button>
+                            <Button bsStyle="primary" className="pull-right" onClick={this.saveGameClickHandler}>Save game</Button>
                         </ButtonToolbar>
                     </Col>
                 </Row>
