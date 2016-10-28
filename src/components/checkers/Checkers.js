@@ -421,16 +421,20 @@ export default class Checkers extends React.Component {
                 return token.props.position === move.from;
             });
 
-        if (validMovesForToken.length && ! this.state.continuingAfterJump) {
-            this.highlightValidMovesForToken(validMovesForToken);
+        if (!this.state.winner) {
+            if (validMovesForToken.length && !this.state.continuingAfterJump) {
+                this.highlightValidMovesForToken(validMovesForToken);
 
-            this.setState({
-                selectedToken: token.props.position
-            });
-        } else if (validMovesForToken.length === 0) {
-            this.highlightValidTokens(this.state.validMoves);
+                this.setState({
+                    selectedToken: token.props.position
+                });
+            } else if (validMovesForToken.length === 0) {
+                this.highlightValidTokens(this.state.validMoves);
 
-            setTimeout(() => { this.highlightValidTokens([])}, 150);
+                setTimeout(() => {
+                    this.highlightValidTokens([])
+                }, 150);
+            }
         }
     };
 
