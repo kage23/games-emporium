@@ -36,22 +36,40 @@ export default class CheckersGameInfo extends React.Component {
 
     render() {
         var generatePlayerInfoBox = (player, playerIndex) => {
+            var dataListing = [];
+
+            if (this.props.gameState.gameType === 'mule') {
+                dataListing.push({
+                    label: 'Men and Kings',
+                    value: player.tokens.filter(token => {return token.type === 'regular' || typeof token.type === 'undefined'}).length
+                });
+                dataListing.push({
+                    label: 'Mules',
+                    value: player.tokens.filter(token => {return token.type === 'mule';}).length
+                });
+                dataListing.push({
+                    label: 'Kings',
+                    value: player.tokens.filter(token => {return token.king;}).length
+                });
+
+            } else {
+                dataListing.push({
+                    label: 'Total men remaining',
+                    value: player.tokens.length
+                });
+                dataListing.push({
+                    label: 'Kings',
+                    value: player.tokens.filter(token => {return token.king;}).length
+                });
+                dataListing.push({
+                    label: 'Captures',
+                    value: player.captures
+                });
+            }
+
             return (
                 <Col lg={6} key={playerIndex}>
-                    <PlayerInfoListing player={player} dataListing={[
-                        {
-                            label: 'Total men remaining',
-                            value: player.tokens.length
-                        },
-                        {
-                            label: 'Kings',
-                            value: player.tokens.filter(token => {return token.king;}).length
-                        },
-                        {
-                            label: 'Captures',
-                            value: player.captures
-                        }
-                    ]}
+                    <PlayerInfoListing player={player} dataListing={dataListing}
                         />
                 </Col>
             );
