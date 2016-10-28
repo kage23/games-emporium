@@ -1,5 +1,8 @@
 import React from 'react'
 
+import ColorDistance from '../../utilities/ColorDistance'
+import ColorToRGB from '../../utilities/ColorToRGB'
+
 export default class Token extends React.Component {
     static propTypes = {
         boardSize: React.PropTypes.number.isRequired,
@@ -16,7 +19,7 @@ export default class Token extends React.Component {
     };
 
     render() {
-        var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token', kingSpan;
+        var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token', kingSpan, kingColor;
 
         tokenCol = parseInt(this.props.position.substr(this.props.position.indexOf('c') + 1), 10);
         tokenRow = parseInt(this.props.position.substr(this.props.position.indexOf('r') + 1), 10);
@@ -36,7 +39,13 @@ export default class Token extends React.Component {
         }
 
         if (this.props.king) {
-            kingSpan = <span className="king" style={{color:this.props.color}}>K</span>;
+            if (ColorDistance(ColorToRGB(this.props.color), ColorToRGB('black')) > 225) {
+                kingColor = 'black';
+            } else {
+                kingColor = 'white';
+            }
+
+            kingSpan = <span className="king" style={{color:kingColor}}>&#9812;</span>;
         }
 
         return (
