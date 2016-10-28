@@ -50,6 +50,8 @@ export default class Token extends React.Component {
                 tokenStyle.border = 0;
                 tokenStyle.background = 'transparent';
                 tokenStyle.color = this.props.color;
+                tokenStyle.WebkitTextStrokeWidth = 1;
+                tokenStyle.WebkitTextStrokeColor = 'black';
                 iconSpan = <span className="tokenIcon">&#9822;</span>;
                 break;
 
