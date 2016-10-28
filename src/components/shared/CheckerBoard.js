@@ -14,7 +14,7 @@ export default class CheckerBoard extends React.Component {
         var cells = generateCellArray([], this.props);
 
         return (
-            <div className="checkerBoard">
+            <div className="checkerBoard" style={{maxWidth:this.props.size*100}}>
                 {cells}
                 {this.props.children}
             </div>

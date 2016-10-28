@@ -57,12 +57,14 @@ export default class Checkers extends React.Component {
                         [
                             {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
                             {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false},
-                            {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false}, {position: 'c6r7', king: false}, {position: 'c8r7', king: false}
+                            {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false}, {position: 'c6r7', king: false}, {position: 'c8r7', king: false},
+                            {position: 'c1r6', king: false}, {position: 'c3r6', king: false}, {position: 'c5r6', king: false}, {position: 'c7r6', king: false}, {position: 'c9r6', king: false}
                         ],
                         [
                             {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
                             {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false},
-                            {position: 'c1r2', king: false}, {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}, {position: 'c9r2', king: false}
+                            {position: 'c1r2', king: false}, {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}, {position: 'c9r2', king: false},
+                            {position: 'c0r3', king: false}, {position: 'c2r3', king: false}, {position: 'c4r3', king: false}, {position: 'c6r3', king: false}, {position: 'c8r3', king: false}
                         ]
                     ]
                 });
@@ -71,6 +73,29 @@ export default class Checkers extends React.Component {
         ['antiCrowded', {
             label: 'Crowded Anti-Checkers',
             description: <p>Bigger board, more pieces. Try for the anti-win condition though.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 10,
+                    startingTokens: [
+                        [
+                            {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
+                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false},
+                            {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false}, {position: 'c6r7', king: false}, {position: 'c8r7', king: false},
+                            {position: 'c1r6', king: false}, {position: 'c3r6', king: false}, {position: 'c5r6', king: false}, {position: 'c7r6', king: false}, {position: 'c9r6', king: false}
+                        ],
+                        [
+                            {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
+                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false},
+                            {position: 'c1r2', king: false}, {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}, {position: 'c9r2', king: false},
+                            {position: 'c0r3', king: false}, {position: 'c2r3', king: false}, {position: 'c4r3', king: false}, {position: 'c6r3', king: false}, {position: 'c8r3', king: false}
+                        ]
+                    ]
+                });
+            }
+        }],
+        ['sparse', {
+            label: 'Sparse Checkers',
+            description: <p>Bigger board, only a few more pieces.</p>,
             callback () {
                 this.setConfig({
                     boardSize: 10,
@@ -89,40 +114,49 @@ export default class Checkers extends React.Component {
                 });
             }
         }],
-        ['sparse', {
-            label: 'Sparse Checkers',
-            description: <p>Bigger board, fewer pieces.</p>,
+        ['antiSparse', {
+            label: 'Sparse Anti-Checkers',
+            description: <p>Bigger board, only a few more pieces. Try for the anti-win condition though.</p>,
             callback () {
                 this.setConfig({
                     boardSize: 10,
                     startingTokens: [
                         [
                             {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
-                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false}
+                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false},
+                            {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false}, {position: 'c6r7', king: false}, {position: 'c8r7', king: false}
                         ],
                         [
                             {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
-                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false}
+                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false},
+                            {position: 'c1r2', king: false}, {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}, {position: 'c9r2', king: false}
                         ]
                     ]
                 });
             }
         }],
-        ['antiSparse', {
-            label: 'Sparse Anti-Checkers',
-            description: <p>Bigger board, fewer pieces. Try for the anti-win condition though.</p>,
+        ['tiny', {
+            label: 'Tiny Checkers',
+            description: <p>Tiny board!</p>,
             callback () {
                 this.setConfig({
-                    boardSize: 10,
+                    boardSize: 4,
                     startingTokens: [
-                        [
-                            {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
-                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false}
-                        ],
-                        [
-                            {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
-                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false}
-                        ]
+                        [{position: 'c0r3', king: false}, {position: 'c2r3', king: false}],
+                        [{position: 'c1r0', king: false}, {position: 'c3r0', king: false}]
+                    ]
+                });
+            }
+        }],
+        ['antiTiny', {
+            label: 'Tiny Anti-Checkers',
+            description: <p>Tiny board! Try for the anti-win condition though.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 4,
+                    startingTokens: [
+                        [{position: 'c0r3', king: false}, {position: 'c2r3', king: false}],
+                        [{position: 'c1r0', king: false}, {position: 'c3r0', king: false}]
                     ]
                 });
             }
@@ -197,7 +231,7 @@ export default class Checkers extends React.Component {
 
     generatePlayerWithTokens = (player, playerIndex) => {
         var newPlayer = {},
-            tokens = this.state.config.startingTokens[playerIndex].map(generateToken);
+            tokens = this.state.config.startingTokens[playerIndex].map(generateTokenWithId);
 
         Object.keys(player).forEach(generateNewPlayerItem);
 
@@ -209,12 +243,11 @@ export default class Checkers extends React.Component {
             newPlayer[key] = player[key];
         }
 
-        function generateToken (token) {
-            return {
-                position: token.position,
-                king: token.king,
-                id: playerIndex + '-' + token.position
-            };
+        function generateTokenWithId (token) {
+            var returnToken = Object.assign({}, token);
+            returnToken.id = playerIndex + '-' + token.position;
+
+            return returnToken;
         }
     };
 
