@@ -6,7 +6,7 @@ import CheckersContainer from './CheckersContainer'
 
 export default class Checkers extends React.Component {
     defaultConfigs = {
-        debug: true,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
+        debug: false,                   // set to false to turn console logs off (in a total hacky way and just when I remembered to do it manually)
         boardSize: 8,                   // must be an even number. number of cells along each side of the board. board will be square.
         color: 'green',                  // color of playable squares
         secondaryColor: '#fff',         // color of alternate squares
