@@ -160,6 +160,26 @@ export default class Checkers extends React.Component {
                     ]
                 });
             }
+        }],
+        ['mule', {
+            label: 'Mule Checkers',
+            description: <p>I'll deal with this later.</p>,
+            callback () {
+                this.setConfig({
+                    startingTokens: [
+                        [
+                            {position: 'c0r7', king: false, type: 'mule'},  {position: 'c2r7', king: false, type: 'mule'},  {position: 'c4r7', king: false, type: 'mule'},  {position: 'c6r7', king: false, type: 'mule'},
+                            {position: 'c1r6', king: false},                {position: 'c3r6', king: false},                {position: 'c5r6', king: false},                {position: 'c7r6', king: false},
+                            {position: 'c0r5', king: false},                {position: 'c2r5', king: false},                {position: 'c4r5', king: false},                {position: 'c6r5', king: false}
+                        ],
+                        [
+                            {position: 'c1r0', king: false, type: 'mule'},  {position: 'c3r0', king: false, type: 'mule'},  {position: 'c5r0', king: false, type: 'mule'},  {position: 'c7r0', king: false, type: 'mule'},
+                            {position: 'c0r1', king: false},                {position: 'c2r1', king: false},                {position: 'c4r1', king: false},                {position: 'c6r1', king: false},
+                            {position: 'c1r2', king: false},                {position: 'c3r2', king: false},                {position: 'c5r2', king: false},                {position: 'c7r2', king: false}
+                        ]
+                    ]
+                });
+            }
         }]
     ]);
 

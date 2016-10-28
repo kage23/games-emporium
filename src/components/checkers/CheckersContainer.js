@@ -23,27 +23,8 @@ export default class CheckersContainer extends React.Component {
     };
 
     render() {
-        var html, tokens;
-
-        var generateTokenArray = function (players) {
-            var tokenArray = [];
-
-            players.forEach(player => {
-                player.tokens.forEach(token => {
-                    var highlighted = token.position === this.props.gameState.selectedToken ||
-                        this.props.gameState.highlightedTokens.indexOf(token.position) > -1;
-
-                    tokenArray.push((
-                        <Token boardSize={this.props.gameState.config.boardSize} type='circle' color={player.color}
-                               handleClick={this.props.handleTokenClick} position={token.position} key={token.id}
-                               king={token.king} highlighted={highlighted}
-                            />
-                    ));
-                });
-            });
-
-            return tokenArray;
-        }.bind(this);
+        var html, tokens,
+            generateTokenArray = _generateTokenArray.bind(this);
 
         tokens = generateTokenArray(this.props.gameState.players);
 
@@ -64,7 +45,7 @@ export default class CheckersContainer extends React.Component {
                 <div>
                     <Row>
                         <Col sm={8} lg={7}>
-                            <TurnOrWinnerHeader gameState={this.props.gameState} />
+                            <TurnOrWinnerHeader gameState={this.props.gameState}/>
                             <CheckerBoard
                                 size={this.props.gameState.config.boardSize}
                                 color={this.props.gameState.config.color}
@@ -88,5 +69,31 @@ export default class CheckersContainer extends React.Component {
             );
 
         return html;
+
+        function _generateTokenArray(players) {
+            var tokenArray = [];
+
+            players.forEach(player => {
+                player.tokens.forEach(token => {
+                    var highlighted = token.position === this.props.gameState.selectedToken ||
+                        this.props.gameState.highlightedTokens.indexOf(token.position) > -1;
+
+                    tokenArray.push((
+                        <Token
+                            key={token.id}
+                            boardSize={this.props.gameState.config.boardSize}
+                            type={token.type || 'circle'}
+                            color={player.color}
+                            handleClick={this.props.handleTokenClick}
+                            position={token.position}
+                            king={token.king}
+                            highlighted={highlighted}
+                            />
+                    ));
+                });
+            });
+
+            return tokenArray;
+        }
     }
 }
