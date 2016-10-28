@@ -46,6 +46,86 @@ export default class Checkers extends React.Component {
                     startingTokens: this.defaultConfigs.startingTokens
                 });
             }
+        }],
+        ['crowded', {
+            label: 'Crowded Checkers',
+            description: <p>Bigger board, more pieces.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 10,
+                    startingTokens: [
+                        [
+                            {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
+                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false},
+                            {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false}, {position: 'c6r7', king: false}, {position: 'c8r7', king: false}
+                        ],
+                        [
+                            {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
+                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false},
+                            {position: 'c1r2', king: false}, {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}, {position: 'c9r2', king: false}
+                        ]
+                    ]
+                });
+            }
+        }],
+        ['antiCrowded', {
+            label: 'Crowded Anti-Checkers',
+            description: <p>Bigger board, more pieces. Try for the anti-win condition though.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 10,
+                    startingTokens: [
+                        [
+                            {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
+                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false},
+                            {position: 'c0r7', king: false}, {position: 'c2r7', king: false}, {position: 'c4r7', king: false}, {position: 'c6r7', king: false}, {position: 'c8r7', king: false}
+                        ],
+                        [
+                            {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
+                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false},
+                            {position: 'c1r2', king: false}, {position: 'c3r2', king: false}, {position: 'c5r2', king: false}, {position: 'c7r2', king: false}, {position: 'c9r2', king: false}
+                        ]
+                    ]
+                });
+            }
+        }],
+        ['sparse', {
+            label: 'Sparse Checkers',
+            description: <p>Bigger board, fewer pieces.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 10,
+                    startingTokens: [
+                        [
+                            {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
+                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false}
+                        ],
+                        [
+                            {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
+                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false}
+                        ]
+                    ]
+                });
+            }
+        }],
+        ['antiSparse', {
+            label: 'Sparse Anti-Checkers',
+            description: <p>Bigger board, fewer pieces. Try for the anti-win condition though.</p>,
+            callback () {
+                this.setConfig({
+                    boardSize: 10,
+                    startingTokens: [
+                        [
+                            {position: 'c0r9', king: false}, {position: 'c2r9', king: false}, {position: 'c4r9', king: false}, {position: 'c6r9', king: false}, {position: 'c8r9', king: false},
+                            {position: 'c1r8', king: false}, {position: 'c3r8', king: false}, {position: 'c5r8', king: false}, {position: 'c7r8', king: false}, {position: 'c9r8', king: false}
+                        ],
+                        [
+                            {position: 'c1r0', king: false}, {position: 'c3r0', king: false}, {position: 'c5r0', king: false}, {position: 'c7r0', king: false}, {position: 'c9r0', king: false},
+                            {position: 'c0r1', king: false}, {position: 'c2r1', king: false}, {position: 'c4r1', king: false}, {position: 'c6r1', king: false}, {position: 'c8r1', king: false}
+                        ]
+                    ]
+                });
+            }
         }]
     ]);
 
@@ -156,7 +236,7 @@ export default class Checkers extends React.Component {
 
         if (validMoves.length <= 0) {
             // Anti-checkers win condition, lose condition otherwise
-            if (this.state.gameType === 'anti') winner = newPlayer;
+            if (this.state.gameType.indexOf('anti') === 0) winner = newPlayer;
             else winner = this.state.players[(newTurn - 1) % 2];
         }
 
