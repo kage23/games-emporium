@@ -142,8 +142,8 @@ export default class Checkers extends React.Component {
                 this.setConfig({
                     boardSize: 4,
                     startingTokens: [
-                        [{position: 'c0r3', king: false}, {position: 'c2r3', king: false}],
-                        [{position: 'c1r0', king: false}, {position: 'c3r0', king: false}]
+                        [{position: 'c0r3', king: true}, {position: 'c2r3', king: false}],
+                        [{position: 'c1r0', king: true}, {position: 'c3r0', king: false}]
                     ]
                 });
             }
@@ -163,9 +163,30 @@ export default class Checkers extends React.Component {
         }],
         ['mule', {
             label: 'Mule Checkers',
-            description: <p>I'll deal with this later.</p>,
+            description: (
+                <div>
+                    <p>I found this on a website called <a
+                        href="https://www.itsyourturn.com/t_helptopic2030.html#helpitem1534">It's Your Turn.</a>
+                    </p>
+                    <p>Basically, the ones that look like chess knights are the mules. They move, capture, and get
+                        captured totally like normal. But they affect how you can win or lose. There are three ways to
+                        win:</p>
+                    <ul>
+                        <li>Capture all of your opponent's regular pieces</li>
+                        <li>Lose all of your own mules</li>
+                        <li>Force your opponent to king a mule</li>
+                    </ul>
+                    <p>Thus, there are three ways to lose:</p>
+                    <ul>
+                        <li>Lose all of your own regular pieces</li>
+                        <li>Capture all of your opponent's mules</li>
+                        <li>King a mule</li>
+                    </ul>
+                </div>
+            ),
             callback () {
                 this.setConfig({
+                    boardSize: 8,
                     startingTokens: [
                         [
                             {position: 'c0r7', king: false, type: 'mule'},  {position: 'c2r7', king: false, type: 'mule'},  {position: 'c4r7', king: false, type: 'mule'},  {position: 'c6r7', king: false, type: 'mule'},
@@ -287,11 +308,7 @@ export default class Checkers extends React.Component {
 
         validMoves = this.determineValidMovesForPlayer(newPlayer);
 
-        if (validMoves.length <= 0) {
-            // Anti-checkers win condition, lose condition otherwise
-            if (this.state.gameType.indexOf('anti') === 0) winner = newPlayer;
-            else winner = this.state.players[(newTurn - 1) % 2];
-        }
+        winner = this.checkWinLose(newTurn, validMoves);
 
         this.setState({
             currentTurn: newTurn,
@@ -308,18 +325,47 @@ export default class Checkers extends React.Component {
         }
     };
 
-    checkWinLose = (currentTurn) => {
-        if (this.state.config.debug) console.log('DEBUG: checkWinLose', currentTurn);
+    checkWinLose = (turn, validMoves) => {
+        if (this.state.config.debug) console.log('DEBUG: checkWinLose', turn, validMoves);
 
-        var winner;
+        var winner,
+            playerRegularTokens, playerMules, playerMuleKings,
+            opponentRegularTokens, opponentMules, opponentMuleKings,
+            player = this.state.players[turn % 2],
+            opponent = this.state.players[(turn + 1) % 2];
 
-        if (this.determineValidMovesForPlayer(this.state.players[(currentTurn + 2) % 2]).length <= 0) {
+        if (this.state.gameType === 'mule') {
+            playerRegularTokens = player.tokens.filter(filterRegularTokens);
+            opponentRegularTokens = opponent.tokens.filter(filterRegularTokens);
+            playerMules = player.tokens.filter(filterMules);
+            opponentMules = opponent.tokens.filter(filterMules);
+            playerMuleKings = playerMules.filter(filterMuleKings);
+            opponentMuleKings = opponentMules.filter(filterMuleKings);
+
+            if (opponentRegularTokens.length === 0 || playerMules.length === 0 || opponentMuleKings.length > 0) {
+                winner = player;
+            } else if (playerRegularTokens.length === 0 || opponentMules.length === 0 || playerMuleKings.length > 0) {
+                winner = opponent;
+            }
+        } else if (validMoves.length <= 0) {
             // Anti-checkers win condition, lose condition otherwise
-            if (this.state.gameType === 'anti') winner = this.state.players[(currentTurn + 2) % 2];
-            else winner = this.state.players[(currentTurn + 1) % 2];
+            if (this.state.gameType.indexOf('anti') === 0) winner = player;
+            else winner = opponent;
         }
 
         return winner;
+
+        function filterRegularTokens (token) {
+            return token.type === 'circle' || typeof token.type === 'undefined';
+        }
+
+        function filterMules (token) {
+            return token.type === 'mule';
+        }
+
+        function filterMuleKings (token) {
+            return token.type === 'mule' && token.king;
+        }
     };
 
     computerTurn = () => {

@@ -59,6 +59,7 @@ export default class CheckersContainer extends React.Component {
 
                         <Col sm={4} lg={5}>
                             <CheckersGameInfo
+                                gameTypes={this.props.gameTypes}
                                 gameState={this.props.gameState}
                                 backToConfig={this.props.backToConfig}
                                 saveGame={this.props.saveGame}

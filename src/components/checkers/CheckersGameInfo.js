@@ -1,5 +1,5 @@
 import React from 'react'
-import { ButtonToolbar, Button, Row, Col } from 'react-bootstrap'
+import { ButtonToolbar, Button, Row, Col, Panel } from 'react-bootstrap'
 
 import PlayerInfoListing from '../shared/PlayerInfoListing'
 import MovesListPanel from '../shared/MovesListPanel'
@@ -7,6 +7,7 @@ import ModalSaveGame from '../shared/ModalSaveGame'
 
 export default class CheckersGameInfo extends React.Component {
     static propTypes = {
+        gameTypes: React.PropTypes.object.isRequired,
         gameState: React.PropTypes.object.isRequired,
         backToConfig: React.PropTypes.func.isRequired,
         saveGame: React.PropTypes.func.isRequired
@@ -69,6 +70,11 @@ export default class CheckersGameInfo extends React.Component {
                     </Col>
                 </Row>
                 <Row style={{marginTop:8}}>
+                    <Col lg={12}>
+                        <Panel collapsible header='Show/Hide game description'>
+                            {this.props.gameTypes.get(this.props.gameState.gameType).description}
+                        </Panel>
+                    </Col>
                     {this.props.gameState.players.map(generatePlayerInfoBox)}
                 </Row>
                 <MovesListPanel moves={this.props.gameState.movesHistory} />

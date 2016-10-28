@@ -19,7 +19,7 @@ export default class Token extends React.Component {
     };
 
     render() {
-        var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token', kingSpan, kingColor;
+        var tokenCol, tokenRow, tokenSize, tokenStyle, className = 'token', iconSpan, kingColor;
 
         tokenCol = parseInt(this.props.position.substr(this.props.position.indexOf('c') + 1), 10);
         tokenRow = parseInt(this.props.position.substr(this.props.position.indexOf('r') + 1), 10);
@@ -41,20 +41,21 @@ export default class Token extends React.Component {
                 kingColor = 'white';
             }
 
-            kingSpan = <span className="king" style={{color:kingColor}}>&#9812;</span>;
+            iconSpan = <span className="tokenIcon" style={{color:kingColor}}>&#9812;</span>;
         }
 
         switch (this.props.type) {
-            case 'circle':
-                tokenStyle.borderRadius = '50%';
-                break;
-
             case 'knight':
             case 'mule':
                 tokenStyle.border = 0;
                 tokenStyle.background = 'transparent';
                 tokenStyle.color = this.props.color;
-                kingSpan = <span className="tokenIcon">&#9822;</span>;
+                iconSpan = <span className="tokenIcon">&#9822;</span>;
+                break;
+
+            case 'circle':
+            default:
+                tokenStyle.borderRadius = '50%';
                 break;
         }
 
@@ -63,7 +64,7 @@ export default class Token extends React.Component {
         }
 
         return (
-            <div className={className} style={tokenStyle} onClick={this.handleClick}>{kingSpan}</div>
+            <div className={className} style={tokenStyle} onClick={this.handleClick}>{iconSpan}</div>
         );
     }
 }
