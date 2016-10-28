@@ -142,8 +142,8 @@ export default class Checkers extends React.Component {
                 this.setConfig({
                     boardSize: 4,
                     startingTokens: [
-                        [{position: 'c0r3', king: true}, {position: 'c2r3', king: false}],
-                        [{position: 'c1r0', king: true}, {position: 'c3r0', king: false}]
+                        [{position: 'c0r3', king: false}, {position: 'c2r3', king: false}],
+                        [{position: 'c1r0', king: false}, {position: 'c3r0', king: false}]
                     ]
                 });
             }
